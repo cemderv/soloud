@@ -13,6 +13,10 @@ target_include_directories(SoLoud PUBLIC include)
 
 set(SoLoud_BACKEND_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/backend/")
 
+if (MSVC)
+    target_compile_options(SoLoud PRIVATE /wd4700)
+endif()
+
 if (NOT MSVC)
   set_source_files_properties(
     src/audiosource/speech/klatt.cpp
