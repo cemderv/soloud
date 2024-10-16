@@ -15,7 +15,9 @@ add_library(SoLoud STATIC ${HeaderFiles} ${SourceFiles})
 target_compile_features(SoLoud PRIVATE cxx_std_20)
 target_include_directories(SoLoud PUBLIC include)
 
-target_precompile_headers(SoLoud PRIVATE include/soloud.h)
+target_precompile_headers(SoLoud PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/include/soloud.h>"
+)
 
 if (WIN32)
     target_compile_definitions(SoLoud PRIVATE -DWIN32_LEAN_AND_MEAN)
