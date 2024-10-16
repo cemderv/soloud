@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_H
-#define SOLOUD_H
+#pragma once
 
 #include <stdlib.h> // rand
 #include <math.h> // sin
@@ -592,4 +591,4 @@ namespace SoLoud
 	};
 };
 
-#endif
+
