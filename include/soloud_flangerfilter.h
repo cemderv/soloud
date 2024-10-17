@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FLANGERFILTER_H
-#define SOLOUD_FLANGERFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -66,5 +65,3 @@ namespace SoLoud
 		result setParams(float aDelay, float aFreq);
 	};
 }
-
-#endif

@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#ifndef SOLOUD_ERROR_H
-#define SOLOUD_ERROR_H
+
+#pragma once
 
 namespace SoLoud
 {
@@ -38,4 +38,3 @@ namespace SoLoud
 		UNKNOWN_ERROR     = 7  // Other error
 	};
 };
-#endif

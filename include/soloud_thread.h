@@ -22,10 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_THREAD_H
-#define SOLOUD_THREAD_H
-
-#include "soloud.h"
+#pragma once
 
 namespace SoLoud
 {
@@ -80,5 +77,3 @@ namespace SoLoud
 		};
 	}
 }
-
-#endif

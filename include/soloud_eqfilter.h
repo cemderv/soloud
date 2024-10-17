@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_EQFILTER_H
-#define SOLOUD_EQFILTER_H
+#pragma once
 
 #include "soloud.h"
 #include "soloud_fftfilter.h"
@@ -78,5 +77,3 @@ namespace SoLoud
 		EqFilter();
 	};
 }
-
-#endif

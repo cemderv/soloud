@@ -22,10 +22,9 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_WAVSTREAM_H
-#define SOLOUD_WAVSTREAM_H
+#pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include "soloud.h"
 
 struct stb_vorbis;
@@ -103,5 +102,3 @@ namespace SoLoud
 		result parse(File *aFile);
 	};
 };
-
-#endif

@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_BQRFILTER_H
-#define SOLOUD_BQRFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -90,5 +89,3 @@ namespace SoLoud
 		virtual ~BiquadResonantFilter();
 	};
 }
-
-#endif

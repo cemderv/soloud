@@ -22,10 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_BUS_H
-#define SOLOUD_BUS_H
-
-#include "soloud.h"
+#pragma once
 
 namespace SoLoud
 {
@@ -99,5 +96,3 @@ namespace SoLoud
 		void findBusHandle();
 	};
 };
-
-#endif

@@ -25,8 +25,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_VIC_H
-#define SOLOUD_VIC_H
+#pragma once
 
 #include "soloud.h"
 
@@ -104,5 +103,3 @@ namespace SoLoud
 		unsigned char 	m_noise[8192];
 	};
 };
-
-#endif

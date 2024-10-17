@@ -22,10 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FILTER_H
-#define SOLOUD_FILTER_H
-
-#include "soloud.h"
+#pragma once
 
 namespace SoLoud
 {
@@ -38,7 +35,6 @@ namespace SoLoud
 		unsigned int mParamChanged;
 		float *mParam;
 		Fader *mParamFader;
-		
 
 		FilterInstance();
 		virtual result initParams(int aNumParams);
@@ -73,4 +69,3 @@ namespace SoLoud
 	};
 };
 
-#endif

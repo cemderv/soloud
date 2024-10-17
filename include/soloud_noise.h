@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_NOISE_H
-#define SOLOUD_NOISE_H
+#pragma once
 
 #include "soloud.h"
 #include "soloud_misc.h"
@@ -70,5 +69,3 @@ namespace SoLoud
 		float mOctaveScale[10];
 	};
 };
-
-#endif

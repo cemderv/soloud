@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_BASSBOOSTFILTER_H
-#define SOLOUD_BASSBOOSTFILTER_H
+#pragma once
 
 #include "soloud.h"
 #include "soloud_fftfilter.h"
@@ -64,5 +63,3 @@ namespace SoLoud
 		BassboostFilter();
 	};
 }
-
-#endif

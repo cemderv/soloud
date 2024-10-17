@@ -23,8 +23,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SFXR_H
-#define SFXR_H
+#pragma once
 
 #include "soloud.h"
 #include "soloud_misc.h"
@@ -155,5 +154,3 @@ namespace SoLoud
 		virtual AudioSourceInstance *createInstance();
 	};
 };
-
-#endif

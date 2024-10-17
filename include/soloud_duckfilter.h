@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_DUCKFILTER_H
-#define SOLOUD_DUCKFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -67,5 +66,3 @@ namespace SoLoud
 		result setParams(Soloud* aSoloud, handle aListenTo, float aOnRamp = 0.1f, float aOffRamp = 0.5f, float aLevel = 0.1f);
 	};
 }
-
-#endif

@@ -22,11 +22,9 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef MONOTONE_H
-#define MONOTONE_H
+#pragma once
 
 #include "soloud.h"
-#include "soloud_misc.h"
 
 namespace SoLoud
 {
@@ -106,5 +104,3 @@ namespace SoLoud
 		void clear();
 	};
 };
-
-#endif
