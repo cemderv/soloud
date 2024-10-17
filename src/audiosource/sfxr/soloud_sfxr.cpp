@@ -23,9 +23,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 #include "soloud_sfxr.h"
 #include "soloud_file.h"
 

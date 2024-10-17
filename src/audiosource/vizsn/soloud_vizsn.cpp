@@ -10,10 +10,10 @@ Integration and changes to work with SoLoud by Jari Komppa,
 released under same license.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
 #include "soloud_vizsn.h"
 
 /*

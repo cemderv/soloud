@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <string.h>
+#include <cstring>
 #include "soloud_internal.h"
 
 // Core "basic" operations - play, stop, etc

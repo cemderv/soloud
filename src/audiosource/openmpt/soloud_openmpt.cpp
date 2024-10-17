@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdio>
 #include "soloud_openmpt.h"
 #include "soloud_file.h"
 

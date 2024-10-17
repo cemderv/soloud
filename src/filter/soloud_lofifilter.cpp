@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
 #include "soloud.h"
 #include "soloud_lofifilter.h"
 

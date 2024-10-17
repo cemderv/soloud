@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <string.h>
 #include "soloud.h"
 #include "soloud_misc.h"
 #include "soloud_robotizefilter.h"

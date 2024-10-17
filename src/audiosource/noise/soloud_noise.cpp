@@ -22,10 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include "soloud_noise.h"
 
 namespace SoLoud

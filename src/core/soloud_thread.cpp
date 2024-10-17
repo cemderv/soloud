@@ -25,10 +25,10 @@ freely, subject to the following restrictions:
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #else
-#include <inttypes.h>
+#include <cinttypes>
 #include <pthread.h>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #endif
 
 #include "soloud.h"
