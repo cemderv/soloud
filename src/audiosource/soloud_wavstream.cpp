@@ -389,9 +389,11 @@ bool WavStreamInstance::rewind()
             }
             break;
     }
+
     mOffset         = 0;
     mStreamPosition = 0.0f;
-    return 0;
+
+    return false;
 }
 
 bool WavStreamInstance::hasEnded()
@@ -512,9 +514,9 @@ void WavStream::loadmp3(MemoryFile& fp)
     drmp3_uninit(&decoder);
 }
 
-AudioSourceInstance* WavStream::createInstance()
+std::shared_ptr<AudioSourceInstance> WavStream::createInstance()
 {
-    return new WavStreamInstance(this);
+    return std::make_shared<WavStreamInstance>(this);
 }
 
 double WavStream::getLength() const

@@ -119,9 +119,9 @@ Noise::~Noise()
     stop();
 }
 
-AudioSourceInstance* Noise::createInstance()
+std::shared_ptr<AudioSourceInstance> Noise::createInstance()
 {
-    return new NoiseInstance(this);
+    return std::make_shared< NoiseInstance>(this);
 }
 
 }; // namespace SoLoud

@@ -135,15 +135,14 @@ Bus::Bus()
     }
 }
 
-BusInstance* Bus::createInstance()
+std::shared_ptr<AudioSourceInstance> Bus::createInstance()
 {
     if (mChannelHandle)
     {
         stop();
         mChannelHandle = 0;
-        mInstance      = 0;
     }
-    mInstance = new BusInstance(this);
+    mInstance = std::make_shared< BusInstance>(this);
     return mInstance;
 }
 
@@ -155,7 +154,7 @@ void Bus::findBusHandle()
         int i;
         for (i = 0; mChannelHandle == 0 && i < (signed)mSoloud->mHighestVoice; i++)
         {
-            if (mSoloud->mVoice[i] == mInstance)
+            if (mSoloud->mVoice[i].get() == mInstance.get())
             {
                 mChannelHandle = mSoloud->getHandleFromVoice_internal(i);
             }
@@ -248,9 +247,6 @@ void Bus::setFilter(size_t aFilterId, Filter* aFilter)
     if (mInstance)
     {
         mSoloud->lockAudioMutex_internal();
-        delete mInstance->mFilter[aFilterId];
-        mInstance->mFilter[aFilterId] = 0;
-
         if (aFilter)
         {
             mInstance->mFilter[aFilterId] = mFilter[aFilterId]->createInstance();

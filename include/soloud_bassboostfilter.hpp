@@ -62,7 +62,7 @@ class BassboostFilter : public FFTFilter
         BOOST = 1
     };
 
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     float mBoost = 2.0f;
 };

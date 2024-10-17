@@ -59,8 +59,8 @@ void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
     }
 }
 
-WaveShaperFilterInstance* WaveShaperFilter::createInstance()
+std::shared_ptr<FilterInstance> WaveShaperFilter::createInstance()
 {
-    return new WaveShaperFilterInstance(this);
+    return std::make_shared< WaveShaperFilterInstance>(this);
 }
 } // namespace SoLoud

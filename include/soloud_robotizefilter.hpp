@@ -62,10 +62,9 @@ class RobotizeFilter : public Filter
         WAVE
     };
 
-    float           mFreq;
-    int             mWave;
-    void            setParams(float aFreq, int aWaveform);
-    FilterInstance* createInstance() override;
-    RobotizeFilter();
+    std::shared_ptr<FilterInstance> createInstance() override;
+
+    float                           mFreq=30.0f;
+    int                             mWave=0;
 };
 } // namespace SoLoud

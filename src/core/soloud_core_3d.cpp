@@ -227,7 +227,7 @@ void Engine::update3dAudio()
     for (i = 0; i < (int)voicecount; i++)
     {
         AudioSourceInstance3dData* v  = &m3dData[voices[i]];
-        AudioSourceInstance*       vi = mVoice[voices[i]];
+        auto&       vi = mVoice[voices[i]];
         if (vi)
         {
             updateVoiceRelativePlaySpeed_internal(voices[i]);

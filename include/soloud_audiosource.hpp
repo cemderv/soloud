@@ -140,7 +140,7 @@ class AudioSourceInstance
   public:
     AudioSourceInstance();
 
-    virtual ~AudioSourceInstance() noexcept;
+    virtual ~AudioSourceInstance() noexcept = default;
 
     // Play index; used to identify instances from handles
     size_t mPlayIndex = 0;
@@ -213,7 +213,7 @@ class AudioSourceInstance
     size_t mBusHandle = ~0u;
 
     // Filter pointer
-    std::array<FilterInstance*, FILTERS_PER_STREAM> mFilter{};
+    std::array<std::shared_ptr<FilterInstance>, FILTERS_PER_STREAM> mFilter{};
 
     // Initialize instance. Mostly internal use.
     void init(AudioSource& aSource, int aPlayIndex);
@@ -332,7 +332,7 @@ class AudioSource
     virtual ~AudioSource() noexcept;
 
     // Create instance from the audio source. Called from within Soloud class.
-    virtual AudioSourceInstance* createInstance() = 0;
+    virtual std::shared_ptr<AudioSourceInstance> createInstance() = 0;
 
     // Set filter. Set to nullptr to clear the filter.
     virtual void setFilter(size_t aFilterId, Filter* aFilter);

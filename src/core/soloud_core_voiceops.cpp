@@ -117,19 +117,16 @@ void Engine::stopVoice_internal(size_t aVoice)
     if (mVoice[aVoice])
     {
         // Delete via temporary variable to avoid recursion
-        AudioSourceInstance* v = mVoice[aVoice];
-        mVoice[aVoice]         = 0;
+        auto v = mVoice[aVoice];
+        mVoice[aVoice].reset();
 
-        size_t i;
-        for (i = 0; i < mMaxActiveVoices; i++)
+        for (size_t i = 0; i < mMaxActiveVoices; i++)
         {
-            if (mResampleDataOwner[i] == v)
+            if (mResampleDataOwner[i].get() == v.get())
             {
-                mResampleDataOwner[i] = nullptr;
+                mResampleDataOwner[i].reset();
             }
         }
-
-        delete v;
     }
 }
 

@@ -34,8 +34,6 @@ void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
         return;
 
     lockAudioMutex_internal();
-    delete mFilterInstance[aFilterId];
-    mFilterInstance[aFilterId] = 0;
 
     mFilter[aFilterId] = aFilter;
     if (aFilter)

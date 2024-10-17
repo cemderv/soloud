@@ -70,7 +70,7 @@ class LofiFilter : public Filter
         BITDEPTH
     };
 
-    LofiFilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     float mSampleRate = 4000.0f;
     float mBitdepth   = 3.0f;

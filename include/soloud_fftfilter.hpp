@@ -32,11 +32,11 @@ class FFTFilter;
 
 class FFTFilterInstance : public FilterInstance
 {
-    float*       mTemp;
-    float*       mInputBuffer;
-    float*       mMixBuffer;
-    float*       mLastPhase;
-    float*       mSumPhase;
+    std::unique_ptr<float[]>       mTemp;
+    std::unique_ptr<float[]>       mInputBuffer;
+    std::unique_ptr<float[]>       mMixBuffer;
+    std::unique_ptr<float[]>       mLastPhase;
+    std::unique_ptr<float[]>       mSumPhase;
     size_t mInputOffset[MAX_CHANNELS];
     size_t mMixOffset[MAX_CHANNELS];
     size_t mReadOffset[MAX_CHANNELS];
@@ -55,7 +55,7 @@ class FFTFilterInstance : public FilterInstance
                                time_t       aTime,
                                size_t aChannel,
                                size_t aChannels) override;
-    ~FFTFilterInstance() override;
+
     explicit FFTFilterInstance(FFTFilter* aParent);
     FFTFilterInstance();
     void comp2MagPhase(float* aFFTBuffer, size_t aSamples);
@@ -74,6 +74,6 @@ class FFTFilterInstance : public FilterInstance
 class FFTFilter : public Filter
 {
   public:
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 };
 } // namespace SoLoud

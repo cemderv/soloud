@@ -18,24 +18,23 @@ class Engine
 {
   public:
     // Back-end data; content is up to the back-end implementation.
-    void* mBackendData;
+    void* mBackendData=nullptr;
     // Pointer for the audio thread mutex.
-    void* mAudioThreadMutex;
+    void* mAudioThreadMutex=nullptr;
     // Flag for when we're inside the mutex, used for debugging.
-    bool mInsideAudioThreadMutex;
+    bool mInsideAudioThreadMutex=false;
     // Called by SoLoud to shut down the back-end. If nullptr, not called. Should be set by
     // back-end.
-    soloudCallFunction mBackendCleanupFunc;
+    soloudCallFunction mBackendCleanupFunc=nullptr;
 
     // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as
     // instance.
-    soloudResultFunction mBackendPauseFunc;
-    soloudResultFunction mBackendResumeFunc;
+    soloudResultFunction mBackendPauseFunc=nullptr;
+    soloudResultFunction mBackendResumeFunc=nullptr;
 
-    // CTor
-    Engine();
-    // DTor
-    ~Engine();
+    Engine()=default;
+
+    ~Engine()noexcept;
 
     // Initialize SoLoud. Must be called before SoLoud can be used.
     void init(Flags                       aFlags      = Flags::ClipRoundoff,
@@ -374,16 +373,16 @@ class Engine
     void unlockAudioMutex_internal();
 
     // Max. number of active voices. Busses and tickable inaudibles also count against this.
-    size_t mMaxActiveVoices;
+    size_t mMaxActiveVoices=16;
 
     // Highest voice in use so far
-    size_t mHighestVoice;
+    size_t mHighestVoice=0;
 
     // Scratch buffer, used for resampling.
     AlignedFloatBuffer mScratch;
 
     // Current size of the scratch, in samples.
-    size_t mScratchSize;
+    size_t mScratchSize=0;
 
     // Output scratch buffer, used in mix_().
     AlignedFloatBuffer mOutputScratch;
@@ -395,52 +394,52 @@ class Engine
     AlignedFloatBuffer mResampleDataBuffer;
 
     // Owners of the resample data
-    std::vector<AudioSourceInstance*> mResampleDataOwner;
+    std::vector<std::shared_ptr<AudioSourceInstance>> mResampleDataOwner;
 
     // Audio voices.
-    std::array<AudioSourceInstance*, VOICE_COUNT> mVoice{};
+    std::array<std::shared_ptr<AudioSourceInstance>, VOICE_COUNT> mVoice;
 
     // Resampler for the main bus
-    Resampler mResampler;
+    Resampler mResampler=default_resampler;
 
     // Output sample rate (not float)
-    size_t mSamplerate;
+    size_t mSamplerate=0;
 
     // Output channel count
-    size_t mChannels;
+    size_t mChannels=2;
 
     // Maximum size of output buffer; used to calculate needed scratch.
-    size_t mBufferSize;
+    size_t mBufferSize=0;
 
     // Flags; see Soloud::FLAGS
-    Flags mFlags;
+    Flags mFlags=Flags::None;
 
     // Global volume. Applied before clipping.
-    float mGlobalVolume;
+    float mGlobalVolume=0.0f;
 
     // Post-clip scaler. Applied after clipping.
-    float mPostClipScaler;
+    float mPostClipScaler=0.0f;
 
     // Current play index. Used to create audio handles.
-    size_t mPlayIndex;
+    size_t mPlayIndex=0;
 
     // Current sound source index. Used to create sound source IDs.
-    size_t mAudioSourceID;
+    size_t mAudioSourceID=1;
 
     // Fader for the global volume.
     Fader mGlobalVolumeFader;
 
     // Global stream time, for the global volume fader.
-    time_t mStreamTime;
+    time_t mStreamTime=0;
 
     // Last time seen by the playClocked call
-    time_t mLastClockedTime;
+    time_t mLastClockedTime=0;
 
     // Global filter
     std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
 
     // Global filter instance
-    std::array<FilterInstance*, FILTERS_PER_STREAM> mFilterInstance{};
+    std::array<std::shared_ptr<FilterInstance>, FILTERS_PER_STREAM> mFilterInstance{};
 
     // Approximate volume for channels.
     std::array<float, MAX_CHANNELS> mVisualizationChannelVolume{};
@@ -460,7 +459,7 @@ class Engine
     vec3 m3dVelocity;
 
     // 3d speed of sound (for doppler)
-    float m3dSoundSpeed;
+    float m3dSoundSpeed=343.3f;
 
     // 3d position of speakers
     std::array<vec3, MAX_CHANNELS> m3dSpeakerPosition;
@@ -474,12 +473,12 @@ class Engine
     size_t   mVoiceGroupCount;
 
     // List of currently active voices
-    size_t mActiveVoice[VOICE_COUNT];
+    std::array<size_t, VOICE_COUNT> mActiveVoice{};
 
     // Number of currently active voices
-    size_t mActiveVoiceCount;
+    size_t mActiveVoiceCount=0;
 
     // Active voices list needs to be recalculated
-    bool mActiveVoiceDirty;
+    bool mActiveVoiceDirty=true;
 };
 }; // namespace SoLoud

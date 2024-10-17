@@ -49,7 +49,7 @@ class QueueInstance : public AudioSourceInstance
 class Queue : public AudioSource
 {
   public:
-    QueueInstance* createInstance() override;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
 
     // Play sound through the queue
     void play(AudioSource& aSound);
@@ -71,8 +71,8 @@ class Queue : public AudioSource
     size_t                                       mReadIndex  = 0;
     size_t                                       mWriteIndex = 0;
     size_t                                       mCount      = 0;
-    std::array<AudioSourceInstance*, SOLOUD_QUEUE_MAX> mSource{};
-    QueueInstance*                                     mInstance    = nullptr;
+    std::array<std::shared_ptr<AudioSourceInstance>, SOLOUD_QUEUE_MAX> mSource{};
+    std::shared_ptr<QueueInstance>                                     mInstance    ;
     handle                                             mQueueHandle = 0;
 };
 }; // namespace SoLoud

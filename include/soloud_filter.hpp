@@ -24,10 +24,11 @@ freely, subject to the following restrictions:
 
 #pragma once
 
+#include "soloud_fader.hpp"
+#include <memory>
+
 namespace SoLoud
 {
-class Fader;
-
 class FilterInstance
 {
   public:
@@ -63,13 +64,11 @@ class FilterInstance
     virtual void oscillateFilterParameter(
         size_t aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
 
-    virtual ~FilterInstance();
-
   protected:
     size_t mNumParams    = 0;
     size_t mParamChanged = 0;
-    float*       mParam        = nullptr;
-    Fader*       mParamFader   = nullptr;
+    std::unique_ptr<float[]>       mParam       ;
+    std::unique_ptr<Fader[]>       mParamFader   ;
 };
 
 class Filter
@@ -79,6 +78,6 @@ class Filter
 
     virtual ~Filter() noexcept = default;
 
-    virtual FilterInstance* createInstance() = 0;
+    virtual std::shared_ptr<FilterInstance> createInstance() = 0;
 };
 }; // namespace SoLoud

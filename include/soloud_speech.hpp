@@ -40,7 +40,9 @@ class Speech : public AudioSource
     int    mBaseWaveform;
     int    mFrames;
     darray mElement;
+
     Speech();
+
     void setText(const char* aText);
 
     void setParams(size_t aBaseFrequency   = 1330,
@@ -50,7 +52,7 @@ class Speech : public AudioSource
 
     ~Speech() override;
 
-    AudioSourceInstance* createInstance() override;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
 };
 
 class SpeechInstance : public AudioSourceInstance

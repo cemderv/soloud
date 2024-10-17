@@ -84,19 +84,14 @@ void FlangerFilterInstance::filter(float*       aBuffer,
     mOffset %= mBufferLength;
 }
 
-FlangerFilterInstance::~FlangerFilterInstance()
-{
-    delete[] mBuffer;
-}
-
 FlangerFilter::FlangerFilter()
 {
     mDelay = 0.005f;
     mFreq  = 10;
 }
 
-FilterInstance* FlangerFilter::createInstance()
+std::shared_ptr<FilterInstance> FlangerFilter::createInstance()
 {
-    return new FlangerFilterInstance(this);
+    return std::make_shared< FlangerFilterInstance>(this);
 }
 } // namespace SoLoud

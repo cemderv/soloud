@@ -546,9 +546,9 @@ Sfxr::~Sfxr()
     stop();
 }
 
-AudioSourceInstance* Sfxr::createInstance()
+std::shared_ptr<AudioSourceInstance> Sfxr::createInstance()
 {
-    return new SfxrInstance(this);
+    return std::make_shared< SfxrInstance>(this);
 }
 
 }; // namespace SoLoud

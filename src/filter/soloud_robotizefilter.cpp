@@ -55,20 +55,8 @@ void RobotizeFilterInstance::filterChannel(float*       aBuffer,
     }
 }
 
-RobotizeFilter::RobotizeFilter()
+std::shared_ptr<FilterInstance> RobotizeFilter::createInstance()
 {
-    mFreq = 30;
-    mWave = 0;
-}
-
-void RobotizeFilter::setParams(float aFreq, int aWaveform)
-{
-    mFreq = aFreq;
-    mWave = aWaveform;
-}
-
-FilterInstance* RobotizeFilter::createInstance()
-{
-    return new RobotizeFilterInstance(this);
+    return std::make_shared< RobotizeFilterInstance>(this);
 }
 } // namespace SoLoud

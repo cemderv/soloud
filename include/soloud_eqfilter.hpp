@@ -77,7 +77,7 @@ class EqFilter : public FFTFilter
 
     EqFilter();
 
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     std::array<float, 8> mVolume{};
 };

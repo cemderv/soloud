@@ -150,8 +150,8 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
         aBuffer[c] = aBuffer[c - 1];
 }
 
-FilterInstance* BiquadResonantFilter::createInstance()
+std::shared_ptr<FilterInstance> BiquadResonantFilter::createInstance()
 {
-    return new BiquadResonantFilterInstance(this);
+    return std::make_shared< BiquadResonantFilterInstance>(this);
 }
 } // namespace SoLoud

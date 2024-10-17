@@ -50,14 +50,7 @@ namespace SoLoud
 
 void FFTFilterInstance::init()
 {
-    mInputBuffer = 0;
-    mMixBuffer   = 0;
-    mTemp        = 0;
-    mLastPhase   = 0;
-    mSumPhase    = 0;
-    mParent      = 0;
-    int i;
-    for (i = 0; i < MAX_CHANNELS; i++)
+    for (size_t i = 0; i < MAX_CHANNELS; ++i)
     {
         mInputOffset[i] = STFT_WINDOW_SIZE;
         mMixOffset[i]   = STFT_WINDOW_HALF;
@@ -75,7 +68,7 @@ FFTFilterInstance::FFTFilterInstance(FFTFilter* aParent)
 {
     init();
     mParent = aParent;
-    initParams(1);
+    FilterInstance::initParams(1);
 }
 
 void FFTFilterInstance::filterChannel(float*       aBuffer,
@@ -94,15 +87,11 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
     // Could allocate max_channels but that would potentially waste a lot of memory.
     if (mInputBuffer == 0)
     {
-        mInputBuffer = new float[STFT_WINDOW_TWICE * aChannels];
-        mMixBuffer   = new float[STFT_WINDOW_TWICE * aChannels];
-        mTemp        = new float[STFT_WINDOW_SIZE];
-        mLastPhase   = new float[STFT_WINDOW_SIZE * aChannels];
-        mSumPhase    = new float[STFT_WINDOW_SIZE * aChannels];
-        memset(mInputBuffer, 0, sizeof(float) * STFT_WINDOW_TWICE * aChannels);
-        memset(mMixBuffer, 0, sizeof(float) * STFT_WINDOW_TWICE * aChannels);
-        memset(mLastPhase, 0, sizeof(float) * STFT_WINDOW_SIZE * aChannels);
-        memset(mSumPhase, 0, sizeof(float) * STFT_WINDOW_SIZE * aChannels);
+        mInputBuffer = std::make_unique<float[]>(STFT_WINDOW_TWICE * aChannels);
+        mMixBuffer   = std::make_unique<float[]>(STFT_WINDOW_TWICE * aChannels);
+        mTemp        = std::make_unique<float[]>(STFT_WINDOW_SIZE);
+        mLastPhase   = std::make_unique<float[]>(STFT_WINDOW_SIZE * aChannels);
+        mSumPhase    = std::make_unique<float[]>(STFT_WINDOW_SIZE * aChannels);
     }
 
     int          i;
@@ -134,12 +123,12 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
                                           (STFT_WINDOW_TWICE - 1))];
             }
 
-            FFT::fft(mTemp, STFT_WINDOW_SIZE);
+            FFT::fft(mTemp.get(), STFT_WINDOW_SIZE);
 
             // do magic
-            fftFilterChannel(mTemp, STFT_WINDOW_HALF, aSamplerate, aTime, aChannel, aChannels);
+            fftFilterChannel(mTemp.get(), STFT_WINDOW_HALF, aSamplerate, aTime, aChannel, aChannels);
 
-            FFT::ifft(mTemp, STFT_WINDOW_SIZE);
+            FFT::ifft(mTemp.get(), STFT_WINDOW_SIZE);
 
             for (i = 0; i < STFT_WINDOW_SIZE; i++)
             {
@@ -289,17 +278,8 @@ void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
     magPhase2Comp(aFFTBuffer, aSamples);
 }
 
-FFTFilterInstance::~FFTFilterInstance()
+std::shared_ptr<FilterInstance> FFTFilter::createInstance()
 {
-    delete[] mTemp;
-    delete[] mInputBuffer;
-    delete[] mMixBuffer;
-    delete[] mLastPhase;
-    delete[] mSumPhase;
-}
-
-FilterInstance* FFTFilter::createInstance()
-{
-    return new FFTFilterInstance(this);
+    return std::make_shared< FFTFilterInstance>(this);
 }
 } // namespace SoLoud

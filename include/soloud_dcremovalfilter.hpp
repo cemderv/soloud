@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_filter.hpp"
+#include <memory>
 
 namespace SoLoud
 {
@@ -32,12 +33,6 @@ class DCRemovalFilter;
 
 class DCRemovalFilterInstance : public FilterInstance
 {
-    float*           mBuffer;
-    float*           mTotals;
-    int              mBufferLength;
-    DCRemovalFilter* mParent;
-    int              mOffset;
-
   public:
     void filter(float*       aBuffer,
                 size_t aSamples,
@@ -45,14 +40,21 @@ class DCRemovalFilterInstance : public FilterInstance
                 size_t aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
-    ~DCRemovalFilterInstance() override;
+
     explicit DCRemovalFilterInstance(DCRemovalFilter* aParent);
+
+private:
+    std::unique_ptr<float[]>           mBuffer;
+    std::unique_ptr<float[]>           mTotals;
+    int              mBufferLength;
+    DCRemovalFilter* mParent;
+    int              mOffset;
 };
 
 class DCRemovalFilter : public Filter
 {
   public:
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     float mLength = 0.1f;
 };

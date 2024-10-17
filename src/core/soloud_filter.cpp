@@ -30,16 +30,8 @@ namespace SoLoud
 void FilterInstance::initParams(int aNumParams)
 {
     mNumParams = aNumParams;
-    delete[] mParam;
-    delete[] mParamFader;
-    mParam      = new float[mNumParams];
-    mParamFader = new Fader[mNumParams];
-
-    for (size_t i = 0; i < mNumParams; i++)
-    {
-        mParam[i]              = 0;
-        mParamFader[i].mActive = 0;
-    }
+    mParam      = std::make_unique< float[]>(mNumParams);
+    mParamFader = std::make_unique< Fader[]>(mNumParams);
 
     mParam[0] = 1; // set 'wet' to 1
 }
@@ -54,12 +46,6 @@ void FilterInstance::updateParams(double aTime)
             mParam[i] = mParamFader[i].get(aTime);
         }
     }
-}
-
-FilterInstance::~FilterInstance()
-{
-    delete[] mParam;
-    delete[] mParamFader;
 }
 
 void FilterInstance::setFilterParameter(size_t aAttributeId, float aValue)

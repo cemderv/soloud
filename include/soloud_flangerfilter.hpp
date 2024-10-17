@@ -45,7 +45,7 @@ class FlangerFilterInstance : public FilterInstance
                 size_t aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
-    ~FlangerFilterInstance() override;
+
     explicit FlangerFilterInstance(FlangerFilter* aParent);
 };
 
@@ -61,8 +61,8 @@ class FlangerFilter : public Filter
 
     FlangerFilter();
 
-    float           mDelay;
-    float           mFreq;
-    FilterInstance* createInstance() override;
+    float                           mDelay;
+    float                           mFreq;
+    std::shared_ptr<FilterInstance> createInstance() override;
 };
 } // namespace SoLoud

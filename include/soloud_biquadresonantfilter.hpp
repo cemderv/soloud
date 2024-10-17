@@ -87,7 +87,7 @@ class BiquadResonantFilter : public Filter
         RESONANCE
     };
 
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     int   mFilterType = LOWPASS;
     float mFrequency  = 1000.0f;

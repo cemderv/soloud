@@ -32,7 +32,7 @@ class EchoFilter;
 
 class EchoFilterInstance : public FilterInstance
 {
-    float* mBuffer;
+    std::unique_ptr<float[]> mBuffer;
     int    mBufferLength;
     int    mBufferMaxLength;
     int    mOffset;
@@ -44,7 +44,7 @@ class EchoFilterInstance : public FilterInstance
                 size_t aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
-    ~EchoFilterInstance() override;
+
     explicit EchoFilterInstance(EchoFilter* aParent);
 };
 
@@ -59,7 +59,7 @@ class EchoFilter : public Filter
         FILTER
     };
 
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     float mDelay  = 0.3f;
     float mDecay  = 0.7f;

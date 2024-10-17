@@ -62,10 +62,12 @@ void DuckFilterInstance::filter(float*       aBuffer,
         int voiceno = mSoloud->getVoiceFromHandle_internal(mListenTo);
         if (voiceno != -1)
         {
-            BusInstance* bi = (BusInstance*)mSoloud->mVoice[voiceno];
+            const auto bi = std::static_pointer_cast<BusInstance>(mSoloud->mVoice[voiceno]);
+
             float        v  = 0;
             for (size_t i = 0; i < bi->mChannels; i++)
                 v += bi->mVisualizationChannelVolume[i];
+
             if (v > 0.01f)
                 soundOn = 1;
         }
@@ -92,12 +94,8 @@ void DuckFilterInstance::filter(float*       aBuffer,
     mCurrentLevel = level;
 }
 
-DuckFilterInstance::~DuckFilterInstance()
+std::shared_ptr<FilterInstance> DuckFilter::createInstance()
 {
-}
-
-FilterInstance* DuckFilter::createInstance()
-{
-    return new DuckFilterInstance(this);
+    return std::make_shared< DuckFilterInstance>(this);
 }
 } // namespace SoLoud

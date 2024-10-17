@@ -61,7 +61,7 @@ class Wav : public AudioSource
 
     ~Wav() override;
 
-    AudioSourceInstance* createInstance() override;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
 
     time_t getLength() const;
 

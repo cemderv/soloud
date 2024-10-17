@@ -49,14 +49,6 @@ AudioSourceInstance::AudioSourceInstance()
     std::fill(mChannelVolume.begin(), mChannelVolume.end(), 1.0f);
 }
 
-AudioSourceInstance::~AudioSourceInstance() noexcept
-{
-    for (int i = 0; i < FILTERS_PER_STREAM; i++)
-    {
-        delete mFilter[i];
-    }
-}
-
 bool AudioSourceInstance::hasFlag(AudioSourceInstanceFlags flag) const
 {
     return testFlag(mFlags, flag);

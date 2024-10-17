@@ -66,8 +66,8 @@ void LofiFilterInstance::filterChannel(float*       aBuffer,
     }
 }
 
-LofiFilterInstance* LofiFilter::createInstance()
+std::shared_ptr<FilterInstance> LofiFilter::createInstance()
 {
-    return new LofiFilterInstance(this);
+    return std::make_shared< LofiFilterInstance>(this);
 }
 } // namespace SoLoud

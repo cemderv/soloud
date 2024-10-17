@@ -65,7 +65,7 @@ class Bus final : public AudioSource
   public:
     Bus();
 
-    BusInstance* createInstance() override;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
 
     // Set filter. Set to nullptr to clear the filter.
     void setFilter(size_t aFilterId, Filter* aFilter) override;
@@ -117,7 +117,7 @@ class Bus final : public AudioSource
     // Set the resampler for this bus
     void setResampler(Resampler aResampler);
 
-    BusInstance* mInstance;
+    std::shared_ptr<BusInstance> mInstance;
     size_t mChannelHandle;
     Resampler    mResampler;
 

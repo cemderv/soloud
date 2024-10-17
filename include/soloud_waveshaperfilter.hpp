@@ -54,7 +54,7 @@ class WaveShaperFilter : public Filter
         AMOUNT
     };
 
-    WaveShaperFilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     float mAmount = 0.0f;
 };

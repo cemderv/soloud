@@ -458,11 +458,11 @@ void Revmodel::setmode(float aValue)
 
 FreeverbFilterInstance::FreeverbFilterInstance(FreeverbFilter* aParent)
 {
-    initParams(5);
+    FilterInstance::initParams(5);
 
     mParent = aParent;
 
-    mModel = new FreeverbImpl::Revmodel();
+    mModel = std::make_unique< FreeverbImpl::Revmodel>();
 
     mParam[FREEZE]   = aParent->mMode;
     mParam[ROOMSIZE] = aParent->mRoomSize;
@@ -492,17 +492,12 @@ void FreeverbFilterInstance::filter(float*       aBuffer,
     mModel->process(aBuffer, aSamples, aBufferSize);
 }
 
-FreeverbFilterInstance::~FreeverbFilterInstance()
-{
-    delete mModel;
-}
-
 FreeverbFilter::FreeverbFilter()
 {
 }
 
-FreeverbFilterInstance* FreeverbFilter::createInstance()
+std::shared_ptr<FilterInstance> FreeverbFilter::createInstance()
 {
-    return new FreeverbFilterInstance(this);
+    return std::make_shared< FreeverbFilterInstance>(this);
 }
 } // namespace SoLoud

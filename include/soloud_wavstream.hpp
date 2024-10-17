@@ -88,8 +88,8 @@ class WavStream : public AudioSource
 
     ~WavStream() override;
 
-    AudioSourceInstance* createInstance() override;
-    time_t               getLength() const;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
+    time_t                               getLength() const;
 
   private:
     void loadwav(MemoryFile& fp);

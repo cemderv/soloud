@@ -49,8 +49,8 @@ void BassboostFilterInstance::fftFilterChannel(float* aFFTBuffer,
     magPhase2Comp(aFFTBuffer, 2);
 }
 
-FilterInstance* BassboostFilter::createInstance()
+std::shared_ptr<FilterInstance> BassboostFilter::createInstance()
 {
-    return new BassboostFilterInstance(this);
+    return std::make_shared< BassboostFilterInstance>(this);
 }
 } // namespace SoLoud

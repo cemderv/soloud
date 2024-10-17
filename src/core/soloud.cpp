@@ -37,8 +37,6 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
-// #define FLOATING_POINT_DEBUG
-
 namespace SoLoud
 {
 AlignedFloatBuffer::AlignedFloatBuffer(size_t aFloats)
@@ -64,69 +62,16 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Engine::Engine()
-{
-#ifdef FLOATING_POINT_DEBUG
-    size_t u;
-    u = _controlfp(0, 0);
-    u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE |
-              _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
-    _controlfp(u, _MCW_EM);
-#endif
-    mResampler              = default_resampler;
-    mInsideAudioThreadMutex = false;
-    mScratchSize            = 0;
-    mSamplerate             = 0;
-    mBufferSize             = 0;
-    mFlags                  = Flags::None;
-    mGlobalVolume           = 0;
-    mPlayIndex              = 0;
-    mBackendData            = nullptr;
-    mAudioThreadMutex       = nullptr;
-    mPostClipScaler         = 0;
-    mBackendCleanupFunc     = nullptr;
-    mBackendPauseFunc       = nullptr;
-    mBackendResumeFunc      = nullptr;
-    mChannels               = 2;
-    mStreamTime             = 0;
-    mLastClockedTime        = 0;
-    mAudioSourceID          = 1;
-    mActiveVoiceDirty       = true;
-    mActiveVoiceCount       = 0;
-    int i;
-    for (i = 0; i < VOICE_COUNT; i++)
-        mActiveVoice[i] = 0;
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
-    {
-        mFilter[i]         = nullptr;
-        mFilterInstance[i] = nullptr;
-    }
-    for (i = 0; i < 256; i++)
-    {
-        mFFTData[i]               = 0;
-        mVisualizationWaveData[i] = 0;
-        mWaveData[i]              = 0;
-    }
-    mVoiceGroup      = 0;
-    mVoiceGroupCount = 0;
-    m3dSoundSpeed    = 343.3f;
-    mMaxActiveVoices = 16;
-    mHighestVoice    = 0;
-}
-
-Engine::~Engine()
+Engine::~Engine() noexcept
 {
     // let's stop all sounds before deinit, so we don't mess up our mutexes
     stopAll();
     deinit();
-    size_t i;
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
+
+    for (size_t i = 0; i < FILTERS_PER_STREAM; i++)
     {
-        delete mFilterInstance[i];
+        mFilterInstance[i].reset();
     }
-    for (i = 0; i < mVoiceGroupCount; i++)
-        delete[] mVoiceGroup[i];
-    delete[] mVoiceGroup;
 }
 
 void Engine::deinit()
@@ -697,7 +642,7 @@ static void resample_point(
 }
 
 
-void panAndExpand(AudioSourceInstance* aVoice,
+void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                   float*               aBuffer,
                   size_t         aSamplesToRead,
                   size_t         aBufferSize,
@@ -1275,7 +1220,7 @@ void Engine::mixBus_internal(float*       aBuffer,
     // Accumulate sound sources
     for (i = 0; i < mActiveVoiceCount; i++)
     {
-        AudioSourceInstance* voice = mVoice[mActiveVoice[i]];
+        auto& voice = mVoice[mActiveVoice[i]];
 
         if (voice && voice->mBusHandle == aBus &&
             !testFlag(voice->mFlags, AudioSourceInstanceFlags::Paused) &&
@@ -1608,7 +1553,7 @@ void Engine::mapResampleBuffers_internal()
     {
         for (size_t j = 0; j < mMaxActiveVoices; j++)
         {
-            if (mResampleDataOwner[i] && mResampleDataOwner[i] == mVoice[mActiveVoice[j]])
+            if (mResampleDataOwner[i] && mResampleDataOwner[i].get() == mVoice[mActiveVoice[j]].get())
             {
                 live[i] |= 1; // Live channel
                 live[j] |= 2; // Live voice
@@ -1715,7 +1660,7 @@ void Engine::calcActiveVoices_internal()
     // Iterative partial quicksort:
     int           left = 0, stack[24], pos = 0, right;
     int           len  = candidates - mustlive;
-    size_t* data = mActiveVoice + mustlive;
+    size_t* data = mActiveVoice.data() + mustlive;
     int           k    = mActiveVoiceCount;
     for (;;)
     {
@@ -1756,20 +1701,6 @@ void Engine::calcActiveVoices_internal()
 
 void Engine::mix_internal(size_t aSamples, size_t aStride)
 {
-#ifdef FLOATING_POINT_DEBUG
-    // This needs to be done in the audio thread as well..
-    static int done = 0;
-    if (!done)
-    {
-        size_t u;
-        u = _controlfp(0, 0);
-        u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE |
-                  _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
-        _controlfp(u, _MCW_EM);
-        done = 1;
-    }
-#endif
-
 #ifdef __arm__
     // flush to zero (FTZ) for ARM
     {

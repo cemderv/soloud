@@ -150,8 +150,8 @@ Speech::~Speech()
     stop();
 }
 
-AudioSourceInstance* Speech::createInstance()
+std::shared_ptr<AudioSourceInstance> Speech::createInstance()
 {
-    return new SpeechInstance(this);
+    return std::make_shared< SpeechInstance>(this);
 }
 }; // namespace SoLoud

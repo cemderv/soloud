@@ -41,8 +41,6 @@ class DuckFilterInstance : public FilterInstance
                 float        aSamplerate,
                 time_t       aTime) override;
 
-    ~DuckFilterInstance() override;
-
     explicit DuckFilterInstance(DuckFilter* aParent);
 
   private:
@@ -62,7 +60,7 @@ class DuckFilter : public Filter
         LEVEL
     };
 
-    FilterInstance* createInstance() override;
+    std::shared_ptr<FilterInstance> createInstance() override;
 
     Engine* mSoloud   = nullptr;
     float   mOnRamp   = 0.1f;

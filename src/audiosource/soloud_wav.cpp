@@ -269,9 +269,9 @@ void Wav::loadflac(MemoryFile& aReader)
     drflac_close(decoder);
 }
 
-AudioSourceInstance* Wav::createInstance()
+std::shared_ptr<AudioSourceInstance> Wav::createInstance()
 {
-    return new WavInstance(this);
+    return std::make_shared< WavInstance>(this);
 }
 
 double Wav::getLength() const

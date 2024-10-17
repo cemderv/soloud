@@ -102,7 +102,7 @@ class Monotone : public AudioSource
 
     void loadMem(std::span<const std::byte> aData);
 
-    AudioSourceInstance* createInstance() override;
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
 
   public:
     void clear();

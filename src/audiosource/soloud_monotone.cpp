@@ -422,9 +422,9 @@ void Monotone::loadMem(std::span<const std::byte> aData)
     }
 }
 
-AudioSourceInstance* Monotone::createInstance()
+std::shared_ptr<AudioSourceInstance> Monotone::createInstance()
 {
-    return new MonotoneInstance(this);
+    return std::make_shared< MonotoneInstance>(this);
 }
 
 }; // namespace SoLoud

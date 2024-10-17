@@ -85,8 +85,8 @@ EqFilter::EqFilter()
     std::fill(mVolume.begin(), mVolume.end(), 1.0f);
 }
 
-FilterInstance* EqFilter::createInstance()
+std::shared_ptr<FilterInstance> EqFilter::createInstance()
 {
-    return new EqFilterInstance(this);
+    return std::make_shared< EqFilterInstance>(this);
 }
 } // namespace SoLoud

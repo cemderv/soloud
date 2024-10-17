@@ -52,8 +52,7 @@ size_t QueueInstance::getAudio(float*       aBuffer,
         copycount -= readcount;
         if (mParent->mSource[mParent->mReadIndex]->hasEnded())
         {
-            delete mParent->mSource[mParent->mReadIndex];
-            mParent->mSource[mParent->mReadIndex] = 0;
+            mParent->mSource[mParent->mReadIndex].reset();
             mParent->mReadIndex                   = (mParent->mReadIndex + 1) % SOLOUD_QUEUE_MAX;
             mParent->mCount--;
             mLoopCount++;
@@ -67,14 +66,14 @@ bool QueueInstance::hasEnded()
     return mLoopCount != 0 && mParent->mCount == 0;
 }
 
-QueueInstance* Queue::createInstance()
+std::shared_ptr<AudioSourceInstance> Queue::createInstance()
 {
     if (mInstance)
     {
         stop();
-        mInstance = 0;
     }
-    mInstance = new QueueInstance(this);
+
+    mInstance = std::make_shared< QueueInstance>(this);
     return mInstance;
 }
 
@@ -105,7 +104,7 @@ void Queue::play(AudioSource& aSound)
         mSoloud->mAudioSourceID++;
     }
 
-    auto* instance = aSound.createInstance();
+    auto instance = aSound.createInstance();
 
     instance->init(aSound, 0);
     instance->mAudioSourceID = aSound.mAudioSourceID;

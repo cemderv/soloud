@@ -74,7 +74,7 @@ class Noise : public AudioSource
     ~Noise() override;
 
   public:
-    AudioSourceInstance* createInstance() override;
-    float                mOctaveScale[10];
+    std::shared_ptr<AudioSourceInstance> createInstance() override;
+    float                                mOctaveScale[10];
 };
 }; // namespace SoLoud
