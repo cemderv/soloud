@@ -18,21 +18,21 @@ jobs:
         build_type: [Debug, Release]
         c_compiler: [gcc, clang, cl]
         include:
-          - os: windows-latest
+          - os: windows-2022
             c_compiler: cl
             cpp_compiler: cl
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: gcc
             cpp_compiler: g++
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: clang
             cpp_compiler: clang++
         exclude:
-          - os: windows-latest
+          - os: windows-2022
             c_compiler: gcc
-          - os: windows-latest
+          - os: windows-2022
             c_compiler: clang
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: cl
 
     steps:
@@ -41,9 +41,9 @@ jobs:
     - name: Install prerequisites
       if: ${{ !contains(matrix.os, 'windows') }}
       run: |
-        apt update -y
-        apt upgrade -y
-        apt install -y libasound2-dev
+        apt-get update -y
+        apt-get upgrade -y
+        apt-get install -y libasound2-dev
 
     - name: Set reusable strings
       id: strings
