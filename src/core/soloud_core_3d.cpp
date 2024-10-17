@@ -118,7 +118,7 @@ void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
     const auto up   = m3dUp;
     const auto m    = lookatRH(at, up);
 
-    for (size_t i = 0; i < aVoiceCount; i++)
+    for (size_t i = 0; i < aVoiceCount; ++i)
     {
         auto& v = m3dData[aVoiceArray[i]];
 
@@ -183,7 +183,7 @@ void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
         v.mChannelVolume = {};
 
         // Apply volume to channels based on speaker vectors
-        for (size_t j = 0; j < mChannels; j++)
+        for (size_t j = 0; j < mChannels; ++j)
         {
             float speakervol = (speaker[j].dot(pos) + 1) / 2;
             if (speaker[j].isNull())
@@ -206,7 +206,7 @@ void Engine::update3dAudio()
     // Step 1 - find voices that need 3d processing
     lockAudioMutex_internal();
     int i;
-    for (i = 0; i < (signed)mHighestVoice; i++)
+    for (i = 0; i < (signed)mHighestVoice; ++i)
     {
         if (mVoice[i] && mVoice[i]->hasFlag(AudioSourceInstanceFlags::Process3D))
         {
@@ -224,7 +224,7 @@ void Engine::update3dAudio()
     // Step 3 - update SoLoud voices
 
     lockAudioMutex_internal();
-    for (i = 0; i < (int)voicecount; i++)
+    for (i = 0; i < (int)voicecount; ++i)
     {
         AudioSourceInstance3dData* v  = &m3dData[voices[i]];
         auto&                      vi = mVoice[voices[i]];
@@ -233,7 +233,7 @@ void Engine::update3dAudio()
             updateVoiceRelativePlaySpeed_internal(voices[i]);
             updateVoiceVolume_internal(voices[i]);
             int j;
-            for (j = 0; j < MAX_CHANNELS; j++)
+            for (j = 0; j < MAX_CHANNELS; ++j)
             {
                 vi->mChannelVolume[j] = v->mChannelVolume[j];
             }
@@ -289,7 +289,7 @@ handle Engine::play3d(
     update3dVoices_internal((size_t*)&v, 1);
     updateVoiceRelativePlaySpeed_internal(v);
     int j;
-    for (j = 0; j < MAX_CHANNELS; j++)
+    for (j = 0; j < MAX_CHANNELS; ++j)
     {
         mVoice[v]->mChannelVolume[j] = m3dData[v].mChannelVolume[j];
     }
@@ -298,7 +298,7 @@ handle Engine::play3d(
 
     // Fix initial voice volume ramp up
     int i;
-    for (i = 0; i < MAX_CHANNELS; i++)
+    for (i = 0; i < MAX_CHANNELS; ++i)
     {
         mVoice[v]->mCurrentChannelVolume[i] =
             mVoice[v]->mChannelVolume[i] * mVoice[v]->mOverallVolume;
@@ -363,7 +363,7 @@ handle Engine::play3dClocked(
     lockAudioMutex_internal();
     updateVoiceRelativePlaySpeed_internal(v);
     int j;
-    for (j = 0; j < MAX_CHANNELS; j++)
+    for (j = 0; j < MAX_CHANNELS; ++j)
     {
         mVoice[v]->mChannelVolume[j] = m3dData[v].mChannelVolume[j];
     }
@@ -371,7 +371,7 @@ handle Engine::play3dClocked(
     updateVoiceVolume_internal(v);
 
     // Fix initial voice volume ramp up
-    for (int i = 0; i < MAX_CHANNELS; i++)
+    for (int i = 0; i < MAX_CHANNELS; ++i)
     {
         mVoice[v]->mCurrentChannelVolume[i] =
             mVoice[v]->mChannelVolume[i] * mVoice[v]->mOverallVolume;

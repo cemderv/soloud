@@ -32,6 +32,8 @@ target_precompile_headers(SoLoud PRIVATE
   <memory>
   <array>
   <stdexcept>
+  <vector>
+  <string>
   include/soloud.hpp
 )
 

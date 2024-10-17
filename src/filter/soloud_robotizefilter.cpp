@@ -31,7 +31,7 @@ namespace SoLoud
 RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
 {
     mParent = aParent;
-    initParams(3);
+    FilterInstance::initParams(3);
     mParam[FREQ] = aParent->mFreq;
     mParam[WAVE] = float(aParent->mWave);
 }
@@ -43,10 +43,10 @@ void RobotizeFilterInstance::filterChannel(float* aBuffer,
                                            size_t aChannel,
                                            size_t aChannels)
 {
-    size_t i;
-    int    period = (int)(aSamplerate / mParam[FREQ]);
-    int    start  = (int)(aTime * aSamplerate) % period;
-    for (i = 0; i < aSamples; i++)
+    const auto    period = int(aSamplerate / mParam[FREQ]);
+    const auto    start  = int(aTime * aSamplerate) % period;
+
+    for (size_t i = 0; i < aSamples; ++i)
     {
         float s    = aBuffer[i];
         float wpos = ((start + i) % period) / (float)period;

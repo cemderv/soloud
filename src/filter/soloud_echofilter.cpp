@@ -59,9 +59,9 @@ void EchoFilterInstance::filter(float* aBuffer,
 
     size_t i, j;
     int    prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
-    for (i = 0; i < aSamples; i++)
+    for (i = 0; i < aSamples; ++i)
     {
-        for (j = 0; j < aChannels; j++)
+        for (j = 0; j < aChannels; ++j)
         {
             int chofs  = j * mBufferLength;
             int bchofs = j * aBufferSize;

@@ -38,7 +38,7 @@ void Prg::srand(int aSeed)
 {
     mIndex = 0;
     int i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 16; ++i)
         mState[i] = aSeed + i * aSeed + i;
 }
 

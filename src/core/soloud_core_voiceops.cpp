@@ -120,7 +120,7 @@ void Engine::stopVoice_internal(size_t aVoice)
         auto v = mVoice[aVoice];
         mVoice[aVoice].reset();
 
-        for (size_t i = 0; i < mMaxActiveVoices; i++)
+        for (size_t i = 0; i < mMaxActiveVoices; ++i)
         {
             if (mResampleDataOwner[i].get() == v.get())
             {
@@ -148,7 +148,7 @@ void Engine::updateVoiceVolume_internal(size_t aVoice)
     if (testFlag(mVoice[aVoice]->mFlags, AudioSourceInstanceFlags::Paused))
     {
         int i;
-        for (i = 0; i < MAX_CHANNELS; i++)
+        for (i = 0; i < MAX_CHANNELS; ++i)
         {
             mVoice[aVoice]->mCurrentChannelVolume[i] =
                 mVoice[aVoice]->mChannelVolume[i] * mVoice[aVoice]->mOverallVolume;

@@ -52,7 +52,7 @@ struct SoLoudWinMMData
     SoLoudWinMMData()
     {
         buffer.clear();
-        for (int i = 0; i < BUFFER_COUNT; i++)
+        for (int i = 0; i < BUFFER_COUNT; ++i)
         {
             sampleBuffer[i] = 0;
             memset(&header[i], 0, sizeof(WAVEHDR));

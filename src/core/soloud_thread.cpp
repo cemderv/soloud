@@ -251,7 +251,7 @@ Pool::Pool()
     mWorkMutex   = 0;
     mRobin       = 0;
     mMaxTask     = 0;
-    for (int i = 0; i < MAX_THREADPOOL_TASKS; i++)
+    for (int i = 0; i < MAX_THREADPOOL_TASKS; ++i)
         mTaskArray[i] = 0;
 }
 
@@ -259,7 +259,7 @@ Pool::~Pool()
 {
     mRunning = 0;
     int i;
-    for (i = 0; i < mThreadCount; i++)
+    for (i = 0; i < mThreadCount; ++i)
     {
         wait(mThread[i]);
         release(mThread[i]);
@@ -279,7 +279,7 @@ void Pool::init(int aThreadCount)
         mThreadCount = aThreadCount;
         mThread      = new ThreadHandle[aThreadCount];
         int i;
-        for (i = 0; i < mThreadCount; i++)
+        for (i = 0; i < mThreadCount; ++i)
         {
             mThread[i] = createThread(poolWorker, this);
         }

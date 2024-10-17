@@ -40,7 +40,7 @@ MonotoneInstance::MonotoneInstance(Monotone* aParent)
     mNextChannel = 0;
     mRowTick     = 0;
     int i;
-    for (i = 0; i < 12; i++)
+    for (i = 0; i < 12; ++i)
     {
         mOutput[i].mSamplePos    = 0;
         mOutput[i].mSamplePosInc = 0;
@@ -62,12 +62,12 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
 {
     int    samplesPerTick = (int)floor(mSamplerate / 60);
     size_t i;
-    for (i = 0; i < 12; i++)
+    for (i = 0; i < 12; ++i)
     {
         mOutput[i].mEnabled =
             i < (size_t)mParent->mHardwareChannels && i < (size_t)mParent->mSong.mTotalTracks;
     }
-    for (i = 0; i < aSamplesToRead; i++)
+    for (i = 0; i < aSamplesToRead; ++i)
     {
         if ((mSampleCount % samplesPerTick) == 0)
         {
@@ -82,7 +82,7 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
                 int dojump      = 0;
                 int pattern     = mParent->mSong.mOrder[mOrder];
                 int j;
-                for (j = 0; j < mParent->mSong.mTotalTracks; j++)
+                for (j = 0; j < mParent->mSong.mTotalTracks; ++j)
                 {
                     size_t d =
                         mParent->mSong
@@ -203,7 +203,7 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
             int j;
 
             // per tick events
-            for (j = 0; j < mParent->mSong.mTotalTracks; j++)
+            for (j = 0; j < mParent->mSong.mTotalTracks; ++j)
             {
                 if (mChannel[j].mActive)
                 {
@@ -240,7 +240,7 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
             int gotit = 0;
             int tries = 0;
 
-            for (j = 0; j < mParent->mHardwareChannels; j++)
+            for (j = 0; j < mParent->mHardwareChannels; ++j)
                 mOutput[j].mSamplePosInc = 0;
 
             while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
@@ -271,7 +271,7 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
 
         aBuffer[i] = 0;
         int j;
-        for (j = 0; j < 12; j++)
+        for (j = 0; j < 12; ++j)
         {
             if (mOutput[j].mEnabled)
             {
@@ -315,13 +315,13 @@ Monotone::Monotone()
         mNotesHz[i] = (int)floor(temphz + 0.5f);
     }
     temphz = 27.5f;
-    for (i = (1 * IBN) + 1; i < maxnote * IBN; i++)
+    for (i = (1 * IBN) + 1; i < maxnote * IBN; ++i)
     {
         temphz      = temphz * interval;
         mNotesHz[i] = (int)floor(temphz + 0.5f);
     }
 
-    for (i = 0; i < 32; i++)
+    for (i = 0; i < 32; ++i)
     {
         mVibTable[i] = (int)floor(0.5 + 64 * sin(i * M_PI / 32 * 2));
     }
@@ -382,7 +382,7 @@ void Monotone::loadMem(std::span<const std::byte> aData)
     unsigned char temp[200];
     mf.read(temp, 9);
     char magic[] = "\bMONOTONE";
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < 9; ++i)
     {
         if (temp[i] != magic[i])
         {
@@ -407,7 +407,7 @@ void Monotone::loadMem(std::span<const std::byte> aData)
     mf.read(mSong.mOrder, 256);
     int totalnotes     = 64 * mSong.mTotalPatterns * mSong.mTotalTracks;
     mSong.mPatternData = new size_t[totalnotes];
-    for (i = 0; i < totalnotes; i++)
+    for (i = 0; i < totalnotes; ++i)
     {
         mf.read(temp, 2);
         size_t datavalue      = temp[0] | (temp[1] << 8);

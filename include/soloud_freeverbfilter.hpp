@@ -72,8 +72,6 @@ class FreeverbFilter : public Filter
         WIDTH
     };
 
-    FreeverbFilter();
-
     std::shared_ptr<FilterInstance> createInstance() override;
 
     float mMode     = 0.0f;

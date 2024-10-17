@@ -208,7 +208,7 @@ static int getOggData(float** aOggOutputs,
         samples = aFrameSize - aFrameOffset;
     }
 
-    for (int i = 0; i < aChannels; i++)
+    for (int i = 0; i < aChannels; ++i)
     {
         memcpy(aBuffer + aPitch * i, aOggOutputs[i] + aFrameOffset, sizeof(float) * samples);
     }
@@ -237,7 +237,7 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
                 size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
                 offset += drflac_read_pcm_frames_f32(flac, blockSize, tmp.data());
 
-                for (size_t j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; ++j)
                 {
                     for (size_t k = 0; k < mChannels; k++)
                     {
@@ -259,7 +259,7 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
                 size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
                 offset += (size_t)drmp3_read_pcm_frames_f32(mp3, blockSize, tmp.data());
 
-                for (size_t j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; ++j)
                 {
                     for (size_t k = 0; k < mChannels; k++)
                     {
@@ -321,7 +321,7 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
                 size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
                 offset += drwav_read_pcm_frames_f32(wav, blockSize, tmp.data());
 
-                for (size_t j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; ++j)
                 {
                     for (size_t k = 0; k < mChannels; k++)
                     {

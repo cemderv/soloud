@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_filter.hpp"
+#include <memory>
 
 namespace SoLoud
 {
@@ -32,12 +33,6 @@ class FlangerFilter;
 
 class FlangerFilterInstance : public FilterInstance
 {
-    float*         mBuffer;
-    size_t         mBufferLength;
-    FlangerFilter* mParent;
-    size_t         mOffset;
-    double         mIndex;
-
   public:
     void filter(float* aBuffer,
                 size_t aSamples,
@@ -47,6 +42,13 @@ class FlangerFilterInstance : public FilterInstance
                 time_t aTime) override;
 
     explicit FlangerFilterInstance(FlangerFilter* aParent);
+
+  private:
+    std::unique_ptr<float[]> mBuffer;
+    size_t                   mBufferLength;
+    FlangerFilter*           mParent;
+    size_t                   mOffset;
+    double                   mIndex;
 };
 
 class FlangerFilter : public Filter

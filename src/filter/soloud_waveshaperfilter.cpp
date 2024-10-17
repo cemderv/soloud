@@ -27,11 +27,10 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-
 WaveShaperFilterInstance::WaveShaperFilterInstance(WaveShaperFilter* aParent)
+    : mParent(aParent)
 {
-    mParent = aParent;
-    initParams(2);
+    FilterInstance::initParams(2);
     mParam[WaveShaperFilter::AMOUNT] = mParent->mAmount;
 }
 
@@ -44,17 +43,22 @@ void WaveShaperFilterInstance::filterChannel(float* aBuffer,
 {
     updateParams(aTime);
 
-    size_t i;
-    float  k = 0;
-    if (mParam[1] == 1)
-        k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
-    else
-        k = 2 * mParam[WaveShaperFilter::AMOUNT] / (1 - mParam[1]);
+    auto  k = 0.0f;
 
-    for (i = 0; i < aSamples; i++)
+    if (mParam[1] == 1)
     {
-        float dry = aBuffer[i];
-        float wet = (1 + k) * aBuffer[i] / (1 + k * (float)fabs(aBuffer[i]));
+        k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
+    }
+    else
+    {
+        k = 2 * mParam[WaveShaperFilter::AMOUNT] / (1 - mParam[1]);
+    }
+
+    for (size_t i = 0; i < aSamples; ++i)
+    {
+        const auto dry = aBuffer[i];
+        const auto wet = (1 + k) * aBuffer[i] / (1 + k * fabs(aBuffer[i]));
+
         aBuffer[i] += (wet - dry) * mParam[WaveShaperFilter::WET];
     }
 }

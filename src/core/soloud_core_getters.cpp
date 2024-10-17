@@ -91,7 +91,7 @@ size_t Engine::getVoiceCount()
     lockAudioMutex_internal();
     int i;
     int c = 0;
-    for (i = 0; i < (signed)mHighestVoice; i++)
+    for (i = 0; i < (signed)mHighestVoice; ++i)
     {
         if (mVoice[i])
         {
@@ -310,7 +310,7 @@ int Engine::findFreeVoice_internal()
     if (mHighestVoice > 0 && mVoice[mHighestVoice - 1] == nullptr)
         mHighestVoice--;
 
-    for (int i = 0; i < VOICE_COUNT; i++)
+    for (int i = 0; i < VOICE_COUNT; ++i)
     {
         if (mVoice[i] == nullptr)
         {

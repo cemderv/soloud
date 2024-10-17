@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_filter.hpp"
+#include <array>
 
 namespace SoLoud
 {
@@ -45,7 +46,7 @@ class LofiFilterInstance : public FilterInstance
         BITDEPTH
     };
 
-    LofiChannelData mChannelData[2];
+    std::array<LofiChannelData, 2> mChannelData{};
 
     LofiFilter* mParent;
 

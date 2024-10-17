@@ -32,16 +32,6 @@ class FFTFilter;
 
 class FFTFilterInstance : public FilterInstance
 {
-    std::unique_ptr<float[]> mTemp;
-    std::unique_ptr<float[]> mInputBuffer;
-    std::unique_ptr<float[]> mMixBuffer;
-    std::unique_ptr<float[]> mLastPhase;
-    std::unique_ptr<float[]> mSumPhase;
-    size_t                   mInputOffset[MAX_CHANNELS];
-    size_t                   mMixOffset[MAX_CHANNELS];
-    size_t                   mReadOffset[MAX_CHANNELS];
-    FFTFilter*               mParent;
-
   public:
     virtual void fftFilterChannel(float* aFFTBuffer,
                                   size_t aSamples,
@@ -58,11 +48,22 @@ class FFTFilterInstance : public FilterInstance
 
     explicit FFTFilterInstance(FFTFilter* aParent);
     FFTFilterInstance();
+
     void comp2MagPhase(float* aFFTBuffer, size_t aSamples);
     void magPhase2MagFreq(float* aFFTBuffer, size_t aSamples, float aSamplerate, size_t aChannel);
     void magFreq2MagPhase(float* aFFTBuffer, size_t aSamples, float aSamplerate, size_t aChannel);
     void magPhase2Comp(float* aFFTBuffer, size_t aSamples);
-    void init();
+
+  private:
+    std::unique_ptr<float[]> mTemp;
+    std::unique_ptr<float[]> mInputBuffer;
+    std::unique_ptr<float[]> mMixBuffer;
+    std::unique_ptr<float[]> mLastPhase;
+    std::unique_ptr<float[]> mSumPhase;
+    size_t                   mInputOffset[MAX_CHANNELS];
+    size_t                   mMixOffset[MAX_CHANNELS];
+    size_t                   mReadOffset[MAX_CHANNELS];
+    FFTFilter*               mParent;
 };
 
 class FFTFilter : public Filter

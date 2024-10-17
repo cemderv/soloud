@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.hpp"
-#include "soloud_thread.hpp"
 #include "soloud_engine.hpp"
+#include "soloud_thread.hpp"
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
@@ -92,8 +92,7 @@ static void alsaCleanup(Engine* aSoloud)
     aSoloud->mBackendData = 0;
 }
 
-void alsa_init(
-    Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+void alsa_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));
@@ -123,8 +122,8 @@ void alsa_init(
     snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
 
     auto val = static_cast<unsigned int>(aSamplerate);
-    int    dir = 0;
-    rc         = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
+    int  dir = 0;
+    rc       = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
     if (rc < 0)
     {
         throw std::runtime_error{"Failed to initialize the audio device"};

@@ -50,31 +50,24 @@ void FlangerFilterInstance::filter(float* aBuffer,
 
     if (mBufferLength < mParam[FlangerFilter::DELAY] * aSamplerate)
     {
-        delete[] mBuffer;
-        mBufferLength = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
-        mBuffer       = new float[mBufferLength * aChannels];
-        if (mBuffer == nullptr)
-        {
-            mBufferLength = 0;
-            return;
-        }
-        memset(mBuffer, 0, sizeof(float) * mBufferLength * aChannels);
+        mBufferLength = int(ceil(mParam[FlangerFilter::DELAY] * aSamplerate));
+        mBuffer       = std::make_unique<float[]>(mBufferLength * aChannels);
     }
 
-    size_t i, j;
-    int    maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
-    double inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
-    for (i = 0; i < aChannels; i++)
+    const int    maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
+    const double inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
+    for (size_t i = 0; i < aChannels; ++i)
     {
-        int mbofs = i * mBufferLength;
-        int abofs = i * aBufferSize;
-        for (j = 0; j < aSamples; j++, abofs++)
+        const auto mbofs = i * mBufferLength;
+        auto       abofs = i * aBufferSize;
+        for (size_t j = 0; j < aSamples; ++j, ++abofs)
         {
-            int delay = (int)floor(maxsamples * (1 + cos(mIndex))) / 2;
+            auto delay = int(floor(maxsamples * (1 + cos(mIndex)))) / 2;
             mIndex += inc;
             mBuffer[mbofs + mOffset % mBufferLength] = aBuffer[abofs];
-            float n                                  = 0.5f * (aBuffer[abofs] +
-                              mBuffer[mbofs + (mBufferLength - delay + mOffset) % mBufferLength]);
+            const auto n =
+                0.5f * (aBuffer[abofs] +
+                        mBuffer[mbofs + (mBufferLength - delay + mOffset) % mBufferLength]);
             mOffset++;
             aBuffer[abofs] += (n - aBuffer[abofs]) * mParam[FlangerFilter::WET];
         }

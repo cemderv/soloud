@@ -45,7 +45,7 @@ size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aB
 {
     float* buffer = aBuffer;
     size_t i;
-    for (i = 0; i < aSamplesToRead; i++)
+    for (i = 0; i < aSamplesToRead; ++i)
     {
         rep_time++;
         if (rep_limit != 0 && rep_time >= rep_limit)

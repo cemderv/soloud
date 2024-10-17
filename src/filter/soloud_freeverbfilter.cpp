@@ -35,19 +35,19 @@ namespace FreeverbImpl
 class Comb
 {
   public:
-    Comb();
-    void   setbuffer(float* aBuf, int aSize);
-    float  process(float aInp);
-    void   mute();
-    void   setdamp(float val);
-    void   setfeedback(float val);
-    float  mFeedback;
-    float  mFilterstore;
-    float  mDamp1;
-    float  mDamp2;
-    float* mBuffer;
-    int    mBufsize;
-    int    mBufidx;
+    void  setbuffer(float* aBuf, int aSize);
+    float process(float aInp);
+    void  mute();
+    void  setdamp(float val);
+    void  setfeedback(float val);
+
+    float  mFeedback    = 0.0f;
+    float  mFilterstore = 0.0f;
+    float  mDamp1       = 0.0f;
+    float  mDamp2       = 0.0f;
+    float* mBuffer      = nullptr;
+    int    mBufsize     = 0;
+    int    mBufidx      = 0;
 };
 
 class Allpass
@@ -64,58 +64,58 @@ class Allpass
     int    mBufidx;
 };
 
-const int   gNumcombs     = 8;
-const int   gNumallpasses = 4;
-const float gMuted        = 0;
-const float gFixedgain    = 0.015f;
-const float gScalewet     = 3;
-const float gScaledry     = 2;
-const float gScaledamp    = 0.4f;
-const float gScaleroom    = 0.28f;
-const float gOffsetroom   = 0.7f;
-const float gInitialroom  = 0.5f;
-const float gInitialdamp  = 0.5f;
-const float gInitialwet   = 1 / gScalewet;
-const float gInitialdry   = 0;
-const float gInitialwidth = 1;
-const float gInitialmode  = 0;
-const float gFreezemode   = 0.5f;
-const int   gStereospread = 23;
+static constexpr int   gNumcombs     = 8;
+static constexpr int   gNumallpasses = 4;
+static constexpr float gMuted        = 0;
+static constexpr float gFixedgain    = 0.015f;
+static constexpr float gScalewet     = 3;
+static constexpr float gScaledry     = 2;
+static constexpr float gScaledamp    = 0.4f;
+static constexpr float gScaleroom    = 0.28f;
+static constexpr float gOffsetroom   = 0.7f;
+static constexpr float gInitialroom  = 0.5f;
+static constexpr float gInitialdamp  = 0.5f;
+static constexpr float gInitialwet   = 1 / gScalewet;
+static constexpr float gInitialdry   = 0;
+static constexpr float gInitialwidth = 1;
+static constexpr float gInitialmode  = 0;
+static constexpr float gFreezemode   = 0.5f;
+static constexpr int   gStereospread = 23;
 
 // These values assume 44.1KHz sample rate
 // they will probably be OK for 48KHz sample rate
 // but would need scaling for 96KHz (or other) sample rates.
 // The values were obtained by listening tests.
-const int gCombtuningL1    = 1116;
-const int gCombtuningR1    = 1116 + gStereospread;
-const int gCombtuningL2    = 1188;
-const int gCombtuningR2    = 1188 + gStereospread;
-const int gCombtuningL3    = 1277;
-const int gCombtuningR3    = 1277 + gStereospread;
-const int gCombtuningL4    = 1356;
-const int gCombtuningR4    = 1356 + gStereospread;
-const int gCombtuningL5    = 1422;
-const int gCombtuningR5    = 1422 + gStereospread;
-const int gCombtuningL6    = 1491;
-const int gCombtuningR6    = 1491 + gStereospread;
-const int gCombtuningL7    = 1557;
-const int gCombtuningR7    = 1557 + gStereospread;
-const int gCombtuningL8    = 1617;
-const int gCombtuningR8    = 1617 + gStereospread;
-const int gAllpasstuningL1 = 556;
-const int gAllpasstuningR1 = 556 + gStereospread;
-const int gAllpasstuningL2 = 441;
-const int gAllpasstuningR2 = 441 + gStereospread;
-const int gAllpasstuningL3 = 341;
-const int gAllpasstuningR3 = 341 + gStereospread;
-const int gAllpasstuningL4 = 225;
-const int gAllpasstuningR4 = 225 + gStereospread;
-
+static constexpr int gCombtuningL1    = 1116;
+static constexpr int gCombtuningR1    = 1116 + gStereospread;
+static constexpr int gCombtuningL2    = 1188;
+static constexpr int gCombtuningR2    = 1188 + gStereospread;
+static constexpr int gCombtuningL3    = 1277;
+static constexpr int gCombtuningR3    = 1277 + gStereospread;
+static constexpr int gCombtuningL4    = 1356;
+static constexpr int gCombtuningR4    = 1356 + gStereospread;
+static constexpr int gCombtuningL5    = 1422;
+static constexpr int gCombtuningR5    = 1422 + gStereospread;
+static constexpr int gCombtuningL6    = 1491;
+static constexpr int gCombtuningR6    = 1491 + gStereospread;
+static constexpr int gCombtuningL7    = 1557;
+static constexpr int gCombtuningR7    = 1557 + gStereospread;
+static constexpr int gCombtuningL8    = 1617;
+static constexpr int gCombtuningR8    = 1617 + gStereospread;
+static constexpr int gAllpasstuningL1 = 556;
+static constexpr int gAllpasstuningR1 = 556 + gStereospread;
+static constexpr int gAllpasstuningL2 = 441;
+static constexpr int gAllpasstuningR2 = 441 + gStereospread;
+static constexpr int gAllpasstuningL3 = 341;
+static constexpr int gAllpasstuningR3 = 341 + gStereospread;
+static constexpr int gAllpasstuningL4 = 225;
+static constexpr int gAllpasstuningR4 = 225 + gStereospread;
 
 class Revmodel
 {
   public:
     Revmodel();
+
     void mute();
     void process(float* aSampleData, long aNumSamples, long aStride);
     void setroomsize(float aValue);
@@ -209,24 +209,13 @@ void Allpass::setbuffer(float* aBuf, int aSize)
 
 void Allpass::mute()
 {
-    for (int i = 0; i < mBufsize; i++)
+    for (int i = 0; i < mBufsize; ++i)
         mBuffer[i] = 0;
 }
 
 void Allpass::setfeedback(float aVal)
 {
     mFeedback = aVal;
-}
-
-Comb::Comb()
-{
-    mFilterstore = 0;
-    mBufidx      = 0;
-    mFeedback    = 0;
-    mDamp1       = 0;
-    mDamp2       = 0;
-    mBuffer      = 0;
-    mBufsize     = 0;
 }
 
 float Comb::process(float aInput)
@@ -253,7 +242,7 @@ void Comb::setbuffer(float* aBuf, int aSize)
 
 void Comb::mute()
 {
-    for (int i = 0; i < mBufsize; i++)
+    for (int i = 0; i < mBufsize; ++i)
         mBuffer[i] = 0;
 }
 
@@ -335,12 +324,12 @@ void Revmodel::mute()
     if (mMode >= gFreezemode)
         return;
 
-    for (int i = 0; i < gNumcombs; i++)
+    for (int i = 0; i < gNumcombs; ++i)
     {
         mCombL[i].mute();
         mCombR[i].mute();
     }
-    for (int i = 0; i < gNumallpasses; i++)
+    for (int i = 0; i < gNumallpasses; ++i)
     {
         mAllpassL[i].mute();
         mAllpassR[i].mute();
@@ -349,29 +338,31 @@ void Revmodel::mute()
 
 void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
 {
-    float *inputL, *inputR;
-    inputL = aSampleData;
-    inputR = aSampleData + aStride;
+    float* inputL = aSampleData;
+    float* inputR = aSampleData + aStride;
 
     if (mDirty)
+    {
         update();
+    }
+
     mDirty = 0;
 
     while (aNumSamples-- > 0)
     {
-        float outL, outR, input;
-        outL = outR = 0;
-        input       = (*inputL + *inputR) * mGain;
+        auto outR  = 0.0f;
+        auto outL  = 0.0f;
+        auto input = (*inputL + *inputR) * mGain;
 
         // Accumulate comb filters in parallel
-        for (int i = 0; i < gNumcombs; i++)
+        for (int i = 0; i < gNumcombs; ++i)
         {
             outL += mCombL[i].process(input);
             outR += mCombR[i].process(input);
         }
 
         // Feed through allpasses in series
-        for (int i = 0; i < gNumallpasses; i++)
+        for (int i = 0; i < gNumallpasses; ++i)
         {
             outL = mAllpassL[i].process(outL);
             outR = mAllpassR[i].process(outR);
@@ -407,13 +398,13 @@ void Revmodel::update()
         mGain      = gFixedgain;
     }
 
-    for (int i = 0; i < gNumcombs; i++)
+    for (int i = 0; i < gNumcombs; ++i)
     {
         mCombL[i].setfeedback(mRoomsize1);
         mCombR[i].setfeedback(mRoomsize1);
     }
 
-    for (int i = 0; i < gNumcombs; i++)
+    for (int i = 0; i < gNumcombs; ++i)
     {
         mCombL[i].setdamp(mDamp1);
         mCombR[i].setdamp(mDamp1);
@@ -479,6 +470,7 @@ void FreeverbFilterInstance::filter(float* aBuffer,
                                     time_t aTime)
 {
     assert(aChannels == 2); // Only stereo supported at this time
+
     if (mParamChanged)
     {
         mModel->setdamp(mParam[DAMP]);
@@ -489,11 +481,8 @@ void FreeverbFilterInstance::filter(float* aBuffer,
         mModel->setdry(1 - mParam[WET]);
         mParamChanged = 0;
     }
-    mModel->process(aBuffer, aSamples, aBufferSize);
-}
 
-FreeverbFilter::FreeverbFilter()
-{
+    mModel->process(aBuffer, aSamples, aBufferSize);
 }
 
 std::shared_ptr<FilterInstance> FreeverbFilter::createInstance()

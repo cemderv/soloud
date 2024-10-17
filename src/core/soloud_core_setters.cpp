@@ -80,10 +80,10 @@ void Engine::setMaxActiveVoiceCount(size_t aVoiceCount)
 
     mResampleDataBuffer = AlignedFloatBuffer{SAMPLE_GRANULARITY * MAX_CHANNELS * aVoiceCount * 2};
 
-    for (size_t i = 0; i < aVoiceCount * 2; i++)
+    for (size_t i = 0; i < aVoiceCount * 2; ++i)
         mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
 
-    for (size_t i = 0; i < aVoiceCount; i++)
+    for (size_t i = 0; i < aVoiceCount; ++i)
         mResampleDataOwner[i] = nullptr;
 
     mActiveVoiceDirty = true;

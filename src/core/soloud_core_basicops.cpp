@@ -83,7 +83,7 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     }
 
     // Fix initial voice volume ramp up
-    for (int i = 0; i < MAX_CHANNELS; i++)
+    for (int i = 0; i < MAX_CHANNELS; ++i)
     {
         mVoice[ch]->mCurrentChannelVolume[i] =
             mVoice[ch]->mChannelVolume[i] * mVoice[ch]->mOverallVolume;
@@ -91,7 +91,7 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     setVoiceRelativePlaySpeed_internal(ch, 1);
 
-    for (int i = 0; i < FILTERS_PER_STREAM; i++)
+    for (int i = 0; i < FILTERS_PER_STREAM; ++i)
     {
         if (aSound.mFilter[i])
         {
@@ -161,7 +161,7 @@ void Engine::stopAudioSource(AudioSource& aSound)
         lockAudioMutex_internal();
 
         int i;
-        for (i = 0; i < (signed)mHighestVoice; i++)
+        for (i = 0; i < (signed)mHighestVoice; ++i)
         {
             if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
             {
@@ -176,7 +176,7 @@ void Engine::stopAll()
 {
     int i;
     lockAudioMutex_internal();
-    for (i = 0; i < (signed)mHighestVoice; i++)
+    for (i = 0; i < (signed)mHighestVoice; ++i)
     {
         stopVoice_internal(i);
     }
@@ -191,7 +191,7 @@ int Engine::countAudioSource(AudioSource& aSound)
         lockAudioMutex_internal();
 
         int i;
-        for (i = 0; i < (signed)mHighestVoice; i++)
+        for (i = 0; i < (signed)mHighestVoice; ++i)
         {
             if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
             {

@@ -28,7 +28,7 @@ namespace SoLoud
 {
 NoiseInstance::NoiseInstance(Noise* aParent)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; ++i)
     {
         mOctaveScale[i] = aParent->mOctaveScale[i];
     }
@@ -40,17 +40,17 @@ size_t NoiseInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*a
     int   octavestep[10];
     float octavevalue[10];
     float totalscale = 0;
-    for (int j = 0; j < 10; j++)
+    for (int j = 0; j < 10; ++j)
     {
         octavevalue[j] = 0;
         octavestep[j]  = 1 << j;
         totalscale += mOctaveScale[j];
     }
 
-    for (size_t i = 0; i < aSamplesToRead; i++)
+    for (size_t i = 0; i < aSamplesToRead; ++i)
     {
         aBuffer[i] = mPrg.rand_float() - 0.5f;
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < 10; ++j)
         {
             octavestep[j]++;
             if (octavestep[j] > (1 << (j + 1)))

@@ -82,7 +82,7 @@ BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter*
     mParam[Frequency] = aParent->mFrequency;
     mParam[Type]      = float(aParent->mFilterType);
 
-    mSamplerate = 44100;
+    mSamplerate = 44'100.0f;
 
     calcBQRParams();
 }
@@ -94,7 +94,8 @@ void BiquadResonantFilterInstance::filterChannel(float* aBuffer,
                                                  size_t aChannel,
                                                  size_t /*aChannels*/)
 {
-    size_t osamples = aSamples;
+    const auto osamples = aSamples;
+
     if (aChannel == 0)
     {
         updateParams(aTime);
@@ -107,20 +108,19 @@ void BiquadResonantFilterInstance::filterChannel(float* aBuffer,
         }
         mParamChanged = 0;
     }
-    float  x;
-    size_t i;
-    int    c = 0;
 
-    BQRStateData& s = mState[aChannel];
+    auto& s = mState[aChannel];
 
     // make sure we access pairs of samples (one sample may be skipped)
     aSamples = aSamples & ~1;
 
-    for (i = 0; i < aSamples; i += 2, c++)
+    int c = 0;
+
+    for (size_t i = 0; i < aSamples; i += 2, c++)
     {
         // Generate outputs by filtering inputs.
-        x     = aBuffer[c];
-        s.mY2 = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
+        const float x = aBuffer[c];
+        s.mY2         = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
         aBuffer[c] += (s.mY2 - aBuffer[c]) * mParam[Wet];
 
         c++;
@@ -135,9 +135,12 @@ void BiquadResonantFilterInstance::filterChannel(float* aBuffer,
         s.mX1 = s.mX2;
         s.mX2 = x;
     }
+
     // If we skipped a sample earlier, patch it by just copying the previous.
     if (osamples != aSamples)
+    {
         aBuffer[c] = aBuffer[c - 1];
+    }
 }
 
 std::shared_ptr<FilterInstance> BiquadResonantFilter::createInstance()

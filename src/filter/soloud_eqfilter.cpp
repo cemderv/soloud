@@ -26,13 +26,12 @@ freely, subject to the following restrictions:
 #include "soloud.hpp"
 #include <cstring>
 
-
 namespace SoLoud
 {
 EqFilterInstance::EqFilterInstance(EqFilter* aParent)
 {
     mParent = aParent;
-    initParams(9);
+    FilterInstance::initParams(9);
     mParam[BAND1] = aParent->mVolume[BAND1 - BAND1];
     mParam[BAND2] = aParent->mVolume[BAND2 - BAND1];
     mParam[BAND3] = aParent->mVolume[BAND3 - BAND1];
@@ -49,7 +48,6 @@ static float catmullrom(float t, float p0, float p1, float p2, float p3)
                    (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 }
 
-
 void EqFilterInstance::fftFilterChannel(float* aFFTBuffer,
                                         size_t aSamples,
                                         float /*aSamplerate*/,
@@ -58,24 +56,28 @@ void EqFilterInstance::fftFilterChannel(float* aFFTBuffer,
                                         size_t /*aChannels*/)
 {
     comp2MagPhase(aFFTBuffer, aSamples / 2);
-    size_t p;
-    for (p = 0; p < aSamples / 2; p++)
+
+    for (size_t p = 0; p < aSamples / 2; p++)
     {
-        int i  = (int)floor(sqrt(p / (float)(aSamples / 2)) * (aSamples / 2));
+        int i  = int(floor(sqrt(p / float(aSamples / 2)) * (aSamples / 2)));
         int p2 = (i / (aSamples / 16));
         int p1 = p2 - 1;
         int p0 = p1 - 1;
         int p3 = p2 + 1;
+
         if (p1 < 0)
             p1 = 0;
         if (p0 < 0)
             p0 = 0;
         if (p3 > 7)
             p3 = 7;
-        float v = (float)(i % (aSamples / 16)) / (float)(aSamples / 16);
+
+        const auto v = float(i % (aSamples / 16)) / float(aSamples / 16);
+
         aFFTBuffer[p * 2] *=
             catmullrom(v, mParam[p0 + 1], mParam[p1 + 1], mParam[p2 + 1], mParam[p3 + 1]);
     }
+
     memset(aFFTBuffer + aSamples, 0, sizeof(float) * aSamples);
     magPhase2Comp(aFFTBuffer, aSamples / 2);
 }

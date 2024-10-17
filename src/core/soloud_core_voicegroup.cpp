@@ -35,7 +35,7 @@ handle Engine::createVoiceGroup()
 
     size_t i;
     // Check if there's any deleted voice groups and re-use if found
-    for (i = 0; i < mVoiceGroupCount; i++)
+    for (i = 0; i < mVoiceGroupCount; ++i)
     {
         if (mVoiceGroup[i] == nullptr)
         {
@@ -69,12 +69,12 @@ handle Engine::createVoiceGroup()
         unlockAudioMutex_internal();
         return 0;
     }
-    for (i = 0; i < oldcount; i++)
+    for (i = 0; i < oldcount; ++i)
     {
         vg[i] = mVoiceGroup[i];
     }
 
-    for (; i < mVoiceGroupCount; i++)
+    for (; i < mVoiceGroupCount; ++i)
     {
         vg[i] = nullptr;
     }
@@ -125,7 +125,7 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 
     lockAudioMutex_internal();
 
-    for (i = 1; i < mVoiceGroup[c][0]; i++)
+    for (i = 1; i < mVoiceGroup[c][0]; ++i)
     {
         if (mVoiceGroup[c][i] == aVoiceHandle)
         {
@@ -146,7 +146,7 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
     // Full group, allocate more memory
     const auto n = new size_t[mVoiceGroup[c][0] * 2 + 1];
 
-    for (i = 0; i < mVoiceGroup[c][0]; i++)
+    for (i = 0; i < mVoiceGroup[c][0]; ++i)
         n[i] = mVoiceGroup[c][i];
 
     n[n[0]]     = aVoiceHandle;
@@ -206,7 +206,7 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
 
     size_t i;
     // first item in voice group is number of allocated indices
-    for (i = 1; i < mVoiceGroup[c][0]; i++)
+    for (i = 1; i < mVoiceGroup[c][0]; ++i)
     {
         // If we hit a voice in the group that's not set, we're done
         if (mVoiceGroup[c][i] == 0)
@@ -222,7 +222,7 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
             lockAudioMutex_internal();
             // current index is an invalid handle, move all following handles backwards
             size_t j;
-            for (j = i; j < mVoiceGroup[c][0] - 1; j++)
+            for (j = i; j < mVoiceGroup[c][0] - 1; ++j)
             {
                 mVoiceGroup[c][j] = mVoiceGroup[c][j + 1];
                 // not a full group, we can stop copying

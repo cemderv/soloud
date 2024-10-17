@@ -47,50 +47,75 @@ void DuckFilterInstance::filter(float* aBuffer,
                                 double aTime)
 {
     updateParams(aTime);
-    float onramp_step = 1;
-    if (mParam[DuckFilter::ONRAMP] > 0.01)
+
+    auto onramp_step = 1.0f;
+    if (mParam[DuckFilter::ONRAMP] > 0.01f)
+    {
         onramp_step =
             (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::ONRAMP] * aSamplerate);
-    float offramp_step = 1;
-    if (mParam[DuckFilter::OFFRAMP] > 0.01)
+    }
+
+    auto offramp_step = 1.0f;
+    if (mParam[DuckFilter::OFFRAMP] > 0.01f)
+    {
         offramp_step =
             (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::OFFRAMP] * aSamplerate);
+    }
 
-    int soundOn = 0;
+    auto soundOn = false;
     if (mSoloud)
     {
-        int voiceno = mSoloud->getVoiceFromHandle_internal(mListenTo);
-        if (voiceno != -1)
+        const auto voice_num = mSoloud->getVoiceFromHandle_internal(mListenTo);
+        if (voice_num != -1)
         {
-            const auto bi = std::static_pointer_cast<BusInstance>(mSoloud->mVoice[voiceno]);
+            const auto bi = std::static_pointer_cast<BusInstance>(mSoloud->mVoice[voice_num]);
 
-            float v = 0;
-            for (size_t i = 0; i < bi->mChannels; i++)
+            auto v = 0.0f;
+            for (size_t i = 0; i < bi->mChannels; ++i)
+            {
                 v += bi->mVisualizationChannelVolume[i];
+            }
 
             if (v > 0.01f)
-                soundOn = 1;
+            {
+                soundOn = true;
+            }
         }
     }
-    float level = mCurrentLevel;
-    for (size_t j = 0; j < aChannels; j++)
+
+    auto level = mCurrentLevel;
+    for (size_t j = 0; j < aChannels; ++j)
     {
-        level      = mCurrentLevel;
-        int bchofs = j * aBufferSize;
-        for (size_t i = 0; i < aSamples; i++)
+        level             = mCurrentLevel;
+        const auto bchofs = j * aBufferSize;
+
+        for (size_t i = 0; i < aSamples; ++i)
         {
             if (soundOn && level > mParam[DuckFilter::LEVEL])
+            {
                 level -= onramp_step;
+            }
+
             if (!soundOn && level < 1)
+            {
                 level += offramp_step;
+            }
+
             if (level < mParam[DuckFilter::LEVEL])
+            {
                 level = mParam[DuckFilter::LEVEL];
+            }
+
             if (level > 1)
+            {
                 level = 1;
+            }
+
             aBuffer[i + bchofs] +=
                 (-aBuffer[i + bchofs] + aBuffer[i + bchofs] * level) * mParam[DuckFilter::WET];
         }
     }
+
     mCurrentLevel = level;
 }
 

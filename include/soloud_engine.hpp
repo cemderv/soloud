@@ -5,6 +5,7 @@
 #include "soloud_misc.hpp"
 #include "soloud_vec3.hpp"
 #include <optional>
+#include <memory>
 #include <vector>
 
 namespace SoLoud
@@ -343,11 +344,11 @@ class Engine
     void update3dVoices_internal(size_t* aVoiceList, size_t aVoiceCount);
     // Clip the samples in the buffer
 
-    void clip_internal(AlignedFloatBuffer& aBuffer,
-                       AlignedFloatBuffer& aDestBuffer,
-                       size_t              aSamples,
-                       float               aVolume0,
-                       float               aVolume1);
+    void clip_internal(const AlignedFloatBuffer& aBuffer,
+                       const AlignedFloatBuffer& aDestBuffer,
+                       size_t                    aSamples,
+                       float                     aVolume0,
+                       float                     aVolume1);
     // Remove all non-active voices from group
     void trimVoiceGroup_internal(handle aVoiceGroupHandle);
 

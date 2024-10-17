@@ -78,7 +78,7 @@ std::shared_ptr<AudioSourceInstance> Queue::createInstance()
 void Queue::findQueueHandle()
 {
     // Find the channel the queue is playing on to calculate handle..
-    for (int i = 0; mQueueHandle == 0 && i < (signed)mSoloud->mHighestVoice; i++)
+    for (int i = 0; mQueueHandle == 0 && i < (signed)mSoloud->mHighestVoice; ++i)
     {
         if (mSoloud->mVoice[i] == mInstance)
         {

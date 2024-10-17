@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-#include <soloud_speech.hpp>
 
 using namespace std::chrono_literals;
 
@@ -24,10 +23,7 @@ int main()
     auto wav = SoLoud::Wav{file_data_span};
     wav.setLooping(true);
 
-    auto speech = SoLoud::Speech{};
-    speech.setText("This is a test");
-
-    engine.play(speech);
+    engine.play(wav);
 
     while(engine.getActiveVoiceCount()>0)
     {

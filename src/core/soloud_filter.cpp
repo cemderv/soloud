@@ -38,7 +38,7 @@ void FilterInstance::initParams(int aNumParams)
 
 void FilterInstance::updateParams(double aTime)
 {
-    for (size_t i = 0; i < mNumParams; i++)
+    for (size_t i = 0; i < mNumParams; ++i)
     {
         if (mParamFader[i].mActive > 0)
         {
@@ -93,7 +93,7 @@ void FilterInstance::filter(float* aBuffer,
                             float  aSamplerate,
                             double aTime)
 {
-    for (size_t i = 0; i < aChannels; i++)
+    for (size_t i = 0; i < aChannels; ++i)
     {
         filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
     }

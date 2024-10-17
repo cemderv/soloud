@@ -26,8 +26,8 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 
 #include "soloud.hpp"
-#include "soloud_thread.hpp"
 #include "soloud_engine.hpp"
+#include "soloud_thread.hpp"
 
 #include "SLES/OpenSLES.h"
 #include "SLES/OpenSLES_Platform.h"
