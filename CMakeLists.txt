@@ -19,6 +19,10 @@ add_library(SoLoud STATIC ${HeaderFiles} ${SourceFiles})
 target_compile_features(SoLoud PRIVATE cxx_std_20)
 target_include_directories(SoLoud PUBLIC include)
 
+target_compile_definitions(SoLoud PRIVATE
+  -DSTB_VORBIS_NO_STDIO
+)
+
 target_precompile_headers(SoLoud PRIVATE
   <cassert>
   <cstdio>
@@ -94,3 +98,7 @@ else ()
   message(FATAL_ERROR "Could not detect a proper backend for SoLoud!")
 endif ()
 
+
+add_executable(testbed main.cpp)
+target_link_libraries(testbed PRIVATE SoLoud)
+target_compile_features(testbed PRIVATE cxx_std_20)

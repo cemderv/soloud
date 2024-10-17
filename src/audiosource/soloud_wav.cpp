@@ -100,7 +100,7 @@ Wav::~Wav()
     stop();
 }
 
-void Wav::loadwav(MemoryFile& aReader)
+void Wav::loadwav(const MemoryFile& aReader)
 {
     drwav decoder;
 
@@ -140,7 +140,7 @@ void Wav::loadwav(MemoryFile& aReader)
     drwav_uninit(&decoder);
 }
 
-void Wav::loadogg(MemoryFile& aReader)
+void Wav::loadogg(const MemoryFile& aReader)
 {
     int   e      = 0;
     auto* vorbis = stb_vorbis_open_memory(aReader.data_uc(), aReader.size(), &e, 0);
@@ -188,7 +188,7 @@ void Wav::loadogg(MemoryFile& aReader)
     stb_vorbis_close(vorbis);
 }
 
-void Wav::loadmp3(MemoryFile& aReader)
+void Wav::loadmp3(const MemoryFile& aReader)
 {
     drmp3 decoder;
 
@@ -229,7 +229,7 @@ void Wav::loadmp3(MemoryFile& aReader)
     drmp3_uninit(&decoder);
 }
 
-void Wav::loadflac(MemoryFile& aReader)
+void Wav::loadflac(const MemoryFile& aReader)
 {
     drflac* decoder = drflac_open_memory(aReader.data(), aReader.size(), nullptr);
 

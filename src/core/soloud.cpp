@@ -62,42 +62,13 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Engine::~Engine() noexcept
-{
-    // let's stop all sounds before deinit, so we don't mess up our mutexes
-    stopAll();
-    deinit();
-
-    for (size_t i = 0; i < FILTERS_PER_STREAM; i++)
-    {
-        mFilterInstance[i].reset();
-    }
-}
-
-void Engine::deinit()
-{
-    // Make sure no audio operation is currently pending
-    lockAudioMutex_internal();
-    unlockAudioMutex_internal();
-    assert(!mInsideAudioThreadMutex);
-    stopAll();
-    if (mBackendCleanupFunc)
-        mBackendCleanupFunc(this);
-    mBackendCleanupFunc = 0;
-    if (mAudioThreadMutex)
-        Thread::destroyMutex(mAudioThreadMutex);
-    mAudioThreadMutex = nullptr;
-}
-
-void Engine::init(Flags                       aFlags,
+Engine::Engine(Flags                       aFlags,
                   std::optional<size_t> aSamplerate,
                   std::optional<size_t> aBufferSize,
                   size_t                aChannels)
 {
     assert(aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
-
-    deinit();
 
     mAudioThreadMutex = Thread::createMutex();
 
@@ -169,6 +140,29 @@ void Engine::init(Flags                       aFlags,
         opensles_init(this, aFlags, samplerate, buffersize, aChannels);
     }
 #endif
+}
+
+Engine::~Engine() noexcept
+{
+    // let's stop all sounds before deinit, so we don't mess up our mutexes
+    stopAll();
+
+    // Make sure no audio operation is currently pending
+    lockAudioMutex_internal();
+    unlockAudioMutex_internal();
+    assert(!mInsideAudioThreadMutex);
+    stopAll();
+    if (mBackendCleanupFunc)
+        mBackendCleanupFunc(this);
+    mBackendCleanupFunc = 0;
+    if (mAudioThreadMutex)
+        Thread::destroyMutex(mAudioThreadMutex);
+    mAudioThreadMutex = nullptr;
+
+    for (size_t i = 0; i < FILTERS_PER_STREAM; i++)
+    {
+        mFilterInstance[i].reset();
+    }
 }
 
 void Engine::pause()
@@ -341,7 +335,7 @@ void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
     size_t samplequads = (aSamples + 3) / 4; // rounded up
 
     // Clip
-    if (mFlags & CLIP_ROUNDOFF)
+    if (mFlags & Flags::ClipRoundoff)
     {
         float                  nb          = -1.65f;
         __m128                 negbound    = _mm_load_ps1(&nb);

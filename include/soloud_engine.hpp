@@ -32,22 +32,16 @@ class Engine
     soloudResultFunction mBackendPauseFunc=nullptr;
     soloudResultFunction mBackendResumeFunc=nullptr;
 
-    Engine()=default;
-
-    ~Engine()noexcept;
-
-    // Initialize SoLoud. Must be called before SoLoud can be used.
-    void init(Flags                       aFlags      = Flags::ClipRoundoff,
+    Engine(Flags                       aFlags      = Flags::ClipRoundoff,
               std::optional<size_t> aSamplerate = std::nullopt,
               std::optional<size_t> aBufferSize = std::nullopt,
               size_t                aChannels   = 2);
 
+    ~Engine()noexcept;
+
     void pause();
 
     void resume();
-
-    // Deinitialize SoLoud. Must be called before shutting down.
-    void deinit();
 
     // Returns current backend channel count (1 mono, 2 stereo, etc)
     size_t getBackendChannels() const;

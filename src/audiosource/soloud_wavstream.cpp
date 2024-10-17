@@ -108,7 +108,7 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
             auto& ogg = std::get<stb_vorbis*>(mCodec);
 
             int e = 0;
-            ogg = stb_vorbis_open_file(reinterpret_cast<Soloud_Filehack*>(&mFile), 0, &e, nullptr);
+            ogg = stb_vorbis_open_memory(mFile.data_uc(), int(mFile.size()), &e, nullptr);
 
             if (!ogg)
             {
@@ -447,7 +447,7 @@ void WavStream::loadogg(MemoryFile& fp)
     fp.seek(0);
 
     int         e = 0;
-    stb_vorbis* v = stb_vorbis_open_file(reinterpret_cast<Soloud_Filehack*>(&fp), 0, &e, 0);
+    stb_vorbis* v = stb_vorbis_open_memory(fp.data_uc(), 0, &e, nullptr);
 
     if (v == nullptr)
     {

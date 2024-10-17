@@ -66,10 +66,10 @@ class Wav : public AudioSource
     time_t getLength() const;
 
   private:
-    void loadwav(MemoryFile& aReader);
-    void loadogg(MemoryFile& aReader);
-    void loadmp3(MemoryFile& aReader);
-    void loadflac(MemoryFile& aReader);
+    void loadwav(const MemoryFile& aReader);
+    void loadogg(const MemoryFile& aReader);
+    void loadmp3(const MemoryFile& aReader);
+    void loadflac(const MemoryFile& aReader);
 
     std::unique_ptr<float[]> mData;
     size_t                   mSampleCount = 0;

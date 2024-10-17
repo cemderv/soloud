@@ -24,11 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
-#include <cstdio>
 #include <span>
-
-typedef void* Soloud_Filehack;
 
 namespace SoLoud
 {
