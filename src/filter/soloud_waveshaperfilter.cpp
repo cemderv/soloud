@@ -23,90 +23,82 @@ freely, subject to the following restrictions:
 */
 
 #include <cmath>
+#include "soloud_error.hpp"
 #include "soloud.hpp"
 #include "soloud_waveshaperfilter.hpp"
 
-namespace SoLoud
-{
+namespace SoLoud {
 
-	WaveShaperFilterInstance::WaveShaperFilterInstance(WaveShaperFilter *aParent)
-	{
-		mParent = aParent;
-		initParams(2);
-		mParam[WaveShaperFilter::AMOUNT] = mParent->mAmount;
-	}
+  WaveShaperFilterInstance::WaveShaperFilterInstance(WaveShaperFilter* aParent) {
+    mParent = aParent;
+    initParams(2);
+    mParam[WaveShaperFilter::AMOUNT] = mParent->mAmount;
+  }
 
-	void WaveShaperFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float /*aSamplerate*/, double aTime, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
-	{
-		updateParams(aTime);
+  void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
+                                               unsigned int aSamples,
+                                               float /*aSamplerate*/,
+                                               double aTime,
+                                               unsigned int /*aChannel*/,
+                                               unsigned int /*aChannels*/) {
+    updateParams(aTime);
 
-		unsigned int i;
-		float k = 0;
-		if (mParam[1] == 1)
-			k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
-		else
-			k = 2 * mParam[WaveShaperFilter::AMOUNT] / (1 - mParam[1]);
+    unsigned int i;
+    float        k = 0;
+    if (mParam[1] == 1)
+      k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
+    else
+      k = 2 * mParam[WaveShaperFilter::AMOUNT] / (1 - mParam[1]);
 
-		for (i = 0; i < aSamples; i++)
-		{
-			float dry = aBuffer[i];
-			float wet = (1 + k) * aBuffer[i] / (1 + k * (float)fabs(aBuffer[i]));
-			aBuffer[i] += (wet - dry) * mParam[WaveShaperFilter::WET];
-		}
-	}
+    for (i = 0; i < aSamples; i++) {
+      float dry = aBuffer[i];
+      float wet = (1 + k) * aBuffer[i] / (1 + k * (float)fabs(aBuffer[i]));
+      aBuffer[i] += (wet - dry) * mParam[WaveShaperFilter::WET];
+    }
+  }
 
-	WaveShaperFilterInstance::~WaveShaperFilterInstance()
-	{
-	}
+  WaveShaperFilterInstance::~WaveShaperFilterInstance() {
+  }
 
-	result WaveShaperFilter::setParams(float aAmount)
-	{
-		if (aAmount < -1 || aAmount > 1)
-			return INVALID_PARAMETER;
-		mAmount = aAmount;
-		return 0;
-	}
+  result WaveShaperFilter::setParams(float aAmount) {
+    if (aAmount < -1 || aAmount > 1)
+      return INVALID_PARAMETER;
+    mAmount = aAmount;
+    return 0;
+  }
 
-	WaveShaperFilter::WaveShaperFilter()
-	{
-		mAmount = 0.0f;
-	}
+  WaveShaperFilter::WaveShaperFilter() {
+    mAmount = 0.0f;
+  }
 
-	int WaveShaperFilter::getParamCount()
-	{
-		return 2;
-	}
+  int WaveShaperFilter::getParamCount() {
+    return 2;
+  }
 
-	const char* WaveShaperFilter::getParamName(unsigned int aParamIndex)
-	{
-		if (aParamIndex == 1)
-			return "Amount";
-		return "Wet";
-	}
+  const char* WaveShaperFilter::getParamName(unsigned int aParamIndex) {
+    if (aParamIndex == 1)
+      return "Amount";
+    return "Wet";
+  }
 
-	unsigned int WaveShaperFilter::getParamType(unsigned int aParamIndex)
-	{
-		return FLOAT_PARAM;
-	}
+  unsigned int WaveShaperFilter::getParamType(unsigned int aParamIndex) {
+    return FLOAT_PARAM;
+  }
 
-	float WaveShaperFilter::getParamMax(unsigned int aParamIndex)
-	{
-		return 1;
-	}
+  float WaveShaperFilter::getParamMax(unsigned int aParamIndex) {
+    return 1;
+  }
 
-	float WaveShaperFilter::getParamMin(unsigned int aParamIndex)
-	{
-		if (aParamIndex == AMOUNT)
-			return -1;
-		return 0;
-	}
+  float WaveShaperFilter::getParamMin(unsigned int aParamIndex) {
+    if (aParamIndex == AMOUNT)
+      return -1;
+    return 0;
+  }
 
-	WaveShaperFilter::~WaveShaperFilter()
-	{
-	}
+  WaveShaperFilter::~WaveShaperFilter() {
+  }
 
-	WaveShaperFilterInstance *WaveShaperFilter::createInstance()
-	{
-		return new WaveShaperFilterInstance(this);
-	}
+  WaveShaperFilterInstance* WaveShaperFilter::createInstance() {
+    return new WaveShaperFilterInstance(this);
+  }
 }

@@ -20,12 +20,21 @@ target_compile_features(SoLoud PRIVATE cxx_std_20)
 target_include_directories(SoLoud PUBLIC include)
 
 target_precompile_headers(SoLoud PRIVATE
+  <cassert>
+  <cstdio>
+  <cstring>
+  <cmath>
   include/soloud.hpp
 )
 
 if (WIN32)
-  target_compile_definitions(SoLoud PRIVATE -DWIN32_LEAN_AND_MEAN)
-  target_precompile_headers(SoLoud PRIVATE <Windows.h>)
+  target_compile_definitions(SoLoud PRIVATE
+    -DWIN32_LEAN_AND_MEAN
+    -DVC_EXTRA_LEAN
+  )
+  target_precompile_headers(SoLoud PRIVATE
+    <Windows.h>
+  )
 endif()
 
 set(SoLoud_BACKEND_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/backend/")

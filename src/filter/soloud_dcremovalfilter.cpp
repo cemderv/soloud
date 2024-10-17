@@ -23,88 +23,82 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.hpp"
+#include "soloud_error.hpp"
 #include "soloud_dcremovalfilter.hpp"
 
-namespace SoLoud
-{
-	DCRemovalFilterInstance::DCRemovalFilterInstance(DCRemovalFilter *aParent)
-	{
-		mParent = aParent;
-		mBuffer = 0;
-		mBufferLength = 0;
-		mTotals = 0;
-		mOffset = 0;
-		initParams(1);
+namespace SoLoud {
+  DCRemovalFilterInstance::DCRemovalFilterInstance(DCRemovalFilter* aParent) {
+    mParent       = aParent;
+    mBuffer       = 0;
+    mBufferLength = 0;
+    mTotals       = 0;
+    mOffset       = 0;
+    initParams(1);
 
-	}
+  }
 
-	void DCRemovalFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
-	{
-		updateParams(aTime);
+  void DCRemovalFilterInstance::filter(float*       aBuffer,
+                                       unsigned int aSamples,
+                                       unsigned int aBufferSize,
+                                       unsigned int aChannels,
+                                       float        aSamplerate,
+                                       double       aTime) {
+    updateParams(aTime);
 
-		if (mBuffer == 0)
-		{
-			mBufferLength = (int)ceil(mParent->mLength * aSamplerate);
-			mBuffer = new float[mBufferLength * aChannels];
-			mTotals = new float[aChannels];
-			unsigned int i;
-			for (i = 0; i < aChannels; i++)
-			{
-			    mTotals[i] = 0;
-			}
-			for (i = 0; i < mBufferLength * aChannels; i++)
-			{
-				mBuffer[i] = 0;
-			}
-		}
+    if (mBuffer == 0) {
+      mBufferLength = (int)ceil(mParent->mLength * aSamplerate);
+      mBuffer       = new float[mBufferLength * aChannels];
+      mTotals       = new float[aChannels];
+      unsigned int i;
+      for (i = 0; i < aChannels; i++) {
+        mTotals[i] = 0;
+      }
+      for (i = 0; i < mBufferLength * aChannels; i++) {
+        mBuffer[i] = 0;
+      }
+    }
 
-		unsigned int i, j;
-		int prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
-		for (i = 0; i < aSamples; i++)
-		{
-			for (j = 0; j < aChannels; j++)
-			{
-				int chofs = j * mBufferLength;
-				int bchofs = j * aBufferSize;
-								
-				float n = aBuffer[i + bchofs];
-				mTotals[j] -= mBuffer[mOffset + chofs];
-				mTotals[j] += n;
-				mBuffer[mOffset + chofs] = n;
-			    
-			    n -= mTotals[j] / mBufferLength;
-			    
-				aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[0];
-			}
-			prevofs = mOffset;
-			mOffset = (mOffset + 1) % mBufferLength;
-		}
-	}
+    unsigned int i, j;
+    int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
+    for (i = 0; i < aSamples; i++) {
+      for (j = 0; j < aChannels; j++) {
+        int chofs  = j * mBufferLength;
+        int bchofs = j * aBufferSize;
 
-	DCRemovalFilterInstance::~DCRemovalFilterInstance()
-	{
-		delete[] mBuffer;
-		delete[] mTotals;
-	}
+        float n = aBuffer[i + bchofs];
+        mTotals[j] -= mBuffer[mOffset + chofs];
+        mTotals[j] += n;
+        mBuffer[mOffset + chofs] = n;
 
-	DCRemovalFilter::DCRemovalFilter()
-	{
-		mLength = 0.1f;
-	}
+        n -= mTotals[j] / mBufferLength;
 
-	result DCRemovalFilter::setParams(float aLength)
-	{
-		if (aLength <= 0)
-			return INVALID_PARAMETER;
+        aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[0];
+      }
+      prevofs = mOffset;
+      mOffset = (mOffset + 1) % mBufferLength;
+    }
+  }
 
-        mLength = aLength;
-		
-		return 0;
-	}
+  DCRemovalFilterInstance::~DCRemovalFilterInstance() {
+    delete[] mBuffer;
+    delete[] mTotals;
+  }
+
+  DCRemovalFilter::DCRemovalFilter() {
+    mLength = 0.1f;
+  }
+
+  result DCRemovalFilter::setParams(float aLength) {
+    if (aLength <= 0)
+      return INVALID_PARAMETER;
+
+    mLength = aLength;
+
+    return 0;
+  }
 
 
-	FilterInstance *DCRemovalFilter::createInstance()
-	{
-		return new DCRemovalFilterInstance(this);
-	}
+  FilterInstance* DCRemovalFilter::createInstance() {
+    return new DCRemovalFilterInstance(this);
+  }
 }

@@ -22,127 +22,110 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include <cstring>
+#include "soloud_error.hpp"
 #include "soloud.hpp"
 #include "soloud_speech.hpp"
 #include "../src/audiosource/speech/tts.h"
 
-namespace SoLoud
-{
-	SpeechInstance::SpeechInstance(Speech *aParent)
-	{
-		mParent = aParent;			
-		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
-		mSample = new short[mSynth.mNspFr * 100];
-		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
-		mOffset = 10;
-		mSampleCount = 10;
-	}
+namespace SoLoud {
+  SpeechInstance::SpeechInstance(Speech* aParent) {
+    mParent = aParent;
+    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+    mSample = new short[mSynth.mNspFr * 100];
+    mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
+    mOffset      = 10;
+    mSampleCount = 10;
+  }
 
-    SpeechInstance::~SpeechInstance()
-	{
-       delete[] mSample;
+  SpeechInstance::~SpeechInstance() {
+    delete[] mSample;
+  }
+
+  static void writesamples(short* aSrc, float* aDst, int aCount) {
+    int i;
+    for (i = 0; i < aCount; i++) {
+      aDst[i] = aSrc[i] * (1 / (float)0x8000);
+    }
+  }
+
+  unsigned int SpeechInstance::getAudio(float* aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/) {
+    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+    unsigned int samples_out = 0;
+    if (mSampleCount > mOffset) {
+      unsigned int copycount = mSampleCount - mOffset;
+      if (copycount > aSamplesToRead) {
+        copycount = aSamplesToRead;
+      }
+      writesamples(mSample + mOffset, aBuffer, copycount);
+      mOffset += copycount;
+      samples_out += copycount;
     }
 
-	static void writesamples(short * aSrc, float * aDst, int aCount)
-	{
-		int i;
-		for (i = 0; i < aCount; i++)
-		{
-			aDst[i] = aSrc[i] * (1 / (float)0x8000);
-		}
-	}
+    while (mSampleCount >= 0 && samples_out < aSamplesToRead) {
+      mOffset      = 0;
+      mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
+      if (mSampleCount > 0) {
+        unsigned int copycount = mSampleCount;
+        if (copycount > aSamplesToRead - samples_out) {
+          copycount = aSamplesToRead - samples_out;
+        }
+        writesamples(mSample, aBuffer + samples_out, copycount);
+        mOffset += copycount;
+        samples_out += copycount;
+      }
+    }
+    return samples_out;
+  }
 
-	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
-	{
-		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
-		unsigned int samples_out = 0;
-		if (mSampleCount > mOffset)
-		{
-			unsigned int copycount = mSampleCount - mOffset;
-			if (copycount > aSamplesToRead) 
-			{
-				copycount = aSamplesToRead;
-			}
-			writesamples(mSample + mOffset, aBuffer, copycount);
-			mOffset += copycount;
-			samples_out += copycount;
-		}
+  result SpeechInstance::rewind() {
+    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+    mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
+    mOffset         = 10;
+    mSampleCount    = 10;
+    mStreamPosition = 0.0f;
+    return 0;
+  }
 
-		while (mSampleCount >= 0 && samples_out < aSamplesToRead)
-		{
-			mOffset = 0;
-			mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
-			if (mSampleCount > 0)
-			{
-				unsigned int copycount = mSampleCount;
-				if (copycount > aSamplesToRead - samples_out)
-				{
-					copycount = aSamplesToRead - samples_out;
-				}
-				writesamples(mSample, aBuffer + samples_out, copycount);
-				mOffset += copycount;
-				samples_out += copycount;				
-			}
-		}
-		return samples_out;
-	}
+  bool SpeechInstance::hasEnded() {
+    if (mSampleCount < 0)
+      return 1;
+    return 0;
+  }
 
-	result SpeechInstance::rewind()
-	{
-		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
-		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
-		mOffset = 10;
-		mSampleCount = 10;
-		mStreamPosition = 0.0f;
-		return 0;
-	}
+  result Speech::setParams(unsigned int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform) {
+    mBaseFrequency   = aBaseFrequency;
+    mBaseSpeed       = aBaseSpeed;
+    mBaseDeclination = aBaseDeclination;
+    mBaseWaveform    = aBaseWaveform;
+    return 0;
+  }
 
-	bool SpeechInstance::hasEnded()
-	{			
-		if (mSampleCount < 0)
-			return 1;				
-		return 0;
-	}	
+  result Speech::setText(const char* aText) {
+    if (aText == NULL)
+      return INVALID_PARAMETER;
 
-	result Speech::setParams(unsigned int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
-	{
-		mBaseFrequency = aBaseFrequency;
-		mBaseSpeed = aBaseSpeed;
-		mBaseDeclination = aBaseDeclination;
-		mBaseWaveform = aBaseWaveform;
-		return 0;
-	}
+    stop();
+    mElement.clear();
+    darray phone;
+    xlate_string(aText, &phone);
+    mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
+    return 0;
+  }
 
-	result Speech::setText(const char *aText)
-	{
-		if (aText == NULL)
-			return INVALID_PARAMETER;
+  Speech::Speech() {
+    mBaseSamplerate  = 11025;
+    mFrames          = 0;
+    mBaseFrequency   = 1330;
+    mBaseSpeed       = 10;
+    mBaseDeclination = 0.5f;
+    mBaseWaveform    = KW_SQUARE;
+  }
 
-		stop();
-		mElement.clear();
-		darray phone;
-		xlate_string(aText, &phone);
-		mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
-		return 0;
-	}
+  Speech::~Speech() {
+    stop();
+  }
 
-	Speech::Speech()
-	{
-		mBaseSamplerate = 11025;
-		mFrames = 0;
-		mBaseFrequency = 1330;
-		mBaseSpeed = 10;
-		mBaseDeclination = 0.5f;
-		mBaseWaveform = KW_SQUARE;
-	}
-
-	Speech::~Speech()
-	{
-		stop();
-	}
-
-	AudioSourceInstance *Speech::createInstance()
-	{
-		return new SpeechInstance(this);
-	}	
+  AudioSourceInstance* Speech::createInstance() {
+    return new SpeechInstance(this);
+  }
 };

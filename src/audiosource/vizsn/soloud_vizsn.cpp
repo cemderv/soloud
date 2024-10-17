@@ -110,431 +110,416 @@ released under same license.
 
 static const float vowtab[8][4][2] =
 {
-	/* a */ 0.10f, 1.6f, 0, 0, 0.2f, 1.5f,  0, 0,
-	/* ä */ 0.10f, 1.6f, 0, 0, 0.2f, 0,     0, 0,
+    /* a */ 0.10f, 1.6f, 0, 0, 0.2f, 1.5f, 0, 0,
+            /* ä */ 0.10f, 1.6f, 0, 0, 0.2f, 0, 0, 0,
 
-	/* e */ 0.08f, 1.8f, 0, 0, 0.2f, -0.8f, 0, 0,
-	/* ö */ 0.08f, 1.8f, 0, 0, 0.3f, 0.9f,  0, 0,
-	/* o */ 0.08f, 1.8f, 0, 0, 0.2f, 1.6f,  0, 0,
+            /* e */ 0.08f, 1.8f, 0, 0, 0.2f, -0.8f, 0, 0,
+            /* ö */ 0.08f, 1.8f, 0, 0, 0.3f, 0.9f, 0, 0,
+            /* o */ 0.08f, 1.8f, 0, 0, 0.2f, 1.6f, 0, 0,
 
-	/* i */ 0.05f, 1.9f, 0, 0, 0.2f, -1.5f, 0, 0,
-	/* y */ 0.05f, 1.9f, 0, 0, 0.2f, 0.8f,  0, 0,
-	/* u */ 0.05f, 1.9f, 0, 0, 0.1f, 1.7f,  0, 0
+            /* i */ 0.05f, 1.9f, 0, 0, 0.2f, -1.5f, 0, 0,
+            /* y */ 0.05f, 1.9f, 0, 0, 0.2f, 0.8f, 0, 0,
+            /* u */ 0.05f, 1.9f, 0, 0, 0.1f, 1.7f, 0, 0
 };
 
 /* integerisoi (8bit): kerro kolmella */
 static const float voo[13][5 + 3 * 10] =
 {
-	/* frikatiivit & puolivokaalit */
+    /* frikatiivit & puolivokaalit */
 
-	/* h */
-	0.0f, 0.0f, 0.36f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* h */
+    0.0f, 0.0f, 0.36f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* v */
-	0.7f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.005f, 1.9f, -0.95f, 0.0f, 0.0f, 0.0f, 0.04f, 1.5f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* v */
+    0.7f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.005f, 1.9f, -0.95f, 0.0f, 0.0f, 0.0f, 0.04f, 1.5f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* j */
-	0.7f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.005f, 1.9f, -0.95f, 0.0f, 0.0f, 0.0f, 0.04f, -1.5f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* j */
+    0.7f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.005f, 1.9f, -0.95f, 0.0f, 0.0f, 0.0f, 0.04f, -1.5f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* s */
-	0.0f, 0.0f, 0.36f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.7f, 0.1f, -0.02f,
-	0.0f, 0.1f, -0.02f, 0.0f, 1.76f, -0.85f, 0.01f, 0.42f, -0.93f, 0.02f, -1.37f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* s */
+    0.0f, 0.0f, 0.36f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.7f, 0.1f, -0.02f,
+    0.0f, 0.1f, -0.02f, 0.0f, 1.76f, -0.85f, 0.01f, 0.42f, -0.93f, 0.02f, -1.37f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f,
 
-	/* l */
-	0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.1f, -0.5f, -0.93f, 0.6f, 1.0f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* l */
+    0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.1f, -0.5f, -0.93f, 0.6f, 1.0f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* r */
-	0.8f, 0.4f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	-0.2f, 0.0f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* r */
+    0.8f, 0.4f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    -0.2f, 0.0f, -0.93f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* klusiilit */
+    /* klusiilit */
 
-	/* k */
-	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.0f, 1.95f, -0.94f, 0.4f, 1.0f, -0.93f, 0.6f, 1.0f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* k */
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.0f, 1.95f, -0.94f, 0.4f, 1.0f, -0.93f, 0.6f, 1.0f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* t */
-	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.0f, 1.6f, -0.94f, 0.0f, 0.3f, -0.93f, 1.5f, -0.6f, -0.89f, 1.8f, -1.5f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* t */
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.0f, 1.6f, -0.94f, 0.0f, 0.3f, -0.93f, 1.5f, -0.6f, -0.89f, 1.8f, -1.5f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f,
 
-	/* p */
-	0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
-	0.01f, 1.9f, -0.94f, 1.5f, 1.7f, -0.93f, 1.0f, 1.0f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* p */
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 22.0f, -42.0f, 21.0f, 0.04f, 1.9f, -0.92f, 1.17f, 0.8f, -0.02f,
+    0.01f, 1.9f, -0.94f, 1.5f, 1.7f, -0.93f, 1.0f, 1.0f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* nasaalit */
+    /* nasaalit */
 
-	/* n */
-	0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f, -0.02f,
-	0.02f, 1.83f, -0.97f, 0.10f, 0.26f, -0.83f, 0.06f, -0.85f, -0.82f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* n */
+    0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f,
+    -0.02f,
+    0.02f, 1.83f, -0.97f, 0.10f, 0.26f, -0.83f, 0.06f, -0.85f, -0.82f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f,
 
-	/* m */
-	0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f, -0.02f,
-	0.08f, 1.5f, -0.94f, 0.06f, 1.0f, -0.9f, 0.05f, 1.5f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    /* m */
+    0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f,
+    -0.02f,
+    0.08f, 1.5f, -0.94f, 0.06f, 1.0f, -0.9f, 0.05f, 1.5f, -0.89f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
-	/* ng */
-	0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f, -0.02f,
-	0.1f, 1.6f, -0.94f, 0.7f, -1.0f, -0.91f, 0.1f, 1.16f, -0.91f, 0.03f, -1.3f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+    /* ng */
+    0.81f, 0.0f, 0.0f, 0.0f, 0.0f, 0.32f, 1.36f, -0.67f, 15.0f, -20.0f, 10.0f, 0.04f, 1.88f, -0.92f, 1.17f, 0.1f,
+    -0.02f,
+    0.1f, 1.6f, -0.94f, 0.7f, -1.0f, -0.91f, 0.1f, 1.16f, -0.91f, 0.03f, -1.3f, -0.68f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f
 };
 
 static const char keyz[] =
 {
-	P_A,  P_P,  P_S,  P_T,  P_E,  P_V,  P_NG,
-	P_H,  P_I,  P_J,  P_K,  P_L,  P_M,  P_N,
-	P_O,  P_P,  P_K,  P_R,  P_S,  P_T,  P_U,
-	P_V,  P_U,  P_S,  P_Y,  P_S,  P_AE, P_OE
+    P_A, P_P, P_S, P_T, P_E, P_V, P_NG,
+    P_H, P_I, P_J, P_K, P_L, P_M, P_N,
+    P_O, P_P, P_K, P_R, P_S, P_T, P_U,
+    P_V, P_U, P_S, P_Y, P_S, P_AE, P_OE
 };
 
-namespace SoLoud
-{
-	VizsnResonator::VizsnResonator() : a(0), b(0), c(0), p1(0), p2(0) {}
-	VizsnBank::VizsnBank() : pitch(0), frica(0), voice(0), aspir(0), bypas(0), breth(0) {}
+namespace SoLoud {
+  VizsnResonator::VizsnResonator() : a(0), b(0), c(0), p1(0), p2(0) {
+  }
 
-	float VizsnResonator::resonate(float i)
-	{
-		float x = (a * i) + (b * p1) + (c * p2);
-		p2 = p1;
-		p1 = x;
-		return x;
-	}
+  VizsnBank::VizsnBank() : pitch(0), frica(0), voice(0), aspir(0), bypas(0), breth(0) {
+  }
 
-	float VizsnResonator::antiresonate(float i)
-	{
-		float x = a * i + b * p1 + c * p2;
-		p2 = p1;
-		p1 = i;
-		return x;
-	}
-	VizsnInstance::VizsnInstance(Vizsn *aParent)
-	{
-		mParent = aParent;
-		mPtr = 0;
-		mCurrentVoiceType = 6;
-		memset(mEchobuf, 0, 1024 * sizeof(int));
-		mPitch = 800;
-		mS = mParent->mText;
-		mBufwrite = 0;
-		mBufread = 0;
-		mA = 0;
-		mB = 100;
-		mOrgv = -1;
-		mGlotlast = 0;
-		mNper = 0;
-		mNmod = 0;
-		mNopen = 0;
-		memset(mBuf, 0, sizeof(float) * 2048);
-	}
+  float VizsnResonator::resonate(float i) {
+    float x = (a * i) + (b * p1) + (c * p2);
+    p2      = p1;
+    p1      = x;
+    return x;
+  }
 
-	VizsnInstance::~VizsnInstance()
-	{
-	}
+  float VizsnResonator::antiresonate(float i) {
+    float x = a * i + b * p1 + c * p2;
+    p2      = p1;
+    p1      = i;
+    return x;
+  }
 
-	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
-	{
-		unsigned int idx = 0;
-		int i, j;
-		if (mBufwrite > mBufread)
-		{
-			for (; mBufwrite > mBufread && idx < aSamplesToRead; mBufread++)
-			{
-				aBuffer[idx] = mBuf[mBufread];
-				idx++;
-			}
-		}
-		if (idx == aSamplesToRead) return aSamplesToRead;
-		mBufwrite = mBufread = 0;
-		while (idx + mBufwrite < aSamplesToRead)
-		{
-			setphone(&mBank0, *mS, mPitch);
+  VizsnInstance::VizsnInstance(Vizsn* aParent) {
+    mParent           = aParent;
+    mPtr              = 0;
+    mCurrentVoiceType = 6;
+    memset(mEchobuf, 0, 1024 * sizeof(int));
+    mPitch    = 800;
+    mS        = mParent->mText;
+    mBufwrite = 0;
+    mBufread  = 0;
+    mA        = 0;
+    mB        = 100;
+    mOrgv     = -1;
+    mGlotlast = 0;
+    mNper     = 0;
+    mNmod     = 0;
+    mNopen    = 0;
+    memset(mBuf, 0, sizeof(float) * 2048);
+  }
 
-			if (*mS == P_END)
-			{
-				mBuf[mBufwrite] = 0;
-				mBufwrite++;
-				SOLOUD_ASSERT(mBufwrite < 2048);
-				break;
-			}
+  VizsnInstance::~VizsnInstance() {
+  }
 
-			setphone(&mBank1, mS[1], mPitch);//pitch+=50);  -- RAISE SOUND
+  unsigned int VizsnInstance::getAudio(float* aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/) {
+    unsigned int idx = 0;
+    int          i, j;
+    if (mBufwrite > mBufread) {
+      for (; mBufwrite > mBufread && idx < aSamplesToRead; mBufread++) {
+        aBuffer[idx] = mBuf[mBufread];
+        idx++;
+      }
+    }
+    if (idx == aSamplesToRead)
+      return aSamplesToRead;
+    mBufwrite = mBufread = 0;
+    while (idx + mBufwrite < aSamplesToRead) {
+      setphone(&mBank0, *mS, mPitch);
 
-			slidePrepare(50);
+      if (*mS == P_END) {
+        mBuf[mBufwrite] = 0;
+        mBufwrite++;
+        assert(mBufwrite < 2048);
+        break;
+      }
 
-			mNper = 0;
+      setphone(&mBank1, mS[1], mPitch); //pitch+=50);  -- RAISE SOUND
 
-			for (i = plosive(*mS) ? 100 : 300; i; i--)
-			{
-				mBuf[mBufwrite] = genwave();
-				mBufwrite++;
-				SOLOUD_ASSERT(mBufwrite < 2048);
-			}
+      slidePrepare(50);
 
-			if (!plosive(mS[1]))
-			{
-				for (i = 50; i; i--)
-				{
-					for (j = 10; j; j--)
-					{
-						mBuf[mBufwrite] = genwave();
-						mBufwrite++;
-						SOLOUD_ASSERT(mBufwrite < 2048);
-					}
-					slideTick();
-				}
-			}
-			else
-			{
-				for (i = 50; i; i--)
-				{
-					for (j = 3; j; j--)
-					{
-						mBuf[mBufwrite] = genwave();
-						mBufwrite++;
-						SOLOUD_ASSERT(mBufwrite < 2048);
-					}
-				}
-			}
+      mNper = 0;
 
-			mS++;
+      for (i = plosive(*mS) ? 100 : 300; i; i--) {
+        mBuf[mBufwrite] = genwave();
+        mBufwrite++;
+        assert(mBufwrite < 2048);
+      }
 
-			memcpy(&mBank0, &mBank1, sizeof(VizsnBank));
-		}
-		for (; idx < aSamplesToRead; idx++)
-		{
-			aBuffer[idx] = mBuf[mBufread];
-			mBufread++;
-		}
-		return aSamplesToRead;
-	}
+      if (!plosive(mS[1])) {
+        for (i = 50; i; i--) {
+          for (j = 10; j; j--) {
+            mBuf[mBufwrite] = genwave();
+            mBufwrite++;
+            assert(mBufwrite < 2048);
+          }
+          slideTick();
+        }
+      }
+      else {
+        for (i = 50; i; i--) {
+          for (j = 3; j; j--) {
+            mBuf[mBufwrite] = genwave();
+            mBufwrite++;
+            assert(mBufwrite < 2048);
+          }
+        }
+      }
 
-	float VizsnInstance::vcsrc(int aPitch, int aVoicetype)
-	{		
-		mA += aPitch;
+      mS++;
 
-		if (mOrgv != aVoicetype)
-		{
-			mOrgv = aVoicetype;
-			mA = 0;
-			mB = 100;
-		}
+      memcpy(&mBank0, &mBank1, sizeof(VizsnBank));
+    }
+    for (; idx < aSamplesToRead; idx++) {
+      aBuffer[idx] = mBuf[mBufread];
+      mBufread++;
+    }
+    return aSamplesToRead;
+  }
 
-		switch (aVoicetype)
-		{
-		case 0:	return (mA & (256 + 128 + 32)) * 5 * 0.0002f;
-		case 1:	return (float)(sin(mA * 0.0002) * cos(mA * 0.0003) * 0.2f + ((rand() % 200 - 100) / 300.0f)); // ilmava
-		case 2: return (float)tan(mA*0.00002)*0.01f; // burpy
-		case 3: return ((mA & 65535) > 32768 ? 65535 : 0) * 0.00001f; // square wave
-		case 4: return (float)mA * (float)mA * 0.0000000002f; // kuisku
-		case 5:	mA += 3; mB++; return ((mA & 255) > ((mB >> 2) & 255)) ? 0.3f : 0.0f;
-		case 7:	return ((mA >> 8) & (256 + 128)) * 0.001f; // robottipulssi
-		case 8:	return (float)(rand() % (1 + ((mA & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana
-		case 9:	return ((float)(rand() & 32767)) / 32767; // -- noise: tsaatana
-		case 6: // fallthrough
-		default: return (mA & 65535) * (0.001f / 256); /*-- sawtooth: near natural */
-		}
-	}
+  float VizsnInstance::vcsrc(int aPitch, int aVoicetype) {
+    mA += aPitch;
 
-	float VizsnInstance::noisrc()
-	{
-		return ((float)(rand() & 32767)) / 32768;
-	}
+    if (mOrgv != aVoicetype) {
+      mOrgv = aVoicetype;
+      mA    = 0;
+      mB    = 100;
+    }
 
-	float VizsnInstance::genwave()
-	{		
-		float s, o, noise, voice, glot, parglot;
-		int ob;
+    switch (aVoicetype) {
+      case 0: return (mA & (256 + 128 + 32)) * 5 * 0.0002f;
+      case 1: return (float)(sin(mA * 0.0002) * cos(mA * 0.0003) * 0.2f + ((rand() % 200 - 100) / 300.0f)); // ilmava
+      case 2: return (float)tan(mA * 0.00002) * 0.01f; // burpy
+      case 3: return ((mA & 65535) > 32768 ? 65535 : 0) * 0.00001f; // square wave
+      case 4: return (float)mA * (float)mA * 0.0000000002f; // kuisku
+      case 5: mA += 3;
+        mB++;
+        return ((mA & 255) > ((mB >> 2) & 255)) ? 0.3f : 0.0f;
+      case 7: return ((mA >> 8) & (256 + 128)) * 0.001f; // robottipulssi
+      case 8: return (float)(rand() % (1 + ((mA & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana
+      case 9: return ((float)(rand() & 32767)) / 32767; // -- noise: tsaatana
+      case 6: // fallthrough
+      default: return (mA & 65535) * (0.001f / 256); /*-- sawtooth: near natural */
+    }
+  }
 
-		noise = noisrc();
+  float VizsnInstance::noisrc() {
+    return ((float)(rand() & 32767)) / 32768;
+  }
 
-		if (mNper > mNmod)
-		{
-			noise *= 0.5f;
-		}
+  float VizsnInstance::genwave() {
+    float s, o, noise, voice, glot, parglot;
+    int   ob;
 
-		s = mBank0.frica * noise;
+    noise = noisrc();
 
-		voice = vcsrc((int)floor(mBank0.pitch), mCurrentVoiceType);
-		voice = mBank0.r[RLP].resonate(voice);
+    if (mNper > mNmod) {
+      noise *= 0.5f;
+    }
 
-		if (mNper < mNopen)
-		{
-			voice += mBank0.breth * noise;
-		}
+    s = mBank0.frica * noise;
 
-		parglot = glot = (mBank0.voice * voice) + (mBank0.aspir * noise);
+    voice = vcsrc((int)floor(mBank0.pitch), mCurrentVoiceType);
+    voice = mBank0.r[RLP].resonate(voice);
 
-		parglot = mBank0.r[RNZ].antiresonate(parglot);
-		parglot = mBank0.r[RNPC].resonate(parglot);
-		s += (parglot - mGlotlast);
-		mGlotlast = parglot;
-		o = mBank0.r[R1P].resonate(parglot);
+    if (mNper < mNopen) {
+      voice += mBank0.breth * noise;
+    }
 
-		int i;
-		for (i = R4P; i > R2P; i--)
-		{
-			o = mBank0.r[i].resonate(s) - o;
-		}
+    parglot = glot = (mBank0.voice * voice) + (mBank0.aspir * noise);
 
-		o = mBank0.r[ROUT].resonate(mBank0.bypas * s - o);
+    parglot = mBank0.r[RNZ].antiresonate(parglot);
+    parglot = mBank0.r[RNPC].resonate(parglot);
+    s += (parglot - mGlotlast);
+    mGlotlast = parglot;
+    o         = mBank0.r[R1P].resonate(parglot);
 
-		/*********/
+    int i;
+    for (i = R4P; i > R2P; i--) {
+      o = mBank0.r[i].resonate(s) - o;
+    }
 
-		ob = (int)floor(o * 400 * 256 + (mEchobuf[mPtr] / 4));
-		mEchobuf[mPtr] = ob;
-		mPtr = (mPtr + 1) & 1023;
+    o = mBank0.r[ROUT].resonate(mBank0.bypas * s - o);
 
-		ob = (ob >> 8) + 128;
+    /*********/
 
-		if (ob < 0)	ob = 0;
-		if (ob > 255) ob = 255;
+    ob             = (int)floor(o * 400 * 256 + (mEchobuf[mPtr] / 4));
+    mEchobuf[mPtr] = ob;
+    mPtr           = (mPtr + 1) & 1023;
 
-		mNper++;
+    ob = (ob >> 8) + 128;
 
-		return ob * (1.0f / 255.0f);
-	}
+    if (ob < 0)
+      ob = 0;
+    if (ob > 255)
+      ob = 255;
 
-	void VizsnInstance::setphone(VizsnBank *aB, char aP, float /*aPitch*/)
-	{
-		int i;
-		aB->frica = aB->aspir = aB->bypas = aB->breth = aB->voice = 0;
-		aB->pitch = mPitch;
+    mNper++;
 
-		if (aP < 0)
-		{
-			for (i = 0; i < 10; i++)
-			{
-				aB->r[i].p1 = aB->r[i].p2 = aB->r[i].a = aB->r[i].b = aB->r[i].c = 0;
-			}
-		}
-		else
-		{
-			if (aP < 8)
-			{
-				/* vokaali */
-				VizsnResonator *r = aB->r;
-				const float *s = vowtab[aP][0];
+    return ob * (1.0f / 255.0f);
+  }
 
-				r[R1P].c = -0.95f; r[R2P].c = -0.93f; r[R3P].c = -0.88f; r[R4P].c = -0.67f;
-				r[RLP].a = 0.31f;  r[RLP].b = 1.35f;  r[RLP].c = -0.67f;
-				r[RNZ].a = 22.0f;  r[RNZ].b = -42.0f; r[RNZ].c = 21.0f;
-				r[RNPC].a = 0.04f; r[RNPC].b = 1.87f; r[RNPC].c = -0.92f;
-				r[ROUT].a = 1.16f; r[ROUT].b = 0.08f; r[ROUT].c = -0.02f;
+  void VizsnInstance::setphone(VizsnBank* aB, char aP, float /*aPitch*/) {
+    int i;
+    aB->frica = aB->aspir = aB->bypas = aB->breth = aB->voice = 0;
+    aB->pitch = mPitch;
 
-				r += R1P;
+    if (aP < 0) {
+      for (i = 0; i < 10; i++) {
+        aB->r[i].p1 = aB->r[i].p2 = aB->r[i].a = aB->r[i].b = aB->r[i].c = 0;
+      }
+    }
+    else {
+      if (aP < 8) {
+        /* vokaali */
+        VizsnResonator* r = aB->r;
+        const float*    s = vowtab[aP][0];
 
-				for (i = 4; i; i--)
-				{
-					r->a = *s++;
-					r->b = *s++;
-					r++;
-				}
+        r[R1P].c  = -0.95f;
+        r[R2P].c  = -0.93f;
+        r[R3P].c  = -0.88f;
+        r[R4P].c  = -0.67f;
+        r[RLP].a  = 0.31f;
+        r[RLP].b  = 1.35f;
+        r[RLP].c  = -0.67f;
+        r[RNZ].a  = 22.0f;
+        r[RNZ].b  = -42.0f;
+        r[RNZ].c  = 21.0f;
+        r[RNPC].a = 0.04f;
+        r[RNPC].b = 1.87f;
+        r[RNPC].c = -0.92f;
+        r[ROUT].a = 1.16f;
+        r[ROUT].b = 0.08f;
+        r[ROUT].c = -0.02f;
 
-				aB->voice = 0.8f;
-			}
-			else
-			{
-				/* v */
-				const float *v = voo[aP - 8];
+        r += R1P;
 
-				/*aB->voice = *v++; */ v++;
-				aB->aspir = *v++;
-				aB->frica = *v++;
-				aB->bypas = *v++;
-				/*aB->breth = *v++; */ v++;
+        for (i = 4; i; i--) {
+          r->a = *s++;
+          r->b = *s++;
+          r++;
+        }
 
-				int j;
-				for (j = 0; j < 10; j++)
-				{
-					aB->r[j].a = *v++;
-					aB->r[j].b = *v++;
-					aB->r[j].c = *v++;
-				}
+        aB->voice = 0.8f;
+      }
+      else {
+        /* v */
+        const float* v = voo[aP - 8];
 
-				aB->voice = 0.8f;
+        /*aB->voice = *v++; */
+        v++;
+        aB->aspir = *v++;
+        aB->frica = *v++;
+        aB->bypas = *v++;
+        /*aB->breth = *v++; */
+        v++;
 
-				aB->breth = 0.18f;
-			}
-		}
-	}
+        int j;
+        for (j = 0; j < 10; j++) {
+          aB->r[j].a = *v++;
+          aB->r[j].b = *v++;
+          aB->r[j].c = *v++;
+        }
 
-	void VizsnInstance::slidePrepare(int aNumtix)
-	{
-		int i;
+        aB->voice = 0.8f;
 
-		for (i = 0; i < 10; i++)
-		{
-			mBank0to1.r[i].a = (mBank1.r[i].a - mBank0.r[i].a) / aNumtix;
-			mBank0to1.r[i].b = (mBank1.r[i].b - mBank0.r[i].b) / aNumtix;
-			mBank0to1.r[i].c = (mBank1.r[i].c - mBank0.r[i].c) / aNumtix;
-		}
+        aB->breth = 0.18f;
+      }
+    }
+  }
 
-		mBank0to1.pitch = (mBank1.pitch - mBank0.pitch) / aNumtix;
-	}
+  void VizsnInstance::slidePrepare(int aNumtix) {
+    int i;
 
-	void VizsnInstance::slideTick()
-	{
-		int i;
+    for (i = 0; i < 10; i++) {
+      mBank0to1.r[i].a = (mBank1.r[i].a - mBank0.r[i].a) / aNumtix;
+      mBank0to1.r[i].b = (mBank1.r[i].b - mBank0.r[i].b) / aNumtix;
+      mBank0to1.r[i].c = (mBank1.r[i].c - mBank0.r[i].c) / aNumtix;
+    }
 
-		for (i = 0; i < 10; i++)
-		{
-			mBank0.r[i].a += mBank0to1.r[i].a;
-			mBank0.r[i].b += mBank0to1.r[i].b;
-			mBank0.r[i].c += mBank0to1.r[i].c;
-		}
+    mBank0to1.pitch = (mBank1.pitch - mBank0.pitch) / aNumtix;
+  }
 
-		mBank0.pitch += mBank0to1.pitch;
-	}
+  void VizsnInstance::slideTick() {
+    int i;
 
-	bool VizsnInstance::hasEnded()
-	{
-		return *mS == P_END;
-	}
+    for (i = 0; i < 10; i++) {
+      mBank0.r[i].a += mBank0to1.r[i].a;
+      mBank0.r[i].b += mBank0to1.r[i].b;
+      mBank0.r[i].c += mBank0to1.r[i].c;
+    }
 
-	Vizsn::Vizsn()
-	{
-		mBaseSamplerate = 8000;
-		mText = 0;
-	}
+    mBank0.pitch += mBank0to1.pitch;
+  }
 
-	Vizsn::~Vizsn()
-	{
-		stop();
-	}
+  bool VizsnInstance::hasEnded() {
+    return *mS == P_END;
+  }
 
-	AudioSourceInstance * Vizsn::createInstance()
-	{
-		return new VizsnInstance(this);
-	}
+  Vizsn::Vizsn() {
+    mBaseSamplerate = 8000;
+    mText           = 0;
+  }
 
-	void Vizsn::setText(char *aText)
-	{
-		if (!aText)
-			return;
-		stop();
-		delete[] mText;
-		int len = (int)strlen(aText);
-		mText = new char[len + 3];
-		memcpy(mText+1, aText, len);
-		mText[0] = P_CLR;
-		int i;
-		for (i = 0; i < len; i++)
-		{
-			int c = mText[i + 1];
-			if (c == '\x84') c = '{'; // ä
-			if (c == '\x94') c = '|'; // ö
-			if (c >= 'a' && c <= '|')
-			{
-				mText[i + 1] = keyz[c - 'a'];
-			}
-			else
-			{
-				mText[i + 1] = P_CLR;
-			}
-		}
-		mText[len + 1] = P_END;
-		mText[len + 2] = 0;
-	}
+  Vizsn::~Vizsn() {
+    stop();
+  }
+
+  AudioSourceInstance* Vizsn::createInstance() {
+    return new VizsnInstance(this);
+  }
+
+  void Vizsn::setText(char* aText) {
+    if (!aText)
+      return;
+    stop();
+    delete[] mText;
+    int len = (int)strlen(aText);
+    mText   = new char[len + 3];
+    memcpy(mText + 1, aText, len);
+    mText[0] = P_CLR;
+    int i;
+    for (i = 0; i < len; i++) {
+      int c = mText[i + 1];
+      if (c == '\x84')
+        c = '{'; // ä
+      if (c == '\x94')
+        c = '|'; // ö
+      if (c >= 'a' && c <= '|') {
+        mText[i + 1] = keyz[c - 'a'];
+      }
+      else {
+        mText[i + 1] = P_CLR;
+      }
+    }
+    mText[len + 1] = P_END;
+    mText[len + 2] = 0;
+  }
 
 };
