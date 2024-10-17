@@ -38,6 +38,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install prerequisites
+      if: ${{ !contains(matrix.os, 'windows') }}
+      run: |
+        apt update -y
+        apt upgrade -y
+        apt install libasound2-dev
+
     - name: Set reusable strings
       id: strings
       shell: bash
