@@ -59,15 +59,10 @@ public:
         FREQ
     };
 
+    FlangerFilter();
+
     float           mDelay;
     float           mFreq;
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
-    FlangerFilter();
-    void setParams(float aDelay, float aFreq);
 };
 } // namespace SoLoud

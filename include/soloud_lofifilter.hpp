@@ -73,11 +73,6 @@ public:
     float               mSampleRate;
     float               mBitdepth;
     LofiFilterInstance* createInstance() override;
-    int                 getParamCount() override;
-    const char*         getParamName(unsigned int aParamIndex) override;
-    unsigned int        getParamType(unsigned int aParamIndex) override;
-    float               getParamMax(unsigned int aParamIndex) override;
-    float               getParamMin(unsigned int aParamIndex) override;
     LofiFilter();
     void setParams(float aSampleRate, float aBitdepth);
     ~LofiFilter() override;

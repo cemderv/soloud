@@ -42,7 +42,7 @@ class RobotizeFilterInstance : public FilterInstance
 
     RobotizeFilter* mParent;
 
-  public:
+public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
@@ -54,7 +54,7 @@ class RobotizeFilterInstance : public FilterInstance
 
 class RobotizeFilter : public Filter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
         WET = 0,
@@ -64,11 +64,6 @@ class RobotizeFilter : public Filter
 
     float           mFreq;
     int             mWave;
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
     void            setParams(float aFreq, int aWaveform);
     FilterInstance* createInstance() override;
     RobotizeFilter();

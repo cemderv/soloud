@@ -74,35 +74,6 @@ WaveShaperFilter::WaveShaperFilter()
     mAmount = 0.0f;
 }
 
-int WaveShaperFilter::getParamCount()
-{
-    return 2;
-}
-
-const char* WaveShaperFilter::getParamName(unsigned int aParamIndex)
-{
-    if (aParamIndex == 1)
-        return "Amount";
-    return "Wet";
-}
-
-unsigned int WaveShaperFilter::getParamType(unsigned int aParamIndex)
-{
-    return FLOAT_PARAM;
-}
-
-float WaveShaperFilter::getParamMax(unsigned int aParamIndex)
-{
-    return 1;
-}
-
-float WaveShaperFilter::getParamMin(unsigned int aParamIndex)
-{
-    if (aParamIndex == AMOUNT)
-        return -1;
-    return 0;
-}
-
 WaveShaperFilter::~WaveShaperFilter()
 {
 }

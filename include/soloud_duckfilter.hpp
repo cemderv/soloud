@@ -32,10 +32,6 @@ class DuckFilter;
 
 class DuckFilterInstance : public FilterInstance
 {
-    handle  mListenTo;
-    Soloud* mSoloud;
-    float   mCurrentLevel;
-
 public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
@@ -43,8 +39,15 @@ public:
                 unsigned int aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
+
     ~DuckFilterInstance() override;
+
     explicit DuckFilterInstance(DuckFilter* aParent);
+
+private:
+    handle  mListenTo;
+    Soloud* mSoloud;
+    float   mCurrentLevel;
 };
 
 class DuckFilter : public Filter
@@ -58,22 +61,12 @@ public:
         LEVEL
     };
 
-    Soloud*         mSoloud;
-    float           mOnRamp;
-    float           mOffRamp;
-    float           mLevel;
-    handle          mListenTo;
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
-    DuckFilter();
-    void setParams(Soloud* aSoloud,
-                   handle  aListenTo,
-                   float   aOnRamp  = 0.1f,
-                   float   aOffRamp = 0.5f,
-                   float   aLevel   = 0.1f);
+
+    Soloud* mSoloud   = nullptr;
+    float   mOnRamp   = 0.1f;
+    float   mOffRamp  = 0.5f;
+    float   mLevel    = 0.5f;
+    handle  mListenTo = 0;
 };
 } // namespace SoLoud

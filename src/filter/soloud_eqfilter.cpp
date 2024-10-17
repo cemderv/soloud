@@ -80,56 +80,9 @@ void EqFilterInstance::fftFilterChannel(float*       aFFTBuffer,
     magPhase2Comp(aFFTBuffer, aSamples / 2);
 }
 
-void EqFilter::setParam(unsigned int aBand, float aVolume)
-{
-    assert(aBand>=BAND1 && aBand <= BAND8);
-    assert(aVolume >= getParamMin(BAND1) && aVolume <= getParamMax(BAND1));
-
-    mVolume.at(aBand - BAND1) = aVolume;
-}
-
-int EqFilter::getParamCount()
-{
-    return 9;
-}
-
-const char* EqFilter::getParamName(unsigned int aParamIndex)
-{
-    switch (aParamIndex)
-    {
-        case BAND1: return "Band 1";
-        case BAND2: return "Band 2";
-        case BAND3: return "Band 3";
-        case BAND4: return "Band 4";
-        case BAND5: return "Band 5";
-        case BAND6: return "Band 6";
-        case BAND7: return "Band 7";
-        case BAND8: return "Band 8";
-    }
-    return "Wet";
-}
-
-unsigned int EqFilter::getParamType(unsigned int aParamIndex)
-{
-    return FLOAT_PARAM;
-}
-
-float EqFilter::getParamMax(unsigned int aParamIndex)
-{
-    if (aParamIndex == 0)
-        return 1;
-    return 4;
-}
-
-float EqFilter::getParamMin(unsigned int aParamIndex)
-{
-    return 0;
-}
-
 EqFilter::EqFilter()
 {
-    for (int i     = 0; i < 8; i++)
-        mVolume[i] = 1;
+    std::fill(mVolume.begin(), mVolume.end(), 1.0f);
 }
 
 FilterInstance* EqFilter::createInstance()

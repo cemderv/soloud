@@ -60,10 +60,5 @@ public:
     void                      setParams(float aAmount);
     WaveShaperFilter();
     ~WaveShaperFilter() override;
-    int          getParamCount() override;
-    const char*  getParamName(unsigned int aParamIndex) override;
-    unsigned int getParamType(unsigned int aParamIndex) override;
-    float        getParamMax(unsigned int aParamIndex) override;
-    float        getParamMin(unsigned int aParamIndex) override;
 };
 } // namespace SoLoud

@@ -89,58 +89,6 @@ EchoFilterInstance::~EchoFilterInstance()
     delete[] mBuffer;
 }
 
-EchoFilter::EchoFilter()
-{
-    mDelay  = 0.3f;
-    mDecay  = 0.7f;
-    mFilter = 0.0f;
-}
-
-void EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
-{
-    assert(aDelay>0.0f);
-    assert(aDecay>0.0f);
-    assert(aFilter>=0.0f);
-    assert(aFilter<1.0f);
-
-    mDecay  = aDecay;
-    mDelay  = aDelay;
-    mFilter = aFilter;
-}
-
-int EchoFilter::getParamCount()
-{
-    return 4;
-}
-
-const char* EchoFilter::getParamName(unsigned int aParamIndex)
-{
-    if (aParamIndex > 3)
-        return 0;
-    const char* names[4] = {"Wet", "Delay", "Decay", "Filter"};
-    return names[aParamIndex];
-}
-
-unsigned int EchoFilter::getParamType(unsigned int aParamIndex)
-{
-    return FLOAT_PARAM;
-}
-
-float EchoFilter::getParamMax(unsigned int aParamIndex)
-{
-    switch (aParamIndex)
-    {
-        case DELAY: return mDelay;
-        default: break;
-    }
-    return 1;
-}
-
-float EchoFilter::getParamMin(unsigned int aParamIndex)
-{
-    return 0;
-}
-
 FilterInstance* EchoFilter::createInstance()
 {
     return new EchoFilterInstance(this);

@@ -57,7 +57,7 @@ class BiquadResonantFilterInstance : public FilterInstance
     BiquadResonantFilter* mParent;
     void                  calcBQRParams();
 
-  public:
+public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
@@ -70,10 +70,10 @@ class BiquadResonantFilterInstance : public FilterInstance
 
 class BiquadResonantFilter : public Filter
 {
-  public:
+public:
     enum FILTERTYPE
     {
-        LOWPASS  = 0,
+        LOWPASS = 0,
         HIGHPASS = 1,
         BANDPASS = 2
     };
@@ -86,18 +86,10 @@ class BiquadResonantFilter : public Filter
         RESONANCE
     };
 
-    int          mFilterType;
-    float        mFrequency;
-    float        mResonance;
-    int          getParamCount() override;
-    const char*  getParamName(unsigned int aParamIndex) override;
-    unsigned int getParamType(unsigned int aParamIndex) override;
-    float        getParamMax(unsigned int aParamIndex) override;
-    float        getParamMin(unsigned int aParamIndex) override;
+    FilterInstance* createInstance() override;
 
-    BiquadResonantFilterInstance* createInstance() override;
-    BiquadResonantFilter();
-    void setParams(int aType, float aFrequency, float aResonance);
-    ~BiquadResonantFilter() override;
+    int   mFilterType = LOWPASS;
+    float mFrequency  = 1000.0f;
+    float mResonance  = 2.0f;
 };
 } // namespace SoLoud

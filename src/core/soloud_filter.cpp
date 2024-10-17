@@ -27,48 +27,6 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-
-int Filter::getParamCount()
-{
-    return 1; // there's always WET
-}
-
-const char* Filter::getParamName(unsigned int aParamIndex)
-{
-    return "Wet";
-}
-
-unsigned int Filter::getParamType(unsigned int aParamIndex)
-{
-    return Filter::FLOAT_PARAM;
-}
-
-float Filter::getParamMax(unsigned int aParamIndex)
-{
-    return 1;
-}
-
-float Filter::getParamMin(unsigned int aParamIndex)
-{
-    return 0;
-}
-
-Filter::Filter()
-{
-}
-
-Filter::~Filter()
-{
-}
-
-FilterInstance::FilterInstance()
-{
-    mNumParams    = 0;
-    mParamChanged = 0;
-    mParam        = 0;
-    mParamFader   = 0;
-}
-
 void FilterInstance::initParams(int aNumParams)
 {
     mNumParams = aNumParams;
@@ -126,7 +84,11 @@ void FilterInstance::fadeFilterParameter(unsigned int aAttributeId,
 }
 
 void FilterInstance::oscillateFilterParameter(
-    unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
+    unsigned int aAttributeId,
+    float        aFrom,
+    float        aTo,
+    double       aTime,
+    double       aStartTime)
 {
     if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
         return;

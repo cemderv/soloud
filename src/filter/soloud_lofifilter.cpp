@@ -88,45 +88,6 @@ LofiFilter::~LofiFilter()
 {
 }
 
-int LofiFilter::getParamCount()
-{
-    return 3;
-}
-
-const char* LofiFilter::getParamName(unsigned int aParamIndex)
-{
-    if (aParamIndex > 2)
-        return nullptr;
-
-    const char* names[3] = {"Wet", "Samplerate", "Bitdepth"};
-    return names[aParamIndex];
-}
-
-unsigned int LofiFilter::getParamType(unsigned int aParamIndex)
-{
-    return FLOAT_PARAM;
-}
-
-float LofiFilter::getParamMax(unsigned int aParamIndex)
-{
-    switch (aParamIndex)
-    {
-        case SAMPLERATE: return 22000;
-        case BITDEPTH: return 16;
-    }
-    return 1;
-}
-
-float LofiFilter::getParamMin(unsigned int aParamIndex)
-{
-    switch (aParamIndex)
-    {
-        case SAMPLERATE: return 100;
-        case BITDEPTH: return 0.5;
-    }
-    return 0;
-}
-
 LofiFilterInstance* LofiFilter::createInstance()
 {
     return new LofiFilterInstance(this);

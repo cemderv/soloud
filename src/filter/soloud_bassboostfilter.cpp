@@ -49,46 +49,6 @@ void BassboostFilterInstance::fftFilterChannel(float* aFFTBuffer,
     magPhase2Comp(aFFTBuffer, 2);
 }
 
-void BassboostFilter::setParams(float aBoost)
-{
-    assert(aBoost >= 0.0f);
-    mBoost = aBoost;
-}
-
-int BassboostFilter::getParamCount()
-{
-    return 2;
-}
-
-const char* BassboostFilter::getParamName(unsigned int aParamIndex)
-{
-    if (aParamIndex == 1)
-        return "Boost";
-    return "Wet";
-}
-
-unsigned int BassboostFilter::getParamType(unsigned int aParamIndex)
-{
-    return FLOAT_PARAM;
-}
-
-float BassboostFilter::getParamMax(unsigned int aParamIndex)
-{
-    if (aParamIndex == 1)
-        return 10;
-    return 1;
-}
-
-float BassboostFilter::getParamMin(unsigned int aParamIndex)
-{
-    return 0;
-}
-
-BassboostFilter::BassboostFilter()
-{
-    mBoost = 2;
-}
-
 FilterInstance* BassboostFilter::createInstance()
 {
     return new BassboostFilterInstance(this);

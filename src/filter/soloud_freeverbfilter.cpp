@@ -391,8 +391,6 @@ void Revmodel::update()
 {
     // Recalculate internal values after parameter change
 
-    int i;
-
     mWet1 = mWet * (mWidth / 2 + 0.5f);
     mWet2 = mWet * ((1 - mWidth) / 2);
 
@@ -409,13 +407,13 @@ void Revmodel::update()
         mGain      = gFixedgain;
     }
 
-    for (i = 0; i < gNumcombs; i++)
+    for (int i = 0; i < gNumcombs; i++)
     {
         mCombL[i].setfeedback(mRoomsize1);
         mCombR[i].setfeedback(mRoomsize1);
     }
 
-    for (i = 0; i < gNumcombs; i++)
+    for (int i = 0; i < gNumcombs; i++)
     {
         mCombL[i].setdamp(mDamp1);
         mCombR[i].setdamp(mDamp1);
@@ -500,59 +498,6 @@ FreeverbFilterInstance::~FreeverbFilterInstance()
 }
 
 FreeverbFilter::FreeverbFilter()
-{
-    setParams(0, 0.5, 0.5, 1);
-}
-
-void FreeverbFilter::setParams(float aFreeze, float aRoomSize, float aDamp, float aWidth)
-{
-    assert(aFreeze>=0.0f && aFreeze<=1.0f);
-    assert(aRoomSize>0);
-    assert(aDamp>=0);
-    assert(aWidth>0);
-
-    mMode     = aFreeze;
-    mRoomSize = aRoomSize;
-    mDamp     = aDamp;
-    mWidth    = aWidth;
-}
-
-int FreeverbFilter::getParamCount()
-{
-    return 5;
-}
-
-const char* FreeverbFilter::getParamName(unsigned int aParamIndex)
-{
-    switch (aParamIndex)
-    {
-        case FREEZE: return "Freeze";
-        case ROOMSIZE: return "Room size";
-        case DAMP: return "Damp";
-        case WIDTH: return "Width";
-    }
-    return "Wet";
-}
-
-unsigned int FreeverbFilter::getParamType(unsigned int aParamIndex)
-{
-    if (aParamIndex == FREEZE)
-        return BOOL_PARAM;
-    return FLOAT_PARAM;
-}
-
-float FreeverbFilter::getParamMax(unsigned int aParamIndex)
-{
-    return 1;
-}
-
-float FreeverbFilter::getParamMin(unsigned int aParamIndex)
-{
-    return 0;
-}
-
-
-FreeverbFilter::~FreeverbFilter()
 {
 }
 

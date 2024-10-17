@@ -35,13 +35,13 @@ class BassboostFilterInstance : public FFTFilterInstance
 {
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BOOST = 1
     };
 
     BassboostFilter* mParent;
 
-  public:
+public:
     void fftFilterChannel(float*       aFFTBuffer,
                           unsigned int aSamples,
                           float        aSamplerate,
@@ -53,21 +53,15 @@ class BassboostFilterInstance : public FFTFilterInstance
 
 class BassboostFilter : public FFTFilter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BOOST = 1
     };
 
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
-    float           mBoost;
-    void            setParams(float aBoost);
     FilterInstance* createInstance() override;
-    BassboostFilter();
+
+    float mBoost = 2.0f;
 };
 } // namespace SoLoud

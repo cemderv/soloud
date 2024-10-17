@@ -72,19 +72,13 @@ public:
         WIDTH
     };
 
-    int          getParamCount() override;
-    const char*  getParamName(unsigned int aParamIndex) override;
-    unsigned int getParamType(unsigned int aParamIndex) override;
-    float        getParamMax(unsigned int aParamIndex) override;
-    float        getParamMin(unsigned int aParamIndex) override;
-
-    float                   mMode;
-    float                   mRoomSize;
-    float                   mDamp;
-    float                   mWidth;
-    FreeverbFilterInstance* createInstance() override;
     FreeverbFilter();
-    void setParams(float aMode, float aRoomSize, float aDamp, float aWidth);
-    ~FreeverbFilter() override;
+
+    FreeverbFilterInstance* createInstance() override;
+
+    float mMode     = 0.0f;
+    float mRoomSize = 0.5f;
+    float mDamp     = 0.5f;
+    float mWidth    = 1.0f;
 };
 } // namespace SoLoud

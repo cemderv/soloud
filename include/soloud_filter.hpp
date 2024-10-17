@@ -30,56 +30,59 @@ class Fader;
 
 class FilterInstance
 {
-  public:
-    unsigned int mNumParams;
-    unsigned int mParamChanged;
-    float*       mParam;
-    Fader*       mParamFader;
+public:
+    FilterInstance() = default;
 
-    FilterInstance();
-    virtual void  initParams(int aNumParams);
-    virtual void  updateParams(time_t aTime);
-    virtual void  filter(float*       aBuffer,
-                         unsigned int aSamples,
-                         unsigned int aBufferSize,
-                         unsigned int aChannels,
-                         float        aSamplerate,
-                         time_t       aTime);
-    virtual void  filterChannel(float*       aBuffer,
-                                unsigned int aSamples,
-                                float        aSamplerate,
-                                time_t       aTime,
-                                unsigned int aChannel,
-                                unsigned int aChannels);
+    virtual void initParams(int aNumParams);
+
+    virtual void updateParams(time_t aTime);
+
+    virtual void filter(float*       aBuffer,
+                        unsigned int aSamples,
+                        unsigned int aBufferSize,
+                        unsigned int aChannels,
+                        float        aSamplerate,
+                        time_t       aTime);
+
+    virtual void filterChannel(float*       aBuffer,
+                               unsigned int aSamples,
+                               float        aSamplerate,
+                               time_t       aTime,
+                               unsigned int aChannel,
+                               unsigned int aChannels);
+
     virtual float getFilterParameter(unsigned int aAttributeId);
-    virtual void  setFilterParameter(unsigned int aAttributeId, float aValue);
-    virtual void  fadeFilterParameter(unsigned int aAttributeId,
-                                      float        aTo,
-                                      time_t       aTime,
-                                      time_t       aStartTime);
-    virtual void  oscillateFilterParameter(
-         unsigned int aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
+
+    virtual void setFilterParameter(unsigned int aAttributeId, float aValue);
+
+    virtual void fadeFilterParameter(unsigned int aAttributeId,
+                                     float        aTo,
+                                     time_t       aTime,
+                                     time_t       aStartTime);
+
+    virtual void oscillateFilterParameter(
+        unsigned int aAttributeId,
+        float        aFrom,
+        float        aTo,
+        time_t       aTime,
+        time_t       aStartTime);
+
     virtual ~FilterInstance();
+
+protected:
+    unsigned int mNumParams    = 0;
+    unsigned int mParamChanged = 0;
+    float*       mParam        = nullptr;
+    Fader*       mParamFader   = nullptr;
 };
 
 class Filter
 {
-  public:
-    enum PARAMTYPE
-    {
-        FLOAT_PARAM = 0,
-        INT_PARAM,
-        BOOL_PARAM
-    };
+public:
+    Filter() = default;
 
-    Filter();
-    virtual int          getParamCount();
-    virtual const char*  getParamName(unsigned int aParamIndex);
-    virtual unsigned int getParamType(unsigned int aParamIndex);
-    virtual float        getParamMax(unsigned int aParamIndex);
-    virtual float        getParamMin(unsigned int aParamIndex);
+    virtual ~Filter() noexcept = default;
 
     virtual FilterInstance* createInstance() = 0;
-    virtual ~Filter();
 };
 }; // namespace SoLoud

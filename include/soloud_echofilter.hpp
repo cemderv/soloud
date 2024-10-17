@@ -59,16 +59,10 @@ public:
         FILTER
     };
 
-    float           mDelay;
-    float           mDecay;
-    float           mFilter;
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
-    EchoFilter();
-    void setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
+
+    float mDelay  = 0.3f;
+    float mDecay  = 0.7f;
+    float mFilter = 0.0f;
 };
 } // namespace SoLoud

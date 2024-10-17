@@ -67,42 +67,6 @@ void RobotizeFilter::setParams(float aFreq, int aWaveform)
     mWave = aWaveform;
 }
 
-int RobotizeFilter::getParamCount()
-{
-    return 3;
-}
-
-const char* RobotizeFilter::getParamName(unsigned int aParamIndex)
-{
-    if (aParamIndex > 2)
-        return 0;
-    const char* names[3] = {"Wet", "Frequency", "Waveform"};
-    return names[aParamIndex];
-}
-
-unsigned int RobotizeFilter::getParamType(unsigned int aParamIndex)
-{
-    if (aParamIndex == WAVE)
-        return INT_PARAM;
-    return FLOAT_PARAM;
-}
-
-float RobotizeFilter::getParamMax(unsigned int aParamIndex)
-{
-    if (aParamIndex == WAVE)
-        return 6;
-    if (aParamIndex == FREQ)
-        return 100;
-    return 1;
-}
-
-float RobotizeFilter::getParamMin(unsigned int aParamIndex)
-{
-    if (aParamIndex == FREQ)
-        return 0.1f;
-    return 0;
-}
-
 FilterInstance* RobotizeFilter::createInstance()
 {
     return new RobotizeFilterInstance(this);

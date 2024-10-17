@@ -75,14 +75,10 @@ public:
         BAND8 = 8
     };
 
-    int                  getParamCount() override;
-    const char*          getParamName(unsigned int aParamIndex) override;
-    unsigned int         getParamType(unsigned int aParamIndex) override;
-    float                getParamMax(unsigned int aParamIndex) override;
-    float                getParamMin(unsigned int aParamIndex) override;
-    std::array<float, 8> mVolume{};
-    void                 setParam(unsigned int aBand, float aVolume);
-    FilterInstance*      createInstance() override;
     EqFilter();
+
+    FilterInstance* createInstance() override;
+
+    std::array<float, 8> mVolume{};
 };
 } // namespace SoLoud
