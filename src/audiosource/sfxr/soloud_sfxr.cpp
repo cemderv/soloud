@@ -131,7 +131,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             if (env_length[1])
             {
                 env_vol = 1.0f + (float)pow(1.0f - (float)env_time / env_length[1], 1.0f) * 2.0f *
-                                     mParams.p_env_punch;
+                          mParams.p_env_punch;
             }
             else
             {
@@ -308,10 +308,10 @@ void SfxrInstance::resetSample(bool aRestart)
             fdphase = -fdphase;
         iphase = abs((int)fphase);
         ipp    = 0;
-        for (int i = 0; i < 1024; i++)
+        for (int i           = 0; i < 1024; i++)
             phaser_buffer[i] = 0.0f;
 
-        for (int i = 0; i < 32; i++)
+        for (int i          = 0; i < 32; i++)
             noise_buffer[i] = frnd(2.0f) - 1.0f;
 
         rep_time  = 0;
@@ -337,7 +337,7 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
     switch (aPresetNo)
     {
         case 0: // pickup/coin
-            mParams.p_base_freq   = 0.4f + frnd(0.5f);
+            mParams.p_base_freq = 0.4f + frnd(0.5f);
             mParams.p_env_attack  = 0.0f;
             mParams.p_env_sustain = frnd(0.1f);
             mParams.p_env_decay   = 0.1f + frnd(0.4f);
@@ -463,7 +463,7 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
                 mParams.p_hpf_freq = frnd(0.3f);
             break;
         case 5: // jump
-            mParams.wave_type     = 0;
+            mParams.wave_type = 0;
             mParams.p_duty        = frnd(0.6f);
             mParams.p_base_freq   = 0.3f + frnd(0.3f);
             mParams.p_freq_ramp   = 0.1f + frnd(0.2f);
@@ -538,15 +538,6 @@ result Sfxr::loadParamsMem(unsigned char* aMem,
     if (res != SO_NO_ERROR)
         return res;
     return loadParamsFile(&mf);
-}
-
-result Sfxr::loadParams(const char* aFilename)
-{
-    DiskFile df;
-    int      res = df.open(aFilename);
-    if (res != SO_NO_ERROR)
-        return res;
-    return loadParamsFile(&df);
 }
 
 result Sfxr::loadParamsFile(File* aFile)

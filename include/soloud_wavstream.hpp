@@ -48,33 +48,36 @@ class WavStreamInstance : public AudioSourceInstance
     WavStream*   mParent;
     unsigned int mOffset;
     File*        mFile;
-    union codec {
+
+    union codec
+    {
         stb_vorbis* mOgg;
         drflac*     mFlac;
         drmp3*      mMp3;
         drwav*      mWav;
     } mCodec;
+
     unsigned int mOggFrameSize;
     unsigned int mOggFrameOffset;
     float**      mOggOutputs;
 
-  public:
+public:
     WavStreamInstance(WavStream* aParent);
     virtual unsigned int getAudio(float*       aBuffer,
                                   unsigned int aSamplesToRead,
                                   unsigned int aBufferSize);
-    virtual result       seek(double aSeconds, float* mScratch, unsigned int mScratchSize);
-    virtual result       rewind();
-    virtual bool         hasEnded();
-    virtual ~WavStreamInstance();
+    virtual result seek(double aSeconds, float* mScratch, unsigned int mScratchSize);
+    virtual result rewind();
+    virtual bool   hasEnded();
+    virtual        ~WavStreamInstance();
 };
 
 enum WAVSTREAM_FILETYPE
 {
-    WAVSTREAM_WAV  = 0,
-    WAVSTREAM_OGG  = 1,
+    WAVSTREAM_WAV = 0,
+    WAVSTREAM_OGG = 1,
     WAVSTREAM_FLAC = 2,
-    WAVSTREAM_MP3  = 3
+    WAVSTREAM_MP3 = 3
 };
 
 class WavStream : public AudioSource
@@ -84,27 +87,22 @@ class WavStream : public AudioSource
     result loadflac(File* fp);
     result loadmp3(File* fp);
 
-  public:
+public:
     int          mFiletype;
-    char*        mFilename;
     File*        mMemFile;
     File*        mStreamFile;
     unsigned int mSampleCount;
 
     WavStream();
     virtual ~WavStream();
-    result                       load(const char* aFilename);
-    result                       loadMem(const unsigned char* aData,
-                                         unsigned int         aDataLen,
-                                         bool                 aCopy          = false,
-                                         bool                 aTakeOwnership = true);
-    result                       loadToMem(const char* aFilename);
-    result                       loadFile(File* aFile);
-    result                       loadFileToMem(File* aFile);
+    result  loadMem(const unsigned char* aData,
+                   unsigned int          aDataLen,
+                   bool                  aCopy          = false,
+                   bool                  aTakeOwnership = true);
     virtual AudioSourceInstance* createInstance();
     time                         getLength();
 
-  public:
+public:
     result parse(File* aFile);
 };
 }; // namespace SoLoud

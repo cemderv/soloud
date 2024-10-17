@@ -22,10 +22,11 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_wavstream.hpp"
 #include "dr_flac.h"
 #include "dr_mp3.h"
 #include "dr_wav.h"
+
+#include "soloud_wavstream.hpp"
 #include "soloud.hpp"
 #include "soloud_error.hpp"
 #include "soloud_file.hpp"
@@ -92,12 +93,6 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
         MemoryFile* mf = new MemoryFile();
         mFile          = mf;
         mf->openMem(aParent->mMemFile->getMemPtr(), aParent->mMemFile->length(), false, false);
-    }
-    else if (aParent->mFilename)
-    {
-        DiskFile* df = new DiskFile;
-        mFile        = df;
-        df->open(aParent->mFilename);
     }
     else if (aParent->mStreamFile)
     {
@@ -175,28 +170,24 @@ WavStreamInstance::~WavStreamInstance()
 {
     switch (mParent->mFiletype)
     {
-        case WAVSTREAM_OGG:
-            if (mCodec.mOgg)
+        case WAVSTREAM_OGG: if (mCodec.mOgg)
             {
                 stb_vorbis_close(mCodec.mOgg);
             }
             break;
-        case WAVSTREAM_FLAC:
-            if (mCodec.mFlac)
+        case WAVSTREAM_FLAC: if (mCodec.mFlac)
             {
                 drflac_close(mCodec.mFlac);
             }
             break;
-        case WAVSTREAM_MP3:
-            if (mCodec.mMp3)
+        case WAVSTREAM_MP3: if (mCodec.mMp3)
             {
                 drmp3_uninit(mCodec.mMp3);
                 delete mCodec.mMp3;
                 mCodec.mMp3 = 0;
             }
             break;
-        case WAVSTREAM_WAV:
-            if (mCodec.mWav)
+        case WAVSTREAM_WAV: if (mCodec.mWav)
             {
                 drwav_uninit(mCodec.mWav);
                 delete mCodec.mWav;
@@ -306,12 +297,12 @@ unsigned int WavStreamInstance::getAudio(float*       aBuffer,
                 mOggFrameSize   = stb_vorbis_get_frame_float(mCodec.mOgg, NULL, &mOggOutputs);
                 mOggFrameOffset = 0;
                 int b           = getOggData(mOggOutputs,
-                                   aBuffer + offset,
-                                   aSamplesToRead - offset,
-                                   aBufferSize,
-                                   mOggFrameSize,
-                                   mOggFrameOffset,
-                                   mChannels);
+                                             aBuffer + offset,
+                                             aSamplesToRead - offset,
+                                             aBufferSize,
+                                             mOggFrameSize,
+                                             mOggFrameOffset,
+                                             mChannels);
                 mOffset += b;
                 offset += b;
                 mOggFrameOffset += b;
@@ -372,26 +363,22 @@ result WavStreamInstance::rewind()
 {
     switch (mParent->mFiletype)
     {
-        case WAVSTREAM_OGG:
-            if (mCodec.mOgg)
+        case WAVSTREAM_OGG: if (mCodec.mOgg)
             {
                 stb_vorbis_seek_start(mCodec.mOgg);
             }
             break;
-        case WAVSTREAM_FLAC:
-            if (mCodec.mFlac)
+        case WAVSTREAM_FLAC: if (mCodec.mFlac)
             {
                 drflac_seek_to_pcm_frame(mCodec.mFlac, 0);
             }
             break;
-        case WAVSTREAM_MP3:
-            if (mCodec.mMp3)
+        case WAVSTREAM_MP3: if (mCodec.mMp3)
             {
                 drmp3_seek_to_pcm_frame(mCodec.mMp3, 0);
             }
             break;
-        case WAVSTREAM_WAV:
-            if (mCodec.mWav)
+        case WAVSTREAM_WAV: if (mCodec.mWav)
             {
                 drwav_seek_to_pcm_frame(mCodec.mWav, 0);
             }
@@ -413,7 +400,6 @@ bool WavStreamInstance::hasEnded()
 
 WavStream::WavStream()
 {
-    mFilename    = 0;
     mSampleCount = 0;
     mFiletype    = WAVSTREAM_WAV;
     mMemFile     = 0;
@@ -423,7 +409,6 @@ WavStream::WavStream()
 WavStream::~WavStream()
 {
     stop();
-    delete[] mFilename;
     delete mMemFile;
 }
 
@@ -521,45 +506,14 @@ result WavStream::loadmp3(File* fp)
     return SO_NO_ERROR;
 }
 
-result WavStream::load(const char* aFilename)
-{
-    delete[] mFilename;
-    delete mMemFile;
-    mMemFile     = 0;
-    mFilename    = 0;
-    mSampleCount = 0;
-    DiskFile fp;
-    int      res = fp.open(aFilename);
-    if (res != SO_NO_ERROR)
-        return res;
-
-    int len   = (int)strlen(aFilename);
-    mFilename = new char[len + 1];
-    memcpy(mFilename, aFilename, len);
-    mFilename[len] = 0;
-
-    res = parse(&fp);
-
-    if (res != SO_NO_ERROR)
-    {
-        delete[] mFilename;
-        mFilename = 0;
-        return res;
-    }
-
-    return 0;
-}
-
 result WavStream::loadMem(const unsigned char* aData,
                           unsigned int         aDataLen,
                           bool                 aCopy,
                           bool                 aTakeOwnership)
 {
-    delete[] mFilename;
     delete mMemFile;
     mStreamFile  = 0;
     mMemFile     = 0;
-    mFilename    = 0;
     mSampleCount = 0;
 
     if (aData == NULL || aDataLen == 0)
@@ -585,69 +539,6 @@ result WavStream::loadMem(const unsigned char* aData,
 
     return 0;
 }
-
-result WavStream::loadToMem(const char* aFilename)
-{
-    DiskFile df;
-    int      res = df.open(aFilename);
-    if (res == SO_NO_ERROR)
-    {
-        res = loadFileToMem(&df);
-    }
-    return res;
-}
-
-result WavStream::loadFile(File* aFile)
-{
-    delete[] mFilename;
-    delete mMemFile;
-    mStreamFile  = 0;
-    mMemFile     = 0;
-    mFilename    = 0;
-    mSampleCount = 0;
-
-    int res = parse(aFile);
-
-    if (res != SO_NO_ERROR)
-    {
-        return res;
-    }
-
-    mStreamFile = aFile;
-
-    return 0;
-}
-
-result WavStream::loadFileToMem(File* aFile)
-{
-    delete[] mFilename;
-    delete mMemFile;
-    mStreamFile  = 0;
-    mMemFile     = 0;
-    mFilename    = 0;
-    mSampleCount = 0;
-
-    MemoryFile* mf  = new MemoryFile();
-    int         res = mf->openFileToMem(aFile);
-    if (res != SO_NO_ERROR)
-    {
-        delete mf;
-        return res;
-    }
-
-    res = parse(mf);
-
-    if (res != SO_NO_ERROR)
-    {
-        delete mf;
-        return res;
-    }
-
-    mMemFile = mf;
-
-    return res;
-}
-
 
 result WavStream::parse(File* aFile)
 {

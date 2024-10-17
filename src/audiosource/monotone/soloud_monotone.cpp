@@ -31,7 +31,6 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-
 MonotoneInstance::MonotoneInstance(Monotone* aParent)
 {
     mParent      = aParent;
@@ -44,19 +43,19 @@ MonotoneInstance::MonotoneInstance(Monotone* aParent)
     int i;
     for (i = 0; i < 12; i++)
     {
-        mOutput[i].mSamplePos    = 0;
+        mOutput[i].mSamplePos = 0;
         mOutput[i].mSamplePosInc = 0;
-        mOutput[i].mEnabled     = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
-        mChannel[i].mEnabled    = i < mParent->mSong.mTotalTracks;
-        mChannel[i].mActive     = 0;
+        mOutput[i].mEnabled = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
+        mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
+        mChannel[i].mActive = 0;
         mChannel[i].mArpCounter = 0;
-        mChannel[i].mLastNote   = 0;
+        mChannel[i].mLastNote = 0;
         mChannel[i].mPortamentoToNote = 0;
-        mChannel[i].mArp              = 0;
-        mChannel[i].mVibrato          = 0;
-        mChannel[i].mVibratoIndex     = 0;
-        mChannel[i].mVibratoDepth     = 1;
-        mChannel[i].mVibratoSpeed     = 1;
+        mChannel[i].mArp = 0;
+        mChannel[i].mVibrato = 0;
+        mChannel[i].mVibratoIndex = 0;
+        mChannel[i].mVibratoDepth = 1;
+        mChannel[i].mVibratoSpeed = 1;
     }
 }
 
@@ -90,7 +89,8 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                 {
                     unsigned int d =
                         mParent->mSong
-                            .mPatternData[(pattern * 64 + mRow) * mParent->mSong.mTotalTracks + j];
+                               .mPatternData[
+                            (pattern * 64 + mRow) * mParent->mSong.mTotalTracks + j];
                     unsigned int note        = (d >> 9) & 127;
                     unsigned int effect      = (d >> 6) & 7;
                     unsigned int effectdata  = (d) & 63;
@@ -173,12 +173,12 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                         case 0x5:
                             // pattern jump
                             patternjump = effectdata;
-                            dojump      = 1;
+                            dojump = 1;
                             break;
                         case 0x6:
                             // row jump
                             rowjump = effectdata;
-                            dojump  = 1;
+                            dojump = 1;
                             break;
                         case 0x7:
                             // set speed
@@ -217,7 +217,7 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                             mParent->mNotesHz[mChannel[j].mLastNote * 8 +
                                               (mParent->mVibTable[mChannel[j].mVibratoIndex] *
                                                mChannel[j].mVibratoDepth) /
-                                                  64];
+                                              64];
                         mChannel[j].mVibratoIndex += mChannel[j].mVibratoSpeed;
                         mChannel[j].mVibratoIndex %= 32;
                     }
@@ -244,7 +244,7 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
             int gotit = 0;
             int tries = 0;
 
-            for (j = 0; j < mParent->mHardwareChannels; j++)
+            for (j                       = 0; j < mParent->mHardwareChannels; j++)
                 mOutput[j].mSamplePosInc = 0;
 
             while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
@@ -388,15 +388,6 @@ result Monotone::loadMem(const unsigned char* aMem,
     if (res != SO_NO_ERROR)
         return res;
     return loadFile(&mf);
-}
-
-result Monotone::load(const char* aFilename)
-{
-    DiskFile df;
-    int      res = df.open(aFilename);
-    if (res != SO_NO_ERROR)
-        return res;
-    return loadFile(&df);
 }
 
 result Monotone::loadFile(File* aFile)

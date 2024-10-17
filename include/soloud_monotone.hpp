@@ -70,7 +70,7 @@ class MonotoneInstance : public AudioSourceInstance
 {
     Monotone* mParent;
 
-  public:
+public:
     MonotoneChannel         mChannel[12];
     MonotoneHardwareChannel mOutput[12];
     int                     mNextChannel;
@@ -87,7 +87,7 @@ class MonotoneInstance : public AudioSourceInstance
 
 class Monotone : public AudioSource
 {
-  public:
+public:
     int          mNotesHz[800];
     int          mVibTable[32];
     int          mHardwareChannels;
@@ -96,15 +96,14 @@ class Monotone : public AudioSource
     Monotone();
     ~Monotone();
     result setParams(int aHardwareChannels, int aWaveform = Soloud::WAVE_SQUARE);
-    result load(const char* aFilename);
     result loadMem(const unsigned char* aMem,
                    unsigned int         aLength,
                    bool                 aCopy          = false,
                    bool                 aTakeOwnership = true);
-    result loadFile(File* aFile);
+    result                       loadFile(File* aFile);
     virtual AudioSourceInstance* createInstance();
 
-  public:
+public:
     void clear();
 };
 }; // namespace SoLoud

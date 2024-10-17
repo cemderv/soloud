@@ -293,18 +293,6 @@ result Wav::testAndLoadFile(MemoryFile* aReader)
     return FILE_LOAD_FAILED;
 }
 
-result Wav::load(const char* aFilename)
-{
-    if (aFilename == 0)
-        return INVALID_PARAMETER;
-    stop();
-    DiskFile dr;
-    int      res = dr.open(aFilename);
-    if (res == SO_NO_ERROR)
-        return loadFile(&dr);
-    return res;
-}
-
 result Wav::loadMem(const unsigned char* aMem,
                     unsigned int         aLength,
                     bool                 aCopy,
@@ -361,7 +349,7 @@ result Wav::loadRawWave8(unsigned char* aMem,
     mChannels       = aChannels;
     mBaseSamplerate = aSamplerate;
     unsigned int i;
-    for (i = 0; i < aLength; i++)
+    for (i       = 0; i < aLength; i++)
         mData[i] = ((signed)aMem[i] - 128) / (float)0x80;
     return SO_NO_ERROR;
 }
@@ -380,7 +368,7 @@ result Wav::loadRawWave16(short*       aMem,
     mChannels       = aChannels;
     mBaseSamplerate = aSamplerate;
     unsigned int i;
-    for (i = 0; i < aLength; i++)
+    for (i       = 0; i < aLength; i++)
         mData[i] = ((signed short)aMem[i]) / (float)0x8000;
     return SO_NO_ERROR;
 }
