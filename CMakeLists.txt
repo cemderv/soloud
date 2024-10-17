@@ -39,6 +39,7 @@ if (WIN32)
   target_compile_definitions(SoLoud PRIVATE
     -DWIN32_LEAN_AND_MEAN
     -DVC_EXTRA_LEAN
+    -D_USE_MATH_DEFINES
   )
   target_precompile_headers(SoLoud PRIVATE
     <Windows.h>
