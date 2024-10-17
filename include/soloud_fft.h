@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
-
 namespace SoLoud
 {
 	namespace FFT

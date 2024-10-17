@@ -21,10 +21,10 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include <string.h>
+#include <cstring>
 #include "soloud.h"
 #include "soloud_speech.h"
-
+#include "../src/audiosource/speech/tts.h"
 
 namespace SoLoud
 {

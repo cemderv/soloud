@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
-
 #define SOLOUD_QUEUE_MAX 32
 
 namespace SoLoud

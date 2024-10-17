@@ -22,11 +22,11 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include "soloud_monotone.h"
 #include "soloud_file.h"
+#include "soloud_misc.h"
 
 namespace SoLoud
 {

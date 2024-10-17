@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include "soloud.h"
 
 struct stb_vorbis;
