@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
+#include "soloud_error.hpp"
 
 #include <psp2/audioout.h>
 #include <psp2/kernel/threadmgr.h>

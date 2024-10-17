@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 
 #include "soloud.hpp"
+#include "soloud_error.hpp"
 
 #if !defined(WITH_SDL2_STATIC)
 

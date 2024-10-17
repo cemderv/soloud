@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
+#include "soloud_error.hpp"
 
 #if !defined(WITH_OPENSLES)
 namespace SoLoud
