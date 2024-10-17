@@ -39,36 +39,38 @@ class RobotizeFilterInstance : public FilterInstance
         FREQ,
         WAVE
     };
+
     RobotizeFilter* mParent;
 
-  public:
-    virtual void filterChannel(float*       aBuffer,
-                               unsigned int aSamples,
-                               float        aSamplerate,
-                               time         aTime,
-                               unsigned int aChannel,
-                               unsigned int aChannels);
-    RobotizeFilterInstance(RobotizeFilter* aParent);
+public:
+    void filterChannel(float*       aBuffer,
+                       unsigned int aSamples,
+                       float        aSamplerate,
+                       time         aTime,
+                       unsigned int aChannel,
+                       unsigned int aChannels) override;
+    explicit RobotizeFilterInstance(RobotizeFilter* aParent);
 };
 
 class RobotizeFilter : public Filter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
         WET = 0,
         FREQ,
         WAVE
     };
-    float                   mFreq;
-    int                     mWave;
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    void                    setParams(float aFreq, int aWaveform);
-    virtual FilterInstance* createInstance();
+
+    float           mFreq;
+    int             mWave;
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    void            setParams(float aFreq, int aWaveform);
+    FilterInstance* createInstance() override;
     RobotizeFilter();
 };
 } // namespace SoLoud

@@ -37,20 +37,20 @@ class EchoFilterInstance : public FilterInstance
     int    mBufferMaxLength;
     int    mOffset;
 
-  public:
-    virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
-                        float        aSamplerate,
-                        time         aTime);
-    virtual ~EchoFilterInstance();
-    EchoFilterInstance(EchoFilter* aParent);
+public:
+    void filter(float*       aBuffer,
+                unsigned int aSamples,
+                unsigned int aBufferSize,
+                unsigned int aChannels,
+                float        aSamplerate,
+                time         aTime) override;
+    ~EchoFilterInstance() override;
+    explicit EchoFilterInstance(EchoFilter* aParent);
 };
 
 class EchoFilter : public Filter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
         WET = 0,
@@ -58,15 +58,16 @@ class EchoFilter : public Filter
         DECAY,
         FILTER
     };
-    float                   mDelay;
-    float                   mDecay;
-    float                   mFilter;
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    virtual FilterInstance* createInstance();
+
+    float           mDelay;
+    float           mDecay;
+    float           mFilter;
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    FilterInstance* createInstance() override;
     EchoFilter();
     result setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
 };

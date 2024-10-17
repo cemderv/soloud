@@ -38,34 +38,35 @@ class FlangerFilterInstance : public FilterInstance
     unsigned int   mOffset;
     double         mIndex;
 
-  public:
-    virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
-                        float        aSamplerate,
-                        time         aTime);
-    virtual ~FlangerFilterInstance();
-    FlangerFilterInstance(FlangerFilter* aParent);
+public:
+    void filter(float*       aBuffer,
+                unsigned int aSamples,
+                unsigned int aBufferSize,
+                unsigned int aChannels,
+                float        aSamplerate,
+                time         aTime) override;
+    ~FlangerFilterInstance() override;
+    explicit FlangerFilterInstance(FlangerFilter* aParent);
 };
 
 class FlangerFilter : public Filter
 {
-  public:
+public:
     enum FILTERPARAMS
     {
         WET,
         DELAY,
         FREQ
     };
-    float                   mDelay;
-    float                   mFreq;
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    virtual FilterInstance* createInstance();
+
+    float           mDelay;
+    float           mFreq;
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    FilterInstance* createInstance() override;
     FlangerFilter();
     result setParams(float aDelay, float aFreq);
 };

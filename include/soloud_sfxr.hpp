@@ -120,11 +120,11 @@ class SfxrInstance : public AudioSourceInstance
     void resetSample(bool aRestart);
 
 public:
-    SfxrInstance(Sfxr* aParent);
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize);
-    virtual bool hasEnded();
+    explicit     SfxrInstance(Sfxr* aParent);
+    unsigned int getAudio(float*       aBuffer,
+                          unsigned int aSamplesToRead,
+                          unsigned int aBufferSize) override;
+    bool hasEnded() override;
 };
 
 class Sfxr : public AudioSource
@@ -146,15 +146,15 @@ public:
     Misc::Prg mRand;
 
     Sfxr();
-    virtual ~Sfxr();
-    void    resetParams();
-    result  loadParamsMem(unsigned char* aMem,
-                         unsigned int    aLength,
-                         bool            aCopy          = false,
-                         bool            aTakeOwnership = true);
+    ~Sfxr() override;
+    void   resetParams();
+    result loadParamsMem(unsigned char* aMem,
+                         unsigned int   aLength,
+                         bool           aCopy          = false,
+                         bool           aTakeOwnership = true);
     result loadParamsFile(File* aFile);
 
-    result                       loadPreset(int aPresetNo, int aRandSeed);
-    virtual AudioSourceInstance* createInstance();
+    result               loadPreset(int aPresetNo, int aRandSeed);
+    AudioSourceInstance* createInstance() override;
 };
 }; // namespace SoLoud

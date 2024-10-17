@@ -34,34 +34,36 @@ class WaveShaperFilterInstance : public FilterInstance
 {
     WaveShaperFilter* mParent;
 
-  public:
-    virtual void filterChannel(float*       aBuffer,
-                               unsigned int aSamples,
-                               float        aSamplerate,
-                               time         aTime,
-                               unsigned int aChannel,
-                               unsigned int aChannels);
-    virtual ~WaveShaperFilterInstance();
-    WaveShaperFilterInstance(WaveShaperFilter* aParent);
+public:
+    void filterChannel(float*       aBuffer,
+                       unsigned int aSamples,
+                       float        aSamplerate,
+                       time         aTime,
+                       unsigned int aChannel,
+                       unsigned int aChannels) override;
+    ~WaveShaperFilterInstance() override;
+
+    explicit WaveShaperFilterInstance(WaveShaperFilter* aParent);
 };
 
 class WaveShaperFilter : public Filter
 {
-  public:
+public:
     enum FILTERPARAMS
     {
         WET = 0,
         AMOUNT
     };
-    float                             mAmount;
-    virtual WaveShaperFilterInstance* createInstance();
-    result                            setParams(float aAmount);
+
+    float                     mAmount;
+    WaveShaperFilterInstance* createInstance() override;
+    result                    setParams(float aAmount);
     WaveShaperFilter();
-    virtual ~WaveShaperFilter();
-    virtual int          getParamCount();
-    virtual const char*  getParamName(unsigned int aParamIndex);
-    virtual unsigned int getParamType(unsigned int aParamIndex);
-    virtual float        getParamMax(unsigned int aParamIndex);
-    virtual float        getParamMin(unsigned int aParamIndex);
+    ~WaveShaperFilter() override;
+    int          getParamCount() override;
+    const char*  getParamName(unsigned int aParamIndex) override;
+    unsigned int getParamType(unsigned int aParamIndex) override;
+    float        getParamMax(unsigned int aParamIndex) override;
+    float        getParamMin(unsigned int aParamIndex) override;
 };
 } // namespace SoLoud

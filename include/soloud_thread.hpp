@@ -24,9 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-namespace SoLoud
-{
-namespace Thread
+namespace SoLoud::Thread
 {
 typedef void (*threadFunction)(void* aParam);
 
@@ -49,13 +47,15 @@ int  getTimeMillis();
 
 class PoolTask
 {
-  public:
+public:
+    virtual ~PoolTask() noexcept = default;
+
     virtual void work() = 0;
 };
 
 class Pool
 {
-  public:
+public:
     // Initialize and run thread pool. For thread count 0, work is done at addWork call.
     void init(int aThreadCount);
     // Ctor, sets known state
@@ -67,7 +67,6 @@ class Pool
     // Called from worker thread to get a new task. Returns null if no work available.
     PoolTask* getWork();
 
-  public:
     int           mThreadCount; // number of threads
     ThreadHandle* mThread; // array of thread handles
     void*         mWorkMutex; // mutex to protect task array/maxtask
@@ -76,5 +75,5 @@ class Pool
     int           mRobin; // cyclic counter, used to pick jobs for threads
     volatile int  mRunning; // running flag, used to flag threads to stop
 };
-} // namespace Thread
-} // namespace SoLoud
+} // namespace SoLoud::Thread
+

@@ -35,7 +35,7 @@ class EqFilterInstance : public FFTFilterInstance
 {
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BAND1 = 1,
         BAND2 = 2,
         BAND3 = 3,
@@ -45,24 +45,25 @@ class EqFilterInstance : public FFTFilterInstance
         BAND7 = 7,
         BAND8 = 8
     };
+
     EqFilter* mParent;
 
-  public:
-    virtual void fftFilterChannel(float*       aFFTBuffer,
-                                  unsigned int aSamples,
-                                  float        aSamplerate,
-                                  time         aTime,
-                                  unsigned int aChannel,
-                                  unsigned int aChannels);
-    EqFilterInstance(EqFilter* aParent);
+public:
+    void fftFilterChannel(float*       aFFTBuffer,
+                          unsigned int aSamples,
+                          float        aSamplerate,
+                          time         aTime,
+                          unsigned int aChannel,
+                          unsigned int aChannels) override;
+    explicit EqFilterInstance(EqFilter* aParent);
 };
 
 class EqFilter : public FFTFilter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BAND1 = 1,
         BAND2 = 2,
         BAND3 = 3,
@@ -72,14 +73,15 @@ class EqFilter : public FFTFilter
         BAND7 = 7,
         BAND8 = 8
     };
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    float                   mVolume[8];
-    result                  setParam(unsigned int aBand, float aVolume);
-    virtual FilterInstance* createInstance();
+
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    float           mVolume[8];
+    result          setParam(unsigned int aBand, float aVolume);
+    FilterInstance* createInstance() override;
     EqFilter();
 };
 } // namespace SoLoud

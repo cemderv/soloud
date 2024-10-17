@@ -33,23 +33,23 @@ class Noise;
 
 class NoiseInstance : public AudioSourceInstance
 {
-  public:
-    NoiseInstance(Noise* aParent);
-    ~NoiseInstance();
+public:
+    explicit NoiseInstance(Noise* aParent);
+    ~NoiseInstance() override;
 
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize);
-    virtual bool         hasEnded();
+    unsigned int getAudio(float*       aBuffer,
+                          unsigned int aSamplesToRead,
+                          unsigned int aBufferSize) override;
+    bool hasEnded() override;
 
-  public:
+public:
     float     mOctaveScale[10];
     Misc::Prg mPrg;
 };
 
 class Noise : public AudioSource
 {
-  public:
+public:
     enum NOISETYPES
     {
         WHITE = 0,
@@ -72,10 +72,10 @@ class Noise : public AudioSource
                         float aOct9);
     void setType(int aType);
 
-    virtual ~Noise();
+    ~Noise() override;
 
-  public:
-    virtual AudioSourceInstance* createInstance();
-    float                        mOctaveScale[10];
+public:
+    AudioSourceInstance* createInstance() override;
+    float                mOctaveScale[10];
 };
 }; // namespace SoLoud

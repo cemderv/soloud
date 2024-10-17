@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 class FreeverbFilter;
+
 namespace FreeverbImpl
 {
 class Revmodel;
@@ -48,20 +49,20 @@ class FreeverbFilterInstance : public FilterInstance
     FreeverbFilter*         mParent;
     FreeverbImpl::Revmodel* mModel;
 
-  public:
-    virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
-                        float        aSamplerate,
-                        time         aTime);
-    virtual ~FreeverbFilterInstance();
-    FreeverbFilterInstance(FreeverbFilter* aParent);
+public:
+    void filter(float*       aBuffer,
+                unsigned int aSamples,
+                unsigned int aBufferSize,
+                unsigned int aChannels,
+                float        aSamplerate,
+                time         aTime) override;
+    ~FreeverbFilterInstance() override;
+    explicit FreeverbFilterInstance(FreeverbFilter* aParent);
 };
 
 class FreeverbFilter : public Filter
 {
-  public:
+public:
     enum FILTERPARAM
     {
         WET = 0,
@@ -70,19 +71,20 @@ class FreeverbFilter : public Filter
         DAMP,
         WIDTH
     };
-    virtual int          getParamCount();
-    virtual const char*  getParamName(unsigned int aParamIndex);
-    virtual unsigned int getParamType(unsigned int aParamIndex);
-    virtual float        getParamMax(unsigned int aParamIndex);
-    virtual float        getParamMin(unsigned int aParamIndex);
 
-    float                           mMode;
-    float                           mRoomSize;
-    float                           mDamp;
-    float                           mWidth;
-    virtual FreeverbFilterInstance* createInstance();
+    int          getParamCount() override;
+    const char*  getParamName(unsigned int aParamIndex) override;
+    unsigned int getParamType(unsigned int aParamIndex) override;
+    float        getParamMax(unsigned int aParamIndex) override;
+    float        getParamMin(unsigned int aParamIndex) override;
+
+    float                   mMode;
+    float                   mRoomSize;
+    float                   mDamp;
+    float                   mWidth;
+    FreeverbFilterInstance* createInstance() override;
     FreeverbFilter();
     result setParams(float aMode, float aRoomSize, float aDamp, float aWidth);
-    virtual ~FreeverbFilter();
+    ~FreeverbFilter() override;
 };
 } // namespace SoLoud

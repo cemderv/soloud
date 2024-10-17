@@ -35,37 +35,39 @@ class BassboostFilterInstance : public FFTFilterInstance
 {
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BOOST = 1
     };
+
     BassboostFilter* mParent;
 
-  public:
-    virtual void fftFilterChannel(float*       aFFTBuffer,
-                                  unsigned int aSamples,
-                                  float        aSamplerate,
-                                  time         aTime,
-                                  unsigned int aChannel,
-                                  unsigned int aChannels);
+public:
+    void fftFilterChannel(float*       aFFTBuffer,
+                          unsigned int aSamples,
+                          float        aSamplerate,
+                          time         aTime,
+                          unsigned int aChannel,
+                          unsigned int aChannels) override;
     BassboostFilterInstance(BassboostFilter* aParent);
 };
 
 class BassboostFilter : public FFTFilter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
-        WET   = 0,
+        WET = 0,
         BOOST = 1
     };
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    float                   mBoost;
-    result                  setParams(float aBoost);
-    virtual FilterInstance* createInstance();
+
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    float           mBoost;
+    result          setParams(float aBoost);
+    FilterInstance* createInstance() override;
     BassboostFilter();
 };
 } // namespace SoLoud

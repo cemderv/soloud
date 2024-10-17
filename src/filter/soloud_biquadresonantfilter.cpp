@@ -31,7 +31,6 @@ Phil Burk, Game Programming Gems 3, p. 606
 #include "soloud.hpp"
 #include "soloud_error.hpp"
 #include <cmath>
-#include <cstring>
 
 namespace SoLoud
 {
@@ -39,31 +38,28 @@ void BiquadResonantFilterInstance::calcBQRParams()
 {
     mDirty = 0;
 
-    float omega     = (float)((2.0f * M_PI * mParam[FREQUENCY]) / mSamplerate);
-    float sin_omega = (float)sin(omega);
-    float cos_omega = (float)cos(omega);
-    float alpha     = sin_omega / (2.0f * mParam[RESONANCE]);
+    auto  omega     = float(2.0f * M_PI * mParam[Frequency] / mSamplerate);
+    auto  sin_omega = sin(omega);
+    auto  cos_omega = cos(omega);
+    float alpha     = sin_omega / (2.0f * mParam[Resonance]);
     float scalar    = 1.0f / (1.0f + alpha);
 
-    switch ((int)(mParam[TYPE]))
+    switch ((int)(mParam[Type]))
     {
         default:
-        case BiquadResonantFilter::LOWPASS:
-            mA0 = 0.5f * (1.0f - cos_omega) * scalar;
+        case BiquadResonantFilter::LOWPASS: mA0 = 0.5f * (1.0f - cos_omega) * scalar;
             mA1 = (1.0f - cos_omega) * scalar;
             mA2 = mA0;
             mB1 = -2.0f * cos_omega * scalar;
             mB2 = (1.0f - alpha) * scalar;
             break;
-        case BiquadResonantFilter::HIGHPASS:
-            mA0 = 0.5f * (1.0f + cos_omega) * scalar;
+        case BiquadResonantFilter::HIGHPASS: mA0 = 0.5f * (1.0f + cos_omega) * scalar;
             mA1 = -(1.0f + cos_omega) * scalar;
             mA2 = mA0;
             mB1 = -2.0f * cos_omega * scalar;
             mB2 = (1.0f - alpha) * scalar;
             break;
-        case BiquadResonantFilter::BANDPASS:
-            mA0 = alpha * scalar;
+        case BiquadResonantFilter::BANDPASS: mA0 = alpha * scalar;
             mA1 = 0;
             mA2 = -mA0;
             mB1 = -2.0f * cos_omega * scalar;
@@ -88,9 +84,9 @@ BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter*
 
     initParams(4);
 
-    mParam[RESONANCE] = aParent->mResonance;
-    mParam[FREQUENCY] = aParent->mFrequency;
-    mParam[TYPE]      = (float)aParent->mFilterType;
+    mParam[Resonance] = aParent->mResonance;
+    mParam[Frequency] = aParent->mFrequency;
+    mParam[Type]      = (float)aParent->mFilterType;
 
     mSamplerate = 44100;
 
@@ -109,7 +105,7 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
     {
         updateParams(aTime);
 
-        if (mParamChanged & ((1 << FREQUENCY) | (1 << RESONANCE) | (1 << TYPE)) ||
+        if (mParamChanged & ((1 << Frequency) | (1 << Resonance) | (1 << Type)) ||
             aSamplerate != mSamplerate)
         {
             mSamplerate = aSamplerate;
@@ -131,7 +127,7 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
         // Generate outputs by filtering inputs.
         x     = aBuffer[c];
         s.mY2 = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
-        aBuffer[c] += (s.mY2 - aBuffer[c]) * mParam[WET];
+        aBuffer[c] += (s.mY2 - aBuffer[c]) * mParam[Wet];
 
         c++;
 
@@ -139,7 +135,7 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
         // Just substitute variables instead of doing mX1=x, etc.
         s.mX2 = aBuffer[c];
         s.mY1 = (mA0 * s.mX2) + (mA1 * x) + (mA2 * s.mX1) - (mB1 * s.mY2) - (mB2 * s.mY1);
-        aBuffer[c] += (s.mY1 - aBuffer[c]) * mParam[WET];
+        aBuffer[c] += (s.mY1 - aBuffer[c]) * mParam[Wet];
 
         // Only move a little data.
         s.mX1 = s.mX2;

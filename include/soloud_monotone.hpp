@@ -71,8 +71,8 @@ class MonotoneInstance : public AudioSourceInstance
     Monotone* mParent;
 
 public:
-    MonotoneChannel         mChannel[12];
-    MonotoneHardwareChannel mOutput[12];
+    MonotoneChannel         mChannel[12]{};
+    MonotoneHardwareChannel mOutput[12]{};
     int                     mNextChannel;
     int                     mTempo; // ticks / row. Tick = 60hz. Default 4.
     int                     mOrder;
@@ -80,9 +80,9 @@ public:
     int                     mSampleCount;
     int                     mRowTick;
 
-    MonotoneInstance(Monotone* aParent);
-    virtual unsigned int getAudio(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize);
-    virtual bool         hasEnded();
+    explicit     MonotoneInstance(Monotone* aParent);
+    unsigned int getAudio(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize) override;
+    bool         hasEnded() override;
 };
 
 class Monotone : public AudioSource
@@ -94,14 +94,14 @@ public:
     int          mWaveform;
     MonotoneSong mSong;
     Monotone();
-    ~Monotone();
+    ~Monotone() override;
     result setParams(int aHardwareChannels, int aWaveform = Soloud::WAVE_SQUARE);
     result loadMem(const unsigned char* aMem,
                    unsigned int         aLength,
                    bool                 aCopy          = false,
                    bool                 aTakeOwnership = true);
-    result                       loadFile(File* aFile);
-    virtual AudioSourceInstance* createInstance();
+    result               loadFile(File* aFile);
+    AudioSourceInstance* createInstance() override;
 
 public:
     void clear();

@@ -36,20 +36,20 @@ class DuckFilterInstance : public FilterInstance
     Soloud* mSoloud;
     float   mCurrentLevel;
 
-  public:
-    virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
-                        float        aSamplerate,
-                        time         aTime);
-    virtual ~DuckFilterInstance();
-    DuckFilterInstance(DuckFilter* aParent);
+public:
+    void filter(float*       aBuffer,
+                unsigned int aSamples,
+                unsigned int aBufferSize,
+                unsigned int aChannels,
+                float        aSamplerate,
+                time         aTime) override;
+    ~DuckFilterInstance() override;
+    explicit DuckFilterInstance(DuckFilter* aParent);
 };
 
 class DuckFilter : public Filter
 {
-  public:
+public:
     enum FILTERATTRIBUTE
     {
         WET = 0,
@@ -57,17 +57,18 @@ class DuckFilter : public Filter
         OFFRAMP,
         LEVEL
     };
-    Soloud*                 mSoloud;
-    float                   mOnRamp;
-    float                   mOffRamp;
-    float                   mLevel;
-    handle                  mListenTo;
-    virtual int             getParamCount();
-    virtual const char*     getParamName(unsigned int aParamIndex);
-    virtual unsigned int    getParamType(unsigned int aParamIndex);
-    virtual float           getParamMax(unsigned int aParamIndex);
-    virtual float           getParamMin(unsigned int aParamIndex);
-    virtual FilterInstance* createInstance();
+
+    Soloud*         mSoloud;
+    float           mOnRamp;
+    float           mOffRamp;
+    float           mLevel;
+    handle          mListenTo;
+    int             getParamCount() override;
+    const char*     getParamName(unsigned int aParamIndex) override;
+    unsigned int    getParamType(unsigned int aParamIndex) override;
+    float           getParamMax(unsigned int aParamIndex) override;
+    float           getParamMin(unsigned int aParamIndex) override;
+    FilterInstance* createInstance() override;
     DuckFilter();
     result setParams(Soloud* aSoloud,
                      handle  aListenTo,

@@ -46,7 +46,7 @@ class Speech : public AudioSource
         KW_WARBLE
     };
 
-  public:
+public:
     int    mBaseFrequency;
     float  mBaseSpeed;
     float  mBaseDeclination;
@@ -59,8 +59,8 @@ class Speech : public AudioSource
                      float        aBaseSpeed       = 10.0f,
                      float        aBaseDeclination = 0.5f,
                      int          aBaseWaveform    = KW_TRIANGLE);
-    virtual ~Speech();
-    virtual AudioSourceInstance* createInstance();
+    ~Speech() override;
+    AudioSourceInstance* createInstance() override;
 };
 
 class SpeechInstance : public AudioSourceInstance
@@ -71,13 +71,13 @@ class SpeechInstance : public AudioSourceInstance
     int     mSampleCount;
     int     mOffset;
 
-  public:
-    SpeechInstance(Speech* aParent);
-    virtual ~SpeechInstance();
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize);
-    virtual result       rewind();
-    virtual bool         hasEnded();
+public:
+    explicit SpeechInstance(Speech* aParent);
+    ~SpeechInstance() override;
+    unsigned int getAudio(float*       aBuffer,
+                          unsigned int aSamplesToRead,
+                          unsigned int aBufferSize) override;
+    result rewind() override;
+    bool   hasEnded() override;
 };
 }; // namespace SoLoud

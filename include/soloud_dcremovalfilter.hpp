@@ -38,22 +38,22 @@ class DCRemovalFilterInstance : public FilterInstance
     DCRemovalFilter* mParent;
     int              mOffset;
 
-  public:
-    virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
-                        float        aSamplerate,
-                        time         aTime);
-    virtual ~DCRemovalFilterInstance();
-    DCRemovalFilterInstance(DCRemovalFilter* aParent);
+public:
+    void filter(float*       aBuffer,
+                unsigned int aSamples,
+                unsigned int aBufferSize,
+                unsigned int aChannels,
+                float        aSamplerate,
+                time         aTime) override;
+    ~DCRemovalFilterInstance() override;
+    explicit DCRemovalFilterInstance(DCRemovalFilter* aParent);
 };
 
 class DCRemovalFilter : public Filter
 {
-  public:
-    float                   mLength;
-    virtual FilterInstance* createInstance();
+public:
+    float           mLength;
+    FilterInstance* createInstance() override;
     DCRemovalFilter();
     result setParams(float aLength = 0.1f);
 };

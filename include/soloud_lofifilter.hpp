@@ -44,40 +44,42 @@ class LofiFilterInstance : public FilterInstance
         SAMPLERATE,
         BITDEPTH
     };
+
     LofiChannelData mChannelData[2];
 
     LofiFilter* mParent;
 
-  public:
-    virtual void filterChannel(float*       aBuffer,
-                               unsigned int aSamples,
-                               float        aSamplerate,
-                               time         aTime,
-                               unsigned int aChannel,
-                               unsigned int aChannels);
-    virtual ~LofiFilterInstance();
-    LofiFilterInstance(LofiFilter* aParent);
+public:
+    void filterChannel(float*       aBuffer,
+                       unsigned int aSamples,
+                       float        aSamplerate,
+                       time         aTime,
+                       unsigned int aChannel,
+                       unsigned int aChannels) override;
+    ~LofiFilterInstance() override;
+    explicit LofiFilterInstance(LofiFilter* aParent);
 };
 
 class LofiFilter : public Filter
 {
-  public:
+public:
     enum FILTERPARAMS
     {
         WET,
         SAMPLERATE,
         BITDEPTH
     };
-    float                       mSampleRate;
-    float                       mBitdepth;
-    virtual LofiFilterInstance* createInstance();
-    virtual int                 getParamCount();
-    virtual const char*         getParamName(unsigned int aParamIndex);
-    virtual unsigned int        getParamType(unsigned int aParamIndex);
-    virtual float               getParamMax(unsigned int aParamIndex);
-    virtual float               getParamMin(unsigned int aParamIndex);
+
+    float               mSampleRate;
+    float               mBitdepth;
+    LofiFilterInstance* createInstance() override;
+    int                 getParamCount() override;
+    const char*         getParamName(unsigned int aParamIndex) override;
+    unsigned int        getParamType(unsigned int aParamIndex) override;
+    float               getParamMax(unsigned int aParamIndex) override;
+    float               getParamMin(unsigned int aParamIndex) override;
     LofiFilter();
     result setParams(float aSampleRate, float aBitdepth);
-    virtual ~LofiFilter();
+    ~LofiFilter() override;
 };
 } // namespace SoLoud

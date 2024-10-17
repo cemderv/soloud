@@ -35,7 +35,9 @@ class AudioSourceInstance3dData;
 
 class AudioCollider
 {
-  public:
+public:
+    virtual ~AudioCollider() noexcept = default;
+
     // Calculate volume multiplier. Assumed to return value between 0 and 1.
     virtual float collide(Soloud*                    aSoloud,
                           AudioSourceInstance3dData* aAudioInstance3dData,
@@ -44,7 +46,9 @@ class AudioCollider
 
 class AudioAttenuator
 {
-  public:
+public:
+    virtual ~AudioAttenuator() noexcept = default;
+
     virtual float attenuate(float aDistance,
                             float aMinDistance,
                             float aMaxDistance,
@@ -53,7 +57,7 @@ class AudioAttenuator
 
 class AudioSourceInstance3dData
 {
-  public:
+public:
     // ctor
     AudioSourceInstance3dData();
     // Set settings from audiosource
@@ -104,7 +108,7 @@ class AudioSourceInstance3dData
 // Base class for audio instances
 class AudioSourceInstance
 {
-  public:
+public:
     enum FLAGS
     {
         // This audio instance loops (if supported)
@@ -211,7 +215,7 @@ class Soloud;
 // Base class for audio sources
 class AudioSource
 {
-  public:
+public:
     enum FLAGS
     {
         // The instances from this audio source should loop

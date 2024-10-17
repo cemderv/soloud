@@ -30,7 +30,7 @@ class Bus;
 
 class BusInstance : public AudioSourceInstance
 {
-  public:
+public:
     Bus*               mParent;
     unsigned int       mScratchSize;
     AlignedFloatBuffer mScratch;
@@ -40,21 +40,21 @@ class BusInstance : public AudioSourceInstance
     // Mono-mixed wave data for visualization and for visualization FFT input
     float mVisualizationWaveData[256];
 
-    BusInstance(Bus* aParent);
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize);
-    virtual bool         hasEnded();
-    virtual ~BusInstance();
+    explicit     BusInstance(Bus* aParent);
+    unsigned int getAudio(float*       aBuffer,
+                          unsigned int aSamplesToRead,
+                          unsigned int aBufferSize) override;
+    bool hasEnded() override;
+    ~BusInstance() override;
 };
 
 class Bus : public AudioSource
 {
-  public:
+public:
     Bus();
-    virtual BusInstance* createInstance();
+    BusInstance* createInstance() override;
     // Set filter. Set to NULL to clear the filter.
-    virtual void setFilter(unsigned int aFilterId, Filter* aFilter);
+    void setFilter(unsigned int aFilterId, Filter* aFilter) override;
     // Play sound through the bus
     handle play(AudioSource& aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0);
     // Play sound through the bus, delayed in relation to other sounds called via this function.
@@ -109,7 +109,7 @@ class Bus : public AudioSource
     // Set the resampler for this bus
     void setResampler(unsigned int aResampler);
 
-  public:
+public:
     BusInstance* mInstance;
     unsigned int mChannelHandle;
     unsigned int mResampler;

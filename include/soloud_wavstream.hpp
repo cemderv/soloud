@@ -25,7 +25,6 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud.hpp"
-#include <cstdio>
 
 struct stb_vorbis;
 #ifndef dr_flac_h
@@ -62,14 +61,14 @@ class WavStreamInstance : public AudioSourceInstance
     float**      mOggOutputs;
 
 public:
-    WavStreamInstance(WavStream* aParent);
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize);
-    virtual result seek(double aSeconds, float* mScratch, unsigned int mScratchSize);
-    virtual result rewind();
-    virtual bool   hasEnded();
-    virtual        ~WavStreamInstance();
+    explicit     WavStreamInstance(WavStream* aParent);
+    unsigned int getAudio(float*       aBuffer,
+                          unsigned int aSamplesToRead,
+                          unsigned int aBufferSize) override;
+    result seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
+    result rewind() override;
+    bool   hasEnded() override;
+    ~WavStreamInstance() override;
 };
 
 enum WAVSTREAM_FILETYPE
@@ -94,13 +93,13 @@ public:
     unsigned int mSampleCount;
 
     WavStream();
-    virtual ~WavStream();
-    result  loadMem(const unsigned char* aData,
-                   unsigned int          aDataLen,
-                   bool                  aCopy          = false,
-                   bool                  aTakeOwnership = true);
-    virtual AudioSourceInstance* createInstance();
-    time                         getLength();
+    ~WavStream() override;
+    result loadMem(const unsigned char* aData,
+                   unsigned int         aDataLen,
+                   bool                 aCopy          = false,
+                   bool                 aTakeOwnership = true);
+    AudioSourceInstance* createInstance() override;
+    time                 getLength();
 
 public:
     result parse(File* aFile);
