@@ -335,7 +335,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
     size_t samplequads = (aSamples + 3) / 4; // rounded up
 
     // Clip
-    if (mFlags & Flags::ClipRoundoff)
+    if (testFlag(mFlags, Flags::ClipRoundoff))
     {
         float                  nb          = -1.65f;
         __m128                 negbound    = _mm_load_ps1(&nb);
@@ -1714,7 +1714,7 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
         if (!once)
         {
             once = true;
-            if (!(mFlags & NO_FPU_REGISTER_CHANGE))
+            if (!testFlag(mFlags, Flags::NoFpuRegisterChange))
             {
                 _controlfp(_DN_FLUSH, _MCW_DN);
             }
