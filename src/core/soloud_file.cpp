@@ -25,8 +25,8 @@ distribution.
 #undef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "soloud.h"
 #include "soloud_file.h"
 

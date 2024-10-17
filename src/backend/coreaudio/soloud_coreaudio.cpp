@@ -25,9 +25,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <stdlib.h>
-#include <math.h>
-
 #include "soloud.h"
 #include "soloud_thread.h"
 

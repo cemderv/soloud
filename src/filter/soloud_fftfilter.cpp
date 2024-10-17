@@ -35,7 +35,7 @@ freely, subject to the following restrictions:
 * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
 */
 
-#include <string.h>
+#include <cstring>
 #include "soloud.h"
 #include "soloud_fftfilter.h"
 #include "soloud_fft.h"

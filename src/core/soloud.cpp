@@ -22,10 +22,10 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <string.h>
-#include <stdlib.h>
-#include <math.h> // sin
-#include <float.h> // _controlfp
+#include <cstring>
+#include <cstdlib>
+#include <cmath> // sin
+#include <cfloat> // _controlfp
 #include "soloud_internal.h"
 #include "soloud_thread.h"
 #include "soloud_fft.h"

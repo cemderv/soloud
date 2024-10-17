@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_misc.h"
-#include <math.h>
+#include <cmath>
 
 namespace SoLoud
 {

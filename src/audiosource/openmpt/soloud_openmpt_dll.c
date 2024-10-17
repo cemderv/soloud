@@ -21,11 +21,11 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include <stdlib.h>
+#include <cstdlib>
 #if defined(_WIN32)||defined(_WIN64)
 #define WINDOWS_VERSION
 #endif // __WINDOWS__
-#include <math.h>
+#include <cmath>
 
 typedef void * (*dll_openmpt_module_create_from_memory)(const void * filedata, size_t filesize, void *logfunc, void * user, void * ctls);
 typedef void (*dll_openmpt_module_destroy)(void * mod);

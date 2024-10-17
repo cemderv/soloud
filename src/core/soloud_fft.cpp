@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_fft.h"
-#include <string.h>
+#include <cstring>
 
 namespace fftimpl
 {

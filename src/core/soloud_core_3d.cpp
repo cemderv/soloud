@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <math.h>
+#include <cmath>
 #include "soloud_internal.h"
 
 // 3d audio operations

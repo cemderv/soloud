@@ -22,9 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
 #include "soloud.h"
 #include "dr_flac.h"
 #include "dr_mp3.h"
