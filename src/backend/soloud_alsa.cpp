@@ -92,7 +92,7 @@ static void alsaCleanup(Engine* aSoloud)
     aSoloud->mBackendData = 0;
 }
 
-result alsa_init(
+void alsa_init(
     Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
@@ -108,7 +108,7 @@ result alsa_init(
     rc = snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0);
     if (rc < 0)
     {
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize the audio device"};
     }
 
     data->alsaDeviceHandle = handle;
@@ -127,13 +127,13 @@ result alsa_init(
     rc         = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
     if (rc < 0)
     {
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize the audio device"};
     }
 
     rc = snd_pcm_hw_params(handle, params);
     if (rc < 0)
     {
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize the audio device"};
     }
 
     snd_pcm_hw_params_get_rate(params, &val, &dir);
@@ -145,11 +145,10 @@ result alsa_init(
     data->sampleBuffer = new short[data->samples * data->channels];
     aSoloud->postinit_internal(aSamplerate, data->samples * data->channels, aFlags, 2);
     data->threadHandle = Thread::createThread(alsaThread, data);
+
     if (0 == data->threadHandle)
     {
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize the audio device"};
     }
-    aSoloud->mBackendString = "ALSA";
-    return 0;
 }
 }; // namespace SoLoud
