@@ -43,7 +43,7 @@ class MemoryFile final
     uint16_t     read16();
     uint32_t     read32();
     bool         eof() const;
-    unsigned int read(unsigned char* aDst, unsigned int aBytes);
+    size_t read(unsigned char* aDst, size_t aBytes);
     void         seek(int aOffset);
     size_t       pos() const;
 

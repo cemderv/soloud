@@ -30,9 +30,9 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 result winmm_init(Soloud*      aSoloud,
-                  unsigned int aFlags,
-                  unsigned int aSamplerate,
-                  unsigned int aBuffer)
+                  size_t aFlags,
+                  size_t aSamplerate,
+                  size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -150,10 +150,10 @@ static void winMMCleanup(Soloud* aSoloud)
 }
 
 void winmm_init(Soloud*      aSoloud,
-                unsigned int aFlags,
-                unsigned int aSamplerate,
-                unsigned int aBuffer,
-                unsigned int aChannels)
+                size_t aFlags,
+                size_t aSamplerate,
+                size_t aBuffer,
+                size_t aChannels)
 {
     SoLoudWinMMData* data        = new SoLoudWinMMData;
     aSoloud->mBackendData        = data;

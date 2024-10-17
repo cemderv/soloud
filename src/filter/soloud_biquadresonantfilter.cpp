@@ -98,13 +98,13 @@ BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter*
 }
 
 void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
-                                                 unsigned int aSamples,
+                                                 size_t aSamples,
                                                  float        aSamplerate,
                                                  double       aTime,
-                                                 unsigned int aChannel,
-                                                 unsigned int /*aChannels*/)
+                                                 size_t aChannel,
+                                                 size_t /*aChannels*/)
 {
-    unsigned int osamples = aSamples;
+    size_t osamples = aSamples;
     if (aChannel == 0)
     {
         updateParams(aTime);
@@ -118,7 +118,7 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
         mParamChanged = 0;
     }
     float        x;
-    unsigned int i;
+    size_t i;
     int          c = 0;
 
     BQRStateData& s = mState[aChannel];

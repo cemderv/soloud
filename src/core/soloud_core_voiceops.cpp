@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-void Engine::setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpeed)
+void Engine::setVoiceRelativePlaySpeed_internal(size_t aVoice, float aSpeed)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -41,7 +41,7 @@ void Engine::setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpee
     }
 }
 
-void Engine::setVoicePause_internal(unsigned int aVoice, int aPause)
+void Engine::setVoicePause_internal(size_t aVoice, int aPause)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -62,7 +62,7 @@ void Engine::setVoicePause_internal(unsigned int aVoice, int aPause)
     }
 }
 
-void Engine::setVoicePan_internal(unsigned int aVoice, float aPan)
+void Engine::setVoicePan_internal(size_t aVoice, float aPan)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -97,7 +97,7 @@ void Engine::setVoicePan_internal(unsigned int aVoice, float aPan)
     }
 }
 
-void Engine::setVoiceVolume_internal(unsigned int aVoice, float aVolume)
+void Engine::setVoiceVolume_internal(size_t aVoice, float aVolume)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -109,7 +109,7 @@ void Engine::setVoiceVolume_internal(unsigned int aVoice, float aVolume)
     }
 }
 
-void Engine::stopVoice_internal(unsigned int aVoice)
+void Engine::stopVoice_internal(size_t aVoice)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -120,7 +120,7 @@ void Engine::stopVoice_internal(unsigned int aVoice)
         AudioSourceInstance* v = mVoice[aVoice];
         mVoice[aVoice]         = 0;
 
-        unsigned int i;
+        size_t i;
         for (i = 0; i < mMaxActiveVoices; i++)
         {
             if (mResampleDataOwner[i] == v)
@@ -133,7 +133,7 @@ void Engine::stopVoice_internal(unsigned int aVoice)
     }
 }
 
-void Engine::updateVoiceRelativePlaySpeed_internal(unsigned int aVoice)
+void Engine::updateVoiceRelativePlaySpeed_internal(size_t aVoice)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
@@ -143,7 +143,7 @@ void Engine::updateVoiceRelativePlaySpeed_internal(unsigned int aVoice)
         mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mOverallRelativePlaySpeed;
 }
 
-void Engine::updateVoiceVolume_internal(unsigned int aVoice)
+void Engine::updateVoiceVolume_internal(size_t aVoice)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);

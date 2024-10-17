@@ -78,7 +78,7 @@ class Engine;
 typedef void (*mutexCallFunction)(void* aMutexPtr);
 typedef void (*soloudCallFunction)(Engine* aSoloud);
 typedef bool (*soloudResultFunction)(Engine* aSoloud);
-typedef unsigned int handle;
+typedef size_t handle;
 typedef double       time_t;
 
 enum class Flags

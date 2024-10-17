@@ -38,36 +38,36 @@ class FilterInstance
     virtual void updateParams(time_t aTime);
 
     virtual void filter(float*       aBuffer,
-                        unsigned int aSamples,
-                        unsigned int aBufferSize,
-                        unsigned int aChannels,
+                        size_t aSamples,
+                        size_t aBufferSize,
+                        size_t aChannels,
                         float        aSamplerate,
                         time_t       aTime);
 
     virtual void filterChannel(float*       aBuffer,
-                               unsigned int aSamples,
+                               size_t aSamples,
                                float        aSamplerate,
                                time_t       aTime,
-                               unsigned int aChannel,
-                               unsigned int aChannels);
+                               size_t aChannel,
+                               size_t aChannels);
 
-    virtual float getFilterParameter(unsigned int aAttributeId);
+    virtual float getFilterParameter(size_t aAttributeId);
 
-    virtual void setFilterParameter(unsigned int aAttributeId, float aValue);
+    virtual void setFilterParameter(size_t aAttributeId, float aValue);
 
-    virtual void fadeFilterParameter(unsigned int aAttributeId,
+    virtual void fadeFilterParameter(size_t aAttributeId,
                                      float        aTo,
                                      time_t       aTime,
                                      time_t       aStartTime);
 
     virtual void oscillateFilterParameter(
-        unsigned int aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
+        size_t aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
 
     virtual ~FilterInstance();
 
   protected:
-    unsigned int mNumParams    = 0;
-    unsigned int mParamChanged = 0;
+    size_t mNumParams    = 0;
+    size_t mParamChanged = 0;
     float*       mParam        = nullptr;
     Fader*       mParamFader   = nullptr;
 };

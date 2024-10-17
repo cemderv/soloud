@@ -35,14 +35,14 @@ BassboostFilterInstance::BassboostFilterInstance(BassboostFilter* aParent)
 }
 
 void BassboostFilterInstance::fftFilterChannel(float* aFFTBuffer,
-                                               unsigned int /*aSamples*/,
+                                               size_t /*aSamples*/,
                                                float /*aSamplerate*/,
                                                time_t /*aTime*/,
-                                               unsigned int /*aChannel*/,
-                                               unsigned int /*aChannels*/)
+                                               size_t /*aChannel*/,
+                                               size_t /*aChannels*/)
 {
     comp2MagPhase(aFFTBuffer, 2);
-    for (unsigned int i = 0; i < 2; i++)
+    for (size_t i = 0; i < 2; i++)
     {
         aFFTBuffer[i * 2] *= mParam[BOOST];
     }

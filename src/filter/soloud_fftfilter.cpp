@@ -79,11 +79,11 @@ FFTFilterInstance::FFTFilterInstance(FFTFilter* aParent)
 }
 
 void FFTFilterInstance::filterChannel(float*       aBuffer,
-                                      unsigned int aSamples,
+                                      size_t aSamples,
                                       float        aSamplerate,
                                       double       aTime,
-                                      unsigned int aChannel,
-                                      unsigned int aChannels)
+                                      size_t aChannel,
+                                      size_t aChannels)
 {
     if (aChannel == 0)
     {
@@ -106,11 +106,11 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
     }
 
     int          i;
-    unsigned int ofs      = 0;
-    unsigned int chofs    = STFT_WINDOW_TWICE * aChannel;
-    unsigned int inputofs = mInputOffset[aChannel];
-    unsigned int mixofs   = mMixOffset[aChannel];
-    unsigned int readofs  = mReadOffset[aChannel];
+    size_t ofs      = 0;
+    size_t chofs    = STFT_WINDOW_TWICE * aChannel;
+    size_t inputofs = mInputOffset[aChannel];
+    size_t mixofs   = mMixOffset[aChannel];
+    size_t readofs  = mReadOffset[aChannel];
 
     while (ofs < aSamples)
     {
@@ -167,9 +167,9 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
     mMixOffset[aChannel]   = mixofs;
 }
 
-void FFTFilterInstance::comp2MagPhase(float* aFFTBuffer, unsigned int aSamples)
+void FFTFilterInstance::comp2MagPhase(float* aFFTBuffer, size_t aSamples)
 {
-    for (unsigned int i = 0; i < aSamples; i++)
+    for (size_t i = 0; i < aSamples; i++)
     {
         float re              = aFFTBuffer[i * 2];
         float im              = aFFTBuffer[i * 2 + 1];
@@ -179,14 +179,14 @@ void FFTFilterInstance::comp2MagPhase(float* aFFTBuffer, unsigned int aSamples)
 }
 
 void FFTFilterInstance::magPhase2MagFreq(float*       aFFTBuffer,
-                                         unsigned int aSamples,
+                                         size_t aSamples,
                                          float        aSamplerate,
-                                         unsigned int aChannel)
+                                         size_t aChannel)
 {
     float stepsize   = aSamples / aSamplerate;
     float expct      = (stepsize / aSamples) * 2.0f * (float)M_PI;
     float freqPerBin = aSamplerate / aSamples;
-    for (unsigned int i = 0; i < aSamples; i++)
+    for (size_t i = 0; i < aSamples; i++)
     {
         float mag = aFFTBuffer[i * 2];
         float pha = aFFTBuffer[i * 2 + 1];
@@ -218,14 +218,14 @@ void FFTFilterInstance::magPhase2MagFreq(float*       aFFTBuffer,
 }
 
 void FFTFilterInstance::magFreq2MagPhase(float*       aFFTBuffer,
-                                         unsigned int aSamples,
+                                         size_t aSamples,
                                          float        aSamplerate,
-                                         unsigned int aChannel)
+                                         size_t aChannel)
 {
     float stepsize   = aSamples / aSamplerate;
     float expct      = (stepsize / aSamples) * 2.0f * (float)M_PI;
     float freqPerBin = aSamplerate / aSamples;
-    for (unsigned int i = 0; i < aSamples; i++)
+    for (size_t i = 0; i < aSamples; i++)
     {
         /* get magnitude and true frequency from synthesis arrays */
         float mag  = aFFTBuffer[i * 2];
@@ -250,9 +250,9 @@ void FFTFilterInstance::magFreq2MagPhase(float*       aFFTBuffer,
     }
 }
 
-void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, unsigned int aSamples)
+void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, size_t aSamples)
 {
-    for (unsigned int i = 0; i < aSamples; i++)
+    for (size_t i = 0; i < aSamples; i++)
     {
         float mag             = aFFTBuffer[i * 2];
         float pha             = aFFTBuffer[i * 2 + 1];
@@ -262,11 +262,11 @@ void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, unsigned int aSamples)
 }
 
 void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
-                                         unsigned int aSamples,
+                                         size_t aSamples,
                                          float        aSamplerate,
                                          time_t /*aTime*/,
-                                         unsigned int aChannel,
-                                         unsigned int /*aChannels*/)
+                                         size_t aChannel,
+                                         size_t /*aChannels*/)
 {
     comp2MagPhase(aFFTBuffer, aSamples);
     magPhase2MagFreq(aFFTBuffer, aSamples, aSamplerate, aChannel);
@@ -275,9 +275,9 @@ void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
     memcpy(t, aFFTBuffer, sizeof(float) * aSamples);
     memset(aFFTBuffer, 0, sizeof(float) * aSamples * 2);
 
-    for (unsigned int i = 0; i < aSamples / 4; i++)
+    for (size_t i = 0; i < aSamples / 4; i++)
     {
-        unsigned int d = i * 2;
+        size_t d = i * 2;
         if (d < aSamples / 4)
         {
             aFFTBuffer[d * 2] += t[i * 2];

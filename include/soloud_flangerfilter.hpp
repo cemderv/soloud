@@ -33,16 +33,16 @@ class FlangerFilter;
 class FlangerFilterInstance : public FilterInstance
 {
     float*         mBuffer;
-    unsigned int   mBufferLength;
+    size_t   mBufferLength;
     FlangerFilter* mParent;
-    unsigned int   mOffset;
+    size_t   mOffset;
     double         mIndex;
 
   public:
     void filter(float*       aBuffer,
-                unsigned int aSamples,
-                unsigned int aBufferSize,
-                unsigned int aChannels,
+                size_t aSamples,
+                size_t aBufferSize,
+                size_t aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
     ~FlangerFilterInstance() override;

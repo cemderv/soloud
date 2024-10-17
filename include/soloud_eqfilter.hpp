@@ -51,11 +51,11 @@ class EqFilterInstance : public FFTFilterInstance
 
   public:
     void fftFilterChannel(float*       aFFTBuffer,
-                          unsigned int aSamples,
+                          size_t aSamples,
                           float        aSamplerate,
                           time_t       aTime,
-                          unsigned int aChannel,
-                          unsigned int aChannels) override;
+                          size_t aChannel,
+                          size_t aChannels) override;
     explicit EqFilterInstance(EqFilter* aParent);
 };
 

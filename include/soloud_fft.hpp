@@ -38,9 +38,9 @@ void fft256(float* aBuffer);
 void ifft256(float* aBuffer);
 
 // Generic (slower) power of two FFT. Buffer is overwritten.
-void fft(float* aBuffer, unsigned int aBufferLength);
+void fft(float* aBuffer, size_t aBufferLength);
 
 // Generic (slower) power of two IFFT. Buffer is overwritten.
-void ifft(float* aBuffer, unsigned int aBufferLength);
+void ifft(float* aBuffer, size_t aBufferLength);
 }; // namespace FFT
 }; // namespace SoLoud

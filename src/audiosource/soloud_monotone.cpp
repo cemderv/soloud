@@ -58,16 +58,16 @@ MonotoneInstance::MonotoneInstance(Monotone* aParent)
     }
 }
 
-unsigned int MonotoneInstance::getAudio(float*       aBuffer,
-                                        unsigned int aSamplesToRead,
-                                        unsigned int /*aBufferSize*/)
+size_t MonotoneInstance::getAudio(float*       aBuffer,
+                                        size_t aSamplesToRead,
+                                        size_t /*aBufferSize*/)
 {
     int          samplesPerTick = (int)floor(mSamplerate / 60);
-    unsigned int i;
+    size_t i;
     for (i = 0; i < 12; i++)
     {
-        mOutput[i].mEnabled = i < (unsigned int)mParent->mHardwareChannels &&
-                              i < (unsigned int)mParent->mSong.mTotalTracks;
+        mOutput[i].mEnabled = i < (size_t)mParent->mHardwareChannels &&
+                              i < (size_t)mParent->mSong.mTotalTracks;
     }
     for (i = 0; i < aSamplesToRead; i++)
     {
@@ -86,14 +86,14 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                 int j;
                 for (j = 0; j < mParent->mSong.mTotalTracks; j++)
                 {
-                    unsigned int d =
+                    size_t d =
                         mParent->mSong
                             .mPatternData[(pattern * 64 + mRow) * mParent->mSong.mTotalTracks + j];
-                    unsigned int note        = (d >> 9) & 127;
-                    unsigned int effect      = (d >> 6) & 7;
-                    unsigned int effectdata  = (d) & 63;
-                    unsigned int effectdata1 = (d >> 3) & 7;
-                    unsigned int effectdata2 = (d >> 0) & 7;
+                    size_t note        = (d >> 9) & 127;
+                    size_t effect      = (d >> 6) & 7;
+                    size_t effectdata  = (d) & 63;
+                    size_t effectdata1 = (d >> 3) & 7;
+                    size_t effectdata2 = (d >> 0) & 7;
 
                     // by default, effects are off, and have to be set on every row.
                     mChannel[j].mPortamento = 0;
@@ -408,17 +408,17 @@ void Monotone::loadMem(std::span<const std::byte> aData)
     }
     mf.read(mSong.mOrder, 256);
     int totalnotes     = 64 * mSong.mTotalPatterns * mSong.mTotalTracks;
-    mSong.mPatternData = new unsigned int[totalnotes];
+    mSong.mPatternData = new size_t[totalnotes];
     for (i = 0; i < totalnotes; i++)
     {
         mf.read(temp, 2);
-        unsigned int datavalue = temp[0] | (temp[1] << 8);
+        size_t datavalue = temp[0] | (temp[1] << 8);
         mSong.mPatternData[i]  = datavalue;
-        // unsigned int note = (datavalue >> 9) & 127;
-        // unsigned int effect = (datavalue >> 6) & 7;
-        // unsigned int effectdata = (datavalue)& 63;
-        // unsigned int effectdata1 = (datavalue >> 3) & 7;
-        // unsigned int effectdata2 = (datavalue >> 0) & 7;
+        // size_t note = (datavalue >> 9) & 127;
+        // size_t effect = (datavalue >> 6) & 7;
+        // size_t effectdata = (datavalue)& 63;
+        // size_t effectdata1 = (datavalue >> 3) & 7;
+        // size_t effectdata2 = (datavalue >> 0) & 7;
     }
 }
 

@@ -39,9 +39,9 @@ class EchoFilterInstance : public FilterInstance
 
   public:
     void filter(float*       aBuffer,
-                unsigned int aSamples,
-                unsigned int aBufferSize,
-                unsigned int aChannels,
+                size_t aSamples,
+                size_t aBufferSize,
+                size_t aChannels,
                 float        aSamplerate,
                 time_t       aTime) override;
     ~EchoFilterInstance() override;

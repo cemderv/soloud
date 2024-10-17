@@ -39,9 +39,9 @@ EchoFilterInstance::EchoFilterInstance(EchoFilter* aParent)
 }
 
 void EchoFilterInstance::filter(float*       aBuffer,
-                                unsigned int aSamples,
-                                unsigned int aBufferSize,
-                                unsigned int aChannels,
+                                size_t aSamples,
+                                size_t aBufferSize,
+                                size_t aChannels,
                                 float        aSamplerate,
                                 double       aTime)
 {
@@ -51,7 +51,7 @@ void EchoFilterInstance::filter(float*       aBuffer,
         // We only know channels and sample rate at this point.. not really optimal
         mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
         mBuffer          = new float[mBufferMaxLength * aChannels];
-        unsigned int i;
+        size_t i;
         for (i = 0; i < mBufferMaxLength * aChannels; i++)
         {
             mBuffer[i] = 0;
@@ -62,7 +62,7 @@ void EchoFilterInstance::filter(float*       aBuffer,
     if (mBufferLength > mBufferMaxLength)
         mBufferLength = mBufferMaxLength;
 
-    unsigned int i, j;
+    size_t i, j;
     int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
     for (i = 0; i < aSamples; i++)
     {

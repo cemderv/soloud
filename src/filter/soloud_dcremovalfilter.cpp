@@ -37,9 +37,9 @@ DCRemovalFilterInstance::DCRemovalFilterInstance(DCRemovalFilter* aParent)
 }
 
 void DCRemovalFilterInstance::filter(float*       aBuffer,
-                                     unsigned int aSamples,
-                                     unsigned int aBufferSize,
-                                     unsigned int aChannels,
+                                     size_t aSamples,
+                                     size_t aBufferSize,
+                                     size_t aChannels,
                                      float        aSamplerate,
                                      double       aTime)
 {
@@ -50,7 +50,7 @@ void DCRemovalFilterInstance::filter(float*       aBuffer,
         mBufferLength = (int)ceil(mParent->mLength * aSamplerate);
         mBuffer       = new float[mBufferLength * aChannels];
         mTotals       = new float[aChannels];
-        unsigned int i;
+        size_t i;
         for (i = 0; i < aChannels; i++)
         {
             mTotals[i] = 0;
@@ -61,7 +61,7 @@ void DCRemovalFilterInstance::filter(float*       aBuffer,
         }
     }
 
-    unsigned int i, j;
+    size_t i, j;
     int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
     for (i = 0; i < aSamples; i++)
     {

@@ -105,11 +105,11 @@ float attenuateExponentialDistance(float aDistance,
     return pow(distance / aMinDistance, -aRolloffFactor);
 }
 
-void Engine::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVoiceCount)
+void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
 {
     auto speaker = std::array<vec3, MAX_CHANNELS>{};
 
-    for (unsigned int i = 0; i < mChannels; ++i)
+    for (size_t i = 0; i < mChannels; ++i)
         speaker[i] = normalize(m3dSpeakerPosition[i]);
 
     const auto lpos = m3dPosition;
@@ -118,7 +118,7 @@ void Engine::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
     const auto up   = m3dUp;
     const auto m    = lookatRH(at, up);
 
-    for (unsigned int i = 0; i < aVoiceCount; i++)
+    for (size_t i = 0; i < aVoiceCount; i++)
     {
         auto& v = m3dData[aVoiceArray[i]];
 
@@ -183,7 +183,7 @@ void Engine::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
         v.mChannelVolume = {};
 
         // Apply volume to channels based on speaker vectors
-        for (unsigned int j = 0; j < mChannels; j++)
+        for (size_t j = 0; j < mChannels; j++)
         {
             float speakervol = (speaker[j].dot(pos) + 1) / 2;
             if (speaker[j].isNull())
@@ -200,8 +200,8 @@ void Engine::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
 
 void Engine::update3dAudio()
 {
-    unsigned int voicecount = 0;
-    unsigned int voices[VOICE_COUNT];
+    size_t voicecount = 0;
+    size_t voices[VOICE_COUNT];
 
     // Step 1 - find voices that need 3d processing
     lockAudioMutex_internal();
@@ -261,7 +261,7 @@ void Engine::update3dAudio()
 
 
 handle Engine::play3d(
-    AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, unsigned int aBus)
+    AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, size_t aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -286,7 +286,7 @@ handle Engine::play3d(
         samples += int(floor(dist / m3dSoundSpeed * float(mSamplerate)));
     }
 
-    update3dVoices_internal((unsigned int*)&v, 1);
+    update3dVoices_internal((size_t*)&v, 1);
     updateVoiceRelativePlaySpeed_internal(v);
     int j;
     for (j = 0; j < MAX_CHANNELS; j++)
@@ -327,7 +327,7 @@ handle Engine::play3d(
 }
 
 handle Engine::play3dClocked(
-    time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, unsigned int aBus)
+    time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, size_t aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -359,7 +359,7 @@ handle Engine::play3dClocked(
         samples += int(floor((dist / m3dSoundSpeed) * mSamplerate));
     }
 
-    update3dVoices_internal(reinterpret_cast<unsigned int*>(&v), 1);
+    update3dVoices_internal(reinterpret_cast<size_t*>(&v), 1);
     lockAudioMutex_internal();
     updateVoiceRelativePlaySpeed_internal(v);
     int j;
@@ -481,7 +481,7 @@ void Engine::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, 
 
 
 void Engine::set3dSourceAttenuation(handle       aVoiceHandle,
-                                    unsigned int aAttenuationModel,
+                                    size_t aAttenuationModel,
                                     float        aAttenuationRolloffFactor)
 {
     FOR_ALL_VOICES_PRE_3D

@@ -36,9 +36,9 @@ class NoiseInstance : public AudioSourceInstance
   public:
     explicit NoiseInstance(Noise* aParent);
 
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
     bool         hasEnded() override;
 
   public:

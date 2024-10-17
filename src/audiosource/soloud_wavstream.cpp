@@ -39,19 +39,19 @@ namespace SoLoud
 size_t drflac_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 {
     auto* fp = static_cast<MemoryFile*>(pUserData);
-    return fp->read(static_cast<unsigned char*>(pBufferOut), (unsigned int)bytesToRead);
+    return fp->read(static_cast<unsigned char*>(pBufferOut), (size_t)bytesToRead);
 }
 
 size_t drmp3_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 {
     auto* fp = static_cast<MemoryFile*>(pUserData);
-    return fp->read(static_cast<unsigned char*>(pBufferOut), (unsigned int)bytesToRead);
+    return fp->read(static_cast<unsigned char*>(pBufferOut), (size_t)bytesToRead);
 }
 
 size_t drwav_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 {
     auto* fp = static_cast<MemoryFile*>(pUserData);
-    return fp->read(static_cast<unsigned char*>(pBufferOut), (unsigned int)bytesToRead);
+    return fp->read(static_cast<unsigned char*>(pBufferOut), (size_t)bytesToRead);
 }
 
 drflac_bool32 drflac_seek_func(void* pUserData, int offset, drflac_seek_origin origin)
@@ -217,9 +217,9 @@ static int getOggData(float** aOggOutputs,
 }
 
 
-unsigned int WavStreamInstance::getAudio(float*       aBuffer,
-                                         unsigned int aSamplesToRead,
-                                         unsigned int aBufferSize)
+size_t WavStreamInstance::getAudio(float*       aBuffer,
+                                         size_t aSamplesToRead,
+                                         size_t aBufferSize)
 {
     size_t                                offset = 0;
     std::array<float, 512 * MAX_CHANNELS> tmp{};
@@ -234,14 +234,14 @@ unsigned int WavStreamInstance::getAudio(float*       aBuffer,
         case WAVSTREAM_FLAC: {
             auto* flac = std::get<drflac*>(mCodec);
 
-            for (unsigned int i = 0; i < aSamplesToRead; i += 512)
+            for (size_t i = 0; i < aSamplesToRead; i += 512)
             {
-                unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
+                size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
                 offset += drflac_read_pcm_frames_f32(flac, blockSize, tmp.data());
 
-                for (unsigned int j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; j++)
                 {
-                    for (unsigned int k = 0; k < mChannels; k++)
+                    for (size_t k = 0; k < mChannels; k++)
                     {
                         aBuffer[k * aSamplesToRead + i + j] = tmp[j * flac->channels + k];
                     }
@@ -256,14 +256,14 @@ unsigned int WavStreamInstance::getAudio(float*       aBuffer,
         case WAVSTREAM_MP3: {
             auto* mp3 = std::get<drmp3*>(mCodec);
 
-            for (unsigned int i = 0; i < aSamplesToRead; i += 512)
+            for (size_t i = 0; i < aSamplesToRead; i += 512)
             {
-                unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
-                offset += (unsigned int)drmp3_read_pcm_frames_f32(mp3, blockSize, tmp.data());
+                size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
+                offset += (size_t)drmp3_read_pcm_frames_f32(mp3, blockSize, tmp.data());
 
-                for (unsigned int j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; j++)
                 {
-                    for (unsigned int k = 0; k < mChannels; k++)
+                    for (size_t k = 0; k < mChannels; k++)
                     {
                         aBuffer[k * aSamplesToRead + i + j] = tmp[j * mp3->channels + k];
                     }
@@ -318,14 +318,14 @@ unsigned int WavStreamInstance::getAudio(float*       aBuffer,
         case WAVSTREAM_WAV: {
             auto* wav = std::get<drwav*>(mCodec);
 
-            for (unsigned int i = 0; i < aSamplesToRead; i += 512)
+            for (size_t i = 0; i < aSamplesToRead; i += 512)
             {
-                unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
+                size_t blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
                 offset += drwav_read_pcm_frames_f32(wav, blockSize, tmp.data());
 
-                for (unsigned int j = 0; j < blockSize; j++)
+                for (size_t j = 0; j < blockSize; j++)
                 {
-                    for (unsigned int k = 0; k < mChannels; k++)
+                    for (size_t k = 0; k < mChannels; k++)
                     {
                         aBuffer[k * aSamplesToRead + i + j] = tmp[j * wav->channels + k];
                     }
@@ -339,7 +339,7 @@ unsigned int WavStreamInstance::getAudio(float*       aBuffer,
     return aSamplesToRead;
 }
 
-bool WavStreamInstance::seek(double aSeconds, float* mScratch, unsigned int mScratchSize)
+bool WavStreamInstance::seek(double aSeconds, float* mScratch, size_t mScratchSize)
 {
     if (auto** ogg = std::get_if<stb_vorbis*>(&mCodec))
     {
@@ -435,7 +435,7 @@ void WavStream::loadwav(MemoryFile& fp)
     }
 
     mBaseSamplerate = float(decoder.sampleRate);
-    mSampleCount    = (unsigned int)decoder.totalPCMFrameCount;
+    mSampleCount    = (size_t)decoder.totalPCMFrameCount;
     mFiletype       = WAVSTREAM_WAV;
     drwav_uninit(&decoder);
 }
@@ -483,7 +483,7 @@ void WavStream::loadflac(MemoryFile& fp)
     }
 
     mBaseSamplerate = (float)decoder->sampleRate;
-    mSampleCount    = (unsigned int)decoder->totalPCMFrameCount;
+    mSampleCount    = (size_t)decoder->totalPCMFrameCount;
     mFiletype       = WAVSTREAM_FLAC;
     drflac_close(decoder);
 }
@@ -507,7 +507,7 @@ void WavStream::loadmp3(MemoryFile& fp)
     drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
 
     mBaseSamplerate = float(decoder.sampleRate);
-    mSampleCount    = (unsigned int)samples;
+    mSampleCount    = (size_t)samples;
     mFiletype       = WAVSTREAM_MP3;
     drmp3_uninit(&decoder);
 }

@@ -40,9 +40,9 @@ FlangerFilterInstance::FlangerFilterInstance(FlangerFilter* aParent)
 }
 
 void FlangerFilterInstance::filter(float*       aBuffer,
-                                   unsigned int aSamples,
-                                   unsigned int aBufferSize,
-                                   unsigned int aChannels,
+                                   size_t aSamples,
+                                   size_t aBufferSize,
+                                   size_t aChannels,
                                    float        aSamplerate,
                                    double       aTime)
 {
@@ -61,7 +61,7 @@ void FlangerFilterInstance::filter(float*       aBuffer,
         memset(mBuffer, 0, sizeof(float) * mBufferLength * aChannels);
     }
 
-    unsigned int i, j;
+    size_t i, j;
     int          maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
     double       inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
     for (i = 0; i < aChannels; i++)

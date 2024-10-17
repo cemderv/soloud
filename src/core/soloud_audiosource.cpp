@@ -103,7 +103,7 @@ bool AudioSourceInstance::rewind()
     return false;
 }
 
-bool AudioSourceInstance::seek(double aSeconds, float* mScratch, unsigned int mScratchSize)
+bool AudioSourceInstance::seek(double aSeconds, float* mScratch, size_t mScratchSize)
 {
     double offset = aSeconds - mStreamPosition;
     if (offset <= 0)
@@ -187,7 +187,7 @@ void AudioSource::setAutoStop(bool aAutoStop)
     }
 }
 
-void AudioSource::setFilter(unsigned int aFilterId, Filter* aFilter)
+void AudioSource::setFilter(size_t aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -209,7 +209,7 @@ void AudioSource::set3dMinMaxDistance(float aMinDistance, float aMaxDistance)
     m3dMaxDistance = aMaxDistance;
 }
 
-void AudioSource::set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+void AudioSource::set3dAttenuation(size_t aAttenuationModel, float aAttenuationRolloffFactor)
 {
     m3dAttenuationModel   = aAttenuationModel;
     m3dAttenuationRolloff = aAttenuationRolloffFactor;
@@ -270,7 +270,7 @@ void AudioSource::setInaudibleBehavior(bool aMustTick, bool aKill)
 }
 
 
-float AudioSourceInstance::getInfo(unsigned int /*aInfoKey*/)
+float AudioSourceInstance::getInfo(size_t /*aInfoKey*/)
 {
     return 0;
 }

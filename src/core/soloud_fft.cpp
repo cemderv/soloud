@@ -2512,14 +2512,14 @@ void ifft256(float* aBuffer)
     ifft(aBuffer, 256);
 }
 
-void fft(float* aBuffer, unsigned int aBufferLength)
+void fft(float* aBuffer, size_t aBufferLength)
 {
     fftimpl::cftbsub(aBufferLength, aBuffer);
 }
 
-void ifft(float* aBuffer, unsigned int aBufferLength)
+void ifft(float* aBuffer, size_t aBufferLength)
 {
-    unsigned int i;
+    size_t i;
     fftimpl::cftfsub(aBufferLength, aBuffer);
     for (i = 0; i < aBufferLength; i++)
         aBuffer[i] *= 1.0f / float(aBufferLength / 2);

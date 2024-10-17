@@ -43,9 +43,9 @@ void Prg::srand(int aSeed)
 }
 
 // WELL512 implementation, public domain by Chris Lomont
-unsigned int Prg::rand()
+size_t Prg::rand()
 {
-    unsigned int a, b, c, d;
+    size_t a, b, c, d;
     a = mState[mIndex];
     c = mState[(mIndex + 13) & 15];
     b = a ^ c ^ (a << 16) ^ (c << 15);

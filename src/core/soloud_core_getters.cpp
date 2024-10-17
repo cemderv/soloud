@@ -43,7 +43,7 @@ float Engine::getGlobalVolume() const
     return mGlobalVolume;
 }
 
-handle Engine::getHandleFromVoice_internal(unsigned int aVoice) const
+handle Engine::getHandleFromVoice_internal(size_t aVoice) const
 {
     if (mVoice[aVoice] == 0)
         return 0;
@@ -63,7 +63,7 @@ int Engine::getVoiceFromHandle_internal(handle aVoiceHandle) const
     }
 
     int          ch  = (aVoiceHandle & 0xfff) - 1;
-    unsigned int idx = aVoiceHandle >> 12;
+    size_t idx = aVoiceHandle >> 12;
     if (mVoice[ch] && (mVoice[ch]->mPlayIndex & 0xfffff) == idx)
     {
         return ch;
@@ -71,22 +71,22 @@ int Engine::getVoiceFromHandle_internal(handle aVoiceHandle) const
     return -1;
 }
 
-unsigned int Engine::getMaxActiveVoiceCount() const
+size_t Engine::getMaxActiveVoiceCount() const
 {
     return mMaxActiveVoices;
 }
 
-unsigned int Engine::getActiveVoiceCount()
+size_t Engine::getActiveVoiceCount()
 {
     lockAudioMutex_internal();
     if (mActiveVoiceDirty)
         calcActiveVoices_internal();
-    unsigned int c = mActiveVoiceCount;
+    size_t c = mActiveVoiceCount;
     unlockAudioMutex_internal();
     return c;
 }
 
-unsigned int Engine::getVoiceCount()
+size_t Engine::getVoiceCount()
 {
     lockAudioMutex_internal();
     int i;
@@ -161,7 +161,7 @@ bool Engine::getAutoStop(handle aVoiceHandle)
     return !v;
 }
 
-float Engine::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
+float Engine::getInfo(handle aVoiceHandle, size_t mInfoKey)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -303,7 +303,7 @@ bool Engine::getProtectVoice(handle aVoiceHandle)
 
 int Engine::findFreeVoice_internal()
 {
-    unsigned int lowest_play_index_value = 0xffffffff;
+    size_t lowest_play_index_value = 0xffffffff;
     int          lowest_play_index       = -1;
 
     // (slowly) drag the highest active voice index down
@@ -331,7 +331,7 @@ int Engine::findFreeVoice_internal()
     return lowest_play_index;
 }
 
-unsigned int Engine::getLoopCount(handle aVoiceHandle)
+size_t Engine::getLoopCount(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -346,25 +346,25 @@ unsigned int Engine::getLoopCount(handle aVoiceHandle)
 }
 
 // Returns current backend channel count (1 mono, 2 stereo, etc)
-unsigned int Engine::getBackendChannels() const
+size_t Engine::getBackendChannels() const
 {
     return mChannels;
 }
 
 // Returns current backend sample rate
-unsigned int Engine::getBackendSamplerate() const
+size_t Engine::getBackendSamplerate() const
 {
     return mSamplerate;
 }
 
 // Returns current backend buffer size
-unsigned int Engine::getBackendBufferSize() const
+size_t Engine::getBackendBufferSize() const
 {
     return mBufferSize;
 }
 
 // Get speaker position in 3d space
-vec3 Engine::getSpeakerPosition(unsigned int aChannel) const
+vec3 Engine::getSpeakerPosition(size_t aChannel) const
 {
     return m3dSpeakerPosition.at(aChannel);
 }

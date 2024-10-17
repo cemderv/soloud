@@ -43,7 +43,7 @@ class Speech : public AudioSource
     Speech();
     void setText(const char* aText);
 
-    void setParams(unsigned int aBaseFrequency   = 1330,
+    void setParams(size_t aBaseFrequency   = 1330,
                    float        aBaseSpeed       = 10.0f,
                    float        aBaseDeclination = 0.5f,
                    int          aBaseWaveform    = KW_TRIANGLE);
@@ -58,9 +58,9 @@ class SpeechInstance : public AudioSourceInstance
   public:
     explicit SpeechInstance(Speech* aParent);
 
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
 
     bool rewind() override;
 

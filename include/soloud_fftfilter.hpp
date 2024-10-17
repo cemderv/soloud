@@ -37,37 +37,37 @@ class FFTFilterInstance : public FilterInstance
     float*       mMixBuffer;
     float*       mLastPhase;
     float*       mSumPhase;
-    unsigned int mInputOffset[MAX_CHANNELS];
-    unsigned int mMixOffset[MAX_CHANNELS];
-    unsigned int mReadOffset[MAX_CHANNELS];
+    size_t mInputOffset[MAX_CHANNELS];
+    size_t mMixOffset[MAX_CHANNELS];
+    size_t mReadOffset[MAX_CHANNELS];
     FFTFilter*   mParent;
 
   public:
     virtual void fftFilterChannel(float*       aFFTBuffer,
-                                  unsigned int aSamples,
+                                  size_t aSamples,
                                   float        aSamplerate,
                                   time_t       aTime,
-                                  unsigned int aChannel,
-                                  unsigned int aChannels);
+                                  size_t aChannel,
+                                  size_t aChannels);
     void         filterChannel(float*       aBuffer,
-                               unsigned int aSamples,
+                               size_t aSamples,
                                float        aSamplerate,
                                time_t       aTime,
-                               unsigned int aChannel,
-                               unsigned int aChannels) override;
+                               size_t aChannel,
+                               size_t aChannels) override;
     ~FFTFilterInstance() override;
     explicit FFTFilterInstance(FFTFilter* aParent);
     FFTFilterInstance();
-    void comp2MagPhase(float* aFFTBuffer, unsigned int aSamples);
+    void comp2MagPhase(float* aFFTBuffer, size_t aSamples);
     void magPhase2MagFreq(float*       aFFTBuffer,
-                          unsigned int aSamples,
+                          size_t aSamples,
                           float        aSamplerate,
-                          unsigned int aChannel);
+                          size_t aChannel);
     void magFreq2MagPhase(float*       aFFTBuffer,
-                          unsigned int aSamples,
+                          size_t aSamples,
                           float        aSamplerate,
-                          unsigned int aChannel);
-    void magPhase2Comp(float* aFFTBuffer, unsigned int aSamples);
+                          size_t aChannel);
+    void magPhase2Comp(float* aFFTBuffer, size_t aSamples);
     void init();
 };
 

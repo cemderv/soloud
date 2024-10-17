@@ -73,9 +73,9 @@ class Prg
   public:
     // random generator
     Prg();
-    unsigned int mState[16];
-    unsigned int mIndex;
-    unsigned int rand();
+    size_t mState[16];
+    size_t mIndex;
+    size_t rand();
     float        rand_float();
     void         srand(int aSeed);
 };

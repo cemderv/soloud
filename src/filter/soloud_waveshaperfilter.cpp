@@ -36,15 +36,15 @@ WaveShaperFilterInstance::WaveShaperFilterInstance(WaveShaperFilter* aParent)
 }
 
 void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
-                                             unsigned int aSamples,
+                                             size_t aSamples,
                                              float /*aSamplerate*/,
                                              double aTime,
-                                             unsigned int /*aChannel*/,
-                                             unsigned int /*aChannels*/)
+                                             size_t /*aChannel*/,
+                                             size_t /*aChannels*/)
 {
     updateParams(aTime);
 
-    unsigned int i;
+    size_t i;
     float        k = 0;
     if (mParam[1] == 1)
         k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;

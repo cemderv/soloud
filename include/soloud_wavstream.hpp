@@ -57,10 +57,10 @@ class WavStreamInstance : public AudioSourceInstance
 
   public:
     explicit WavStreamInstance(WavStream* aParent);
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
-    bool         seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
+    bool         seek(double aSeconds, float* mScratch, size_t mScratchSize) override;
     bool         rewind() override;
     bool         hasEnded() override;
     ~WavStreamInstance() override;
@@ -82,7 +82,7 @@ class WavStream : public AudioSource
     int          mFiletype = WAVSTREAM_WAV;
     MemoryFile   mFile;
     bool         mIsStream    = false;
-    unsigned int mSampleCount = 0;
+    size_t mSampleCount = 0;
 
     explicit WavStream(std::span<const std::byte> data);
 

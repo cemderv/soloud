@@ -50,9 +50,9 @@ static void writesamples(short* aSrc, float* aDst, int aCount)
     }
 }
 
-unsigned int SpeechInstance::getAudio(float*       aBuffer,
-                                      unsigned int aSamplesToRead,
-                                      unsigned int /*aBufferSize*/)
+size_t SpeechInstance::getAudio(float*       aBuffer,
+                                      size_t aSamplesToRead,
+                                      size_t /*aBufferSize*/)
 {
     // TODO: check this, was .init() before (mLastElement etc)
     mSynth = klatt{mParent->mBaseFrequency,
@@ -60,10 +60,10 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
                    mParent->mBaseDeclination,
                    mParent->mBaseWaveform};
 
-    unsigned int samples_out = 0;
+    size_t samples_out = 0;
     if (mSampleCount > mOffset)
     {
-        unsigned int copycount = mSampleCount - mOffset;
+        size_t copycount = mSampleCount - mOffset;
         if (copycount > aSamplesToRead)
         {
             copycount = aSamplesToRead;
@@ -79,7 +79,7 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
         mSampleCount = mSynth.synth(mSynth.mNspFr, mSample.get());
         if (mSampleCount > 0)
         {
-            unsigned int copycount = mSampleCount;
+            size_t copycount = mSampleCount;
             if (copycount > aSamplesToRead - samples_out)
             {
                 copycount = aSamplesToRead - samples_out;
@@ -115,7 +115,7 @@ bool SpeechInstance::hasEnded()
     return mSampleCount < 0;
 }
 
-void Speech::setParams(unsigned int aBaseFrequency,
+void Speech::setParams(size_t aBaseFrequency,
                        float        aBaseSpeed,
                        float        aBaseDeclination,
                        int          aBaseWaveform)

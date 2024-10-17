@@ -40,9 +40,9 @@ DuckFilterInstance::DuckFilterInstance(DuckFilter* aParent)
 }
 
 void DuckFilterInstance::filter(float*       aBuffer,
-                                unsigned int aSamples,
-                                unsigned int aBufferSize,
-                                unsigned int aChannels,
+                                size_t aSamples,
+                                size_t aBufferSize,
+                                size_t aChannels,
                                 float        aSamplerate,
                                 double       aTime)
 {
@@ -64,18 +64,18 @@ void DuckFilterInstance::filter(float*       aBuffer,
         {
             BusInstance* bi = (BusInstance*)mSoloud->mVoice[voiceno];
             float        v  = 0;
-            for (unsigned int i = 0; i < bi->mChannels; i++)
+            for (size_t i = 0; i < bi->mChannels; i++)
                 v += bi->mVisualizationChannelVolume[i];
             if (v > 0.01f)
                 soundOn = 1;
         }
     }
     float level = mCurrentLevel;
-    for (unsigned int j = 0; j < aChannels; j++)
+    for (size_t j = 0; j < aChannels; j++)
     {
         level      = mCurrentLevel;
         int bchofs = j * aBufferSize;
-        for (unsigned int i = 0; i < aSamples; i++)
+        for (size_t i = 0; i < aSamples; i++)
         {
             if (soundOn && level > mParam[DuckFilter::LEVEL])
                 level -= onramp_step;

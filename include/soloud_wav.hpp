@@ -39,9 +39,9 @@ class WavInstance : public AudioSourceInstance
   public:
     explicit WavInstance(Wav* aParent);
 
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
 
     bool rewind() override;
 

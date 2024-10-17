@@ -33,13 +33,13 @@ handle Engine::createVoiceGroup()
 {
     lockAudioMutex_internal();
 
-    unsigned int i;
+    size_t i;
     // Check if there's any deleted voice groups and re-use if found
     for (i = 0; i < mVoiceGroupCount; i++)
     {
         if (mVoiceGroup[i] == nullptr)
         {
-            mVoiceGroup[i] = new unsigned int[17];
+            mVoiceGroup[i] = new size_t[17];
             if (mVoiceGroup[i] == nullptr)
             {
                 unlockAudioMutex_internal();
@@ -56,13 +56,13 @@ handle Engine::createVoiceGroup()
         unlockAudioMutex_internal();
         return 0;
     }
-    unsigned int oldcount = mVoiceGroupCount;
+    size_t oldcount = mVoiceGroupCount;
     if (mVoiceGroupCount == 0)
     {
         mVoiceGroupCount = 4;
     }
     mVoiceGroupCount *= 2;
-    unsigned int** vg = new unsigned int*[mVoiceGroupCount];
+    size_t** vg = new size_t*[mVoiceGroupCount];
     if (vg == nullptr)
     {
         mVoiceGroupCount = oldcount;
@@ -82,7 +82,7 @@ handle Engine::createVoiceGroup()
     delete[] mVoiceGroup;
     mVoiceGroup    = vg;
     i              = oldcount;
-    mVoiceGroup[i] = new unsigned int[17];
+    mVoiceGroup[i] = new size_t[17];
     if (mVoiceGroup[i] == nullptr)
     {
         unlockAudioMutex_internal();
@@ -121,7 +121,7 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
     trimVoiceGroup_internal(aVoiceGroupHandle);
 
     int          c = aVoiceGroupHandle & 0xfff;
-    unsigned int i;
+    size_t i;
 
     lockAudioMutex_internal();
 
@@ -144,7 +144,7 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
     }
 
     // Full group, allocate more memory
-    const auto n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
+    const auto n = new size_t[mVoiceGroup[c][0] * 2 + 1];
 
     for (i = 0; i < mVoiceGroup[c][0]; i++)
         n[i] = mVoiceGroup[c][i];
@@ -162,7 +162,7 @@ bool Engine::isVoiceGroup(handle aVoiceGroupHandle)
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
         return 0;
-    unsigned int c = aVoiceGroupHandle & 0xfff;
+    size_t c = aVoiceGroupHandle & 0xfff;
     if (c >= mVoiceGroupCount)
         return 0;
 
@@ -204,7 +204,7 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
         return;
     }
 
-    unsigned int i;
+    size_t i;
     // first item in voice group is number of allocated indices
     for (i = 1; i < mVoiceGroup[c][0]; i++)
     {
@@ -221,7 +221,7 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
         {
             lockAudioMutex_internal();
             // current index is an invalid handle, move all following handles backwards
-            unsigned int j;
+            size_t j;
             for (j = i; j < mVoiceGroup[c][0] - 1; j++)
             {
                 mVoiceGroup[c][j] = mVoiceGroup[c][j + 1];
@@ -248,7 +248,7 @@ handle* Engine::voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
         return nullptr;
-    unsigned int c = aVoiceGroupHandle & 0xfff;
+    size_t c = aVoiceGroupHandle & 0xfff;
     if (c >= mVoiceGroupCount)
         return nullptr;
     if (mVoiceGroup[c] == nullptr)

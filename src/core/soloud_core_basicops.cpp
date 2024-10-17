@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, unsigned int aBus)
+handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, size_t aBus)
 {
     if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
     {
@@ -108,7 +108,7 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 }
 
 handle Engine::playClocked(
-    time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, unsigned int aBus)
+    time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, size_t aBus)
 {
     handle h = play(aSound, aVolume, aPan, 1, aBus);
     lockAudioMutex_internal();
@@ -129,7 +129,7 @@ handle Engine::playClocked(
     return h;
 }
 
-handle Engine::playBackground(AudioSource& aSound, float aVolume, bool aPaused, unsigned int aBus)
+handle Engine::playBackground(AudioSource& aSound, float aVolume, bool aPaused, size_t aBus)
 {
     handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
     setPanAbsolute(h, 1.0f, 1.0f);

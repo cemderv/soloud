@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-void Engine::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
+void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -46,8 +46,8 @@ void Engine::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
 }
 
 std::optional<float> Engine::getFilterParameter(handle       aVoiceHandle,
-                                                unsigned int aFilterId,
-                                                unsigned int aAttributeId)
+                                                size_t aFilterId,
+                                                size_t aAttributeId)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return {};
@@ -82,8 +82,8 @@ std::optional<float> Engine::getFilterParameter(handle       aVoiceHandle,
 }
 
 void Engine::setFilterParameter(handle       aVoiceHandle,
-                                unsigned int aFilterId,
-                                unsigned int aAttributeId,
+                                size_t aFilterId,
+                                size_t aAttributeId,
                                 float        aValue)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
@@ -109,7 +109,7 @@ void Engine::setFilterParameter(handle       aVoiceHandle,
 }
 
 void Engine::fadeFilterParameter(
-    handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aTo, double aTime)
+    handle aVoiceHandle, size_t aFilterId, size_t aAttributeId, float aTo, double aTime)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -134,8 +134,8 @@ void Engine::fadeFilterParameter(
 }
 
 void Engine::oscillateFilterParameter(handle       aVoiceHandle,
-                                      unsigned int aFilterId,
-                                      unsigned int aAttributeId,
+                                      size_t aFilterId,
+                                      size_t aAttributeId,
                                       float        aFrom,
                                       float        aTo,
                                       double       aTime)

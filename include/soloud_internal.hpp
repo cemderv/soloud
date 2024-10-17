@@ -31,72 +31,72 @@ namespace SoLoud
 // SDL2 "non-dynamic" back-end initialization call
 void sdl2static_init(Engine*      aSoloud,
                      Flags        aFlags      = Flags::ClipRoundoff,
-                     unsigned int aSamplerate = 44100,
-                     unsigned int aBuffer     = 2048,
-                     unsigned int aChannels   = 2);
+                     size_t aSamplerate = 44100,
+                     size_t aBuffer     = 2048,
+                     size_t aChannels   = 2);
 
 // Core Audio driver back-end initialization call
 void coreaudio_init(Engine*      aSoloud,
                     Flags        aFlags      = Flags::ClipRoundoff,
-                    unsigned int aSamplerate = 44100,
-                    unsigned int aBuffer     = 2048,
-                    unsigned int aChannels   = 2);
+                    size_t aSamplerate = 44100,
+                    size_t aBuffer     = 2048,
+                    size_t aChannels   = 2);
 
 // OpenSL ES back-end initialization call
 void opensles_init(Engine*      aSoloud,
                    Flags        aFlags      = Flags::ClipRoundoff,
-                   unsigned int aSamplerate = 44100,
-                   unsigned int aBuffer     = 2048,
-                   unsigned int aChannels   = 2);
+                   size_t aSamplerate = 44100,
+                   size_t aBuffer     = 2048,
+                   size_t aChannels   = 2);
 
 // WinMM back-end initialization call
 void winmm_init(Engine*      aSoloud,
                 Flags        aFlags      = Flags::ClipRoundoff,
-                unsigned int aSamplerate = 44100,
-                unsigned int aBuffer     = 4096,
-                unsigned int aChannels   = 2);
+                size_t aSamplerate = 44100,
+                size_t aBuffer     = 4096,
+                size_t aChannels   = 2);
 
 // XAudio2 back-end initialization call
 void xaudio2_init(Engine*      aSoloud,
                   Flags        aFlags      = Flags::ClipRoundoff,
-                  unsigned int aSamplerate = 44100,
-                  unsigned int aBuffer     = 2048,
-                  unsigned int aChannels   = 2);
+                  size_t aSamplerate = 44100,
+                  size_t aBuffer     = 2048,
+                  size_t aChannels   = 2);
 
 // WASAPI back-end initialization call
 void wasapi_init(Engine*      aSoloud,
                  Flags        aFlags      = Flags::ClipRoundoff,
-                 unsigned int aSamplerate = 44100,
-                 unsigned int aBuffer     = 4096,
-                 unsigned int aChannels   = 2);
+                 size_t aSamplerate = 44100,
+                 size_t aBuffer     = 4096,
+                 size_t aChannels   = 2);
 
 // PS Vita homebrew back-end initialization call
 void vita_homebrew_init(Engine*      aSoloud,
                         Flags        aFlags      = Flags::ClipRoundoff,
-                        unsigned int aSamplerate = 44100,
-                        unsigned int aBuffer     = 2048,
-                        unsigned int aChannels   = 2);
+                        size_t aSamplerate = 44100,
+                        size_t aBuffer     = 2048,
+                        size_t aChannels   = 2);
 
 // ALSA back-end initialization call
 void alsa_init(Engine*      aSoloud,
                Flags        aFlags      = Flags::ClipRoundoff,
-               unsigned int aSamplerate = 44100,
-               unsigned int aBuffer     = 2048,
-               unsigned int aChannels   = 2);
+               size_t aSamplerate = 44100,
+               size_t aBuffer     = 2048,
+               size_t aChannels   = 2);
 
 // Interlace samples in a buffer. From 11112222 to 12121212
 void interlace_samples_float(const float* aSourceBuffer,
                              float*       aDestBuffer,
-                             unsigned int aSamples,
-                             unsigned int aChannels,
-                             unsigned int aStride);
+                             size_t aSamples,
+                             size_t aChannels,
+                             size_t aStride);
 
 // Convert to 16-bit and interlace samples in a buffer. From 11112222 to 12121212
 void interlace_samples_s16(const float* aSourceBuffer,
                            short*       aDestBuffer,
-                           unsigned int aSamples,
-                           unsigned int aChannels,
-                           unsigned int aStride);
+                           size_t aSamples,
+                           size_t aChannels,
+                           size_t aStride);
 }; // namespace SoLoud
 
 #define FOR_ALL_VOICES_PRE                                                                         \

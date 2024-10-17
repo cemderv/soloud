@@ -104,7 +104,7 @@ class AudioSourceInstance3dData
     float m3dAttenuationRolloff = 1.0f;
 
     // 3d attenuation model
-    unsigned int m3dAttenuationModel = 0;
+    size_t m3dAttenuationModel = 0;
 
     // 3d doppler factor
     float m3dDopplerFactor = 1.0f;
@@ -143,10 +143,10 @@ class AudioSourceInstance
     virtual ~AudioSourceInstance() noexcept;
 
     // Play index; used to identify instances from handles
-    unsigned int mPlayIndex = 0;
+    size_t mPlayIndex = 0;
 
     // Loop count
-    unsigned int mLoopCount = 0;
+    size_t mLoopCount = 0;
 
     AudioSourceInstanceFlags mFlags = AudioSourceInstanceFlags::None;
 
@@ -207,10 +207,10 @@ class AudioSourceInstance
     std::array<float, MAX_CHANNELS> mCurrentChannelVolume{};
 
     // ID of the sound source that generated this instance
-    unsigned int mAudioSourceID = 0;
+    size_t mAudioSourceID = 0;
 
     // Handle of the bus this audio instance is playing on. 0 for root.
-    unsigned int mBusHandle = ~0u;
+    size_t mBusHandle = ~0u;
 
     // Filter pointer
     std::array<FilterInstance*, FILTERS_PER_STREAM> mFilter{};
@@ -222,33 +222,33 @@ class AudioSourceInstance
     std::array<float*, 2> mResampleData{};
 
     // Sub-sample playhead; 16.16 fixed point
-    unsigned int mSrcOffset = 0;
+    size_t mSrcOffset = 0;
 
     // Samples left over from earlier pass
-    unsigned int mLeftoverSamples = 0;
+    size_t mLeftoverSamples = 0;
 
     // Number of samples to delay streaming
-    unsigned int mDelaySamples = 0;
+    size_t mDelaySamples = 0;
 
     // When looping, start playing from this time
     time_t mLoopPoint = 0;
 
     // Get N samples from the stream to the buffer. Report samples written.
-    virtual unsigned int getAudio(float*       aBuffer,
-                                  unsigned int aSamplesToRead,
-                                  unsigned int aBufferSize) = 0;
+    virtual size_t getAudio(float*       aBuffer,
+                                  size_t aSamplesToRead,
+                                  size_t aBufferSize) = 0;
 
     // Has the stream ended?
     virtual bool hasEnded() = 0;
 
     // Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-    virtual bool seek(time_t aSeconds, float* mScratch, unsigned int mScratchSize);
+    virtual bool seek(time_t aSeconds, float* mScratch, size_t mScratchSize);
 
     // Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
     virtual bool rewind();
 
     // Get information. Returns 0 by default.
-    virtual float getInfo(unsigned int aInfoKey);
+    virtual float getInfo(size_t aInfoKey);
 };
 
 static inline AudioSourceInstanceFlags operator&(AudioSourceInstanceFlags lhs,
@@ -335,7 +335,7 @@ class AudioSource
     virtual AudioSourceInstance* createInstance() = 0;
 
     // Set filter. Set to nullptr to clear the filter.
-    virtual void setFilter(unsigned int aFilterId, Filter* aFilter);
+    virtual void setFilter(size_t aFilterId, Filter* aFilter);
 
     // Stop all instances of this audio source
     void stop();
@@ -356,7 +356,7 @@ class AudioSource
     void set3dMinMaxDistance(float aMinDistance, float aMaxDistance);
 
     // Set attenuation model and rolloff factor for 3d audio source
-    void set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+    void set3dAttenuation(size_t aAttenuationModel, float aAttenuationRolloffFactor);
 
     // Set doppler factor to reduce or enhance doppler effect, default = 1.0
     void set3dDopplerFactor(float aDopplerFactor);
@@ -383,7 +383,7 @@ class AudioSource
     time_t getLoopPoint();
 
     // Flags. See AudioSource::FLAGS
-    unsigned int mFlags = 0;
+    size_t mFlags = 0;
 
     // Base sample rate, used to initialize instances
     float mBaseSamplerate = 44'100.0f;
@@ -392,10 +392,10 @@ class AudioSource
     float mVolume = 1.0f;
 
     // Number of channels this audio source produces
-    unsigned int mChannels = 1;
+    size_t mChannels = 1;
 
     // Sound source ID. Assigned by SoLoud the first time it's played.
-    unsigned int mAudioSourceID = 0;
+    size_t mAudioSourceID = 0;
 
     // 3d min distance
     float m3dMinDistance = 1.0f;
@@ -407,7 +407,7 @@ class AudioSource
     float m3dAttenuationRolloff = 1.0f;
 
     // 3d attenuation model
-    unsigned int m3dAttenuationModel = NO_ATTENUATION;
+    size_t m3dAttenuationModel = NO_ATTENUATION;
 
     // 3d doppler factor
     float m3dDopplerFactor = 1.0f;

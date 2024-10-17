@@ -37,13 +37,13 @@ RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
 }
 
 void RobotizeFilterInstance::filterChannel(float*       aBuffer,
-                                           unsigned int aSamples,
+                                           size_t aSamples,
                                            float        aSamplerate,
                                            time_t       aTime,
-                                           unsigned int aChannel,
-                                           unsigned int aChannels)
+                                           size_t aChannel,
+                                           size_t aChannels)
 {
-    unsigned int i;
+    size_t i;
     int          period = (int)(aSamplerate / mParam[FREQ]);
     int          start  = (int)(aTime * aSamplerate) % period;
     for (i = 0; i < aSamples; i++)

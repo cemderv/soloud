@@ -30,9 +30,9 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 result alsa_init(Soloud*      aSoloud,
-                 unsigned int aFlags,
-                 unsigned int aSamplerate,
-                 unsigned int aBuffer)
+                 size_t aFlags,
+                 size_t aSamplerate,
+                 size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -107,10 +107,10 @@ static void alsaCleanup(Soloud* aSoloud)
 }
 
 result alsa_init(Soloud*      aSoloud,
-                 unsigned int aFlags,
-                 unsigned int aSamplerate,
-                 unsigned int aBuffer,
-                 unsigned int aChannels)
+                 size_t aFlags,
+                 size_t aSamplerate,
+                 size_t aBuffer,
+                 size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));
@@ -139,7 +139,7 @@ result alsa_init(Soloud*      aSoloud,
     snd_pcm_hw_params_set_channels(handle, params, 2);
     snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
 
-    unsigned int val = aSamplerate;
+    size_t val = aSamplerate;
     int          dir = 0;
     rc               = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
     if (rc < 0)

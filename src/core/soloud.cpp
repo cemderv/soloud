@@ -67,7 +67,7 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
 Engine::Engine()
 {
 #ifdef FLOATING_POINT_DEBUG
-    unsigned int u;
+    size_t u;
     u = _controlfp(0, 0);
     u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE |
               _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
@@ -119,7 +119,7 @@ Engine::~Engine()
     // let's stop all sounds before deinit, so we don't mess up our mutexes
     stopAll();
     deinit();
-    unsigned int i;
+    size_t i;
     for (i = 0; i < FILTERS_PER_STREAM; i++)
     {
         delete mFilterInstance[i];
@@ -145,9 +145,9 @@ void Engine::deinit()
 }
 
 void Engine::init(Flags                       aFlags,
-                  std::optional<unsigned int> aSamplerate,
-                  std::optional<unsigned int> aBufferSize,
-                  unsigned int                aChannels)
+                  std::optional<size_t> aSamplerate,
+                  std::optional<size_t> aBufferSize,
+                  size_t                aChannels)
 {
     assert(aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
@@ -239,10 +239,10 @@ void Engine::resume()
 }
 
 
-void Engine::postinit_internal(unsigned int aSamplerate,
-                               unsigned int aBufferSize,
+void Engine::postinit_internal(size_t aSamplerate,
+                               size_t aBufferSize,
                                Flags        aFlags,
-                               unsigned int aChannels)
+                               size_t aChannels)
 {
     mGlobalVolume = 1;
     mChannels     = aChannels;
@@ -345,7 +345,7 @@ float* Engine::getWave()
     return mWaveData.data();
 }
 
-float Engine::getApproximateVolume(unsigned int aChannel)
+float Engine::getApproximateVolume(size_t aChannel)
 {
     if (aChannel > mChannels)
         return 0;
@@ -386,14 +386,14 @@ float* Engine::calcFFT()
 #if defined(SOLOUD_SSE_INTRINSICS)
 void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
-                           unsigned int        aSamples,
+                           size_t        aSamples,
                            float               aVolume0,
                            float               aVolume1)
 {
     float        vd = (aVolume1 - aVolume0) / aSamples;
     float        v  = aVolume0;
-    unsigned int i, j, c, d;
-    unsigned int samplequads = (aSamples + 3) / 4; // rounded up
+    size_t i, j, c, d;
+    size_t samplequads = (aSamples + 3) / 4; // rounded up
 
     // Clip
     if (mFlags & CLIP_ROUNDOFF)
@@ -504,14 +504,14 @@ void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
 #else // fallback code
 void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
-                           unsigned int        aSamples,
+                           size_t        aSamples,
                            float               aVolume0,
                            float               aVolume1)
 {
     float        vd = (aVolume1 - aVolume0) / aSamples;
     float        v  = aVolume0;
-    unsigned int i, j, c, d;
-    unsigned int samplequads = (aSamples + 3) / 4; // rounded up
+    size_t i, j, c, d;
+    size_t samplequads = (aSamples + 3) / 4; // rounded up
     // Clip
     if (testFlag(mFlags, Flags::ClipRoundoff))
     {
@@ -699,10 +699,10 @@ static void resample_point(
 
 void panAndExpand(AudioSourceInstance* aVoice,
                   float*               aBuffer,
-                  unsigned int         aSamplesToRead,
-                  unsigned int         aBufferSize,
+                  size_t         aSamplesToRead,
+                  size_t         aBufferSize,
                   float*               aScratch,
-                  unsigned int         aChannels)
+                  size_t         aChannels)
 {
 #ifdef SOLOUD_SSE_INTRINSICS
     assert(((size_t)aBuffer & 0xf) == 0);
@@ -712,7 +712,7 @@ void panAndExpand(AudioSourceInstance* aVoice,
     float        pan[MAX_CHANNELS]; // current speaker volume
     float        pand[MAX_CHANNELS]; // destination speaker volume
     float        pani[MAX_CHANNELS]; // speaker volume increment per sample
-    unsigned int j, k;
+    size_t j, k;
     for (k = 0; k < aChannels; k++)
     {
         pan[k]  = aVoice->mCurrentChannelVolume[k];
@@ -790,7 +790,7 @@ void panAndExpand(AudioSourceInstance* aVoice,
                     int c = 0;
                     // if ((aBufferSize & 3) == 0)
                     {
-                        unsigned int           samplequads = aSamplesToRead / 4; // rounded down
+                        size_t           samplequads = aSamplesToRead / 4; // rounded down
                         TinyAlignedFloatBuffer pan0;
                         pan0.mData[0] = pan[0] + pani[0];
                         pan0.mData[1] = pan[0] + pani[0] * 2;
@@ -855,7 +855,7 @@ void panAndExpand(AudioSourceInstance* aVoice,
                     int c = 0;
                     // if ((aBufferSize & 3) == 0)
                     {
-                        unsigned int           samplequads = aSamplesToRead / 4; // rounded down
+                        size_t           samplequads = aSamplesToRead / 4; // rounded down
                         TinyAlignedFloatBuffer pan0;
                         pan0.mData[0] = pan[0] + pani[0];
                         pan0.mData[1] = pan[0] + pani[0] * 2;
@@ -1254,15 +1254,15 @@ void panAndExpand(AudioSourceInstance* aVoice,
 }
 
 void Engine::mixBus_internal(float*       aBuffer,
-                             unsigned int aSamplesToRead,
-                             unsigned int aBufferSize,
+                             size_t aSamplesToRead,
+                             size_t aBufferSize,
                              float*       aScratch,
-                             unsigned int aBus,
+                             size_t aBus,
                              float        aSamplerate,
-                             unsigned int aChannels,
+                             size_t aChannels,
                              Resampler    aResampler)
 {
-    unsigned int i, j;
+    size_t i, j;
     // Clear accumulation buffer
     for (i = 0; i < aSamplesToRead; i++)
     {
@@ -1285,8 +1285,8 @@ void Engine::mixBus_internal(float*       aBuffer,
             // avoid step overflow
             if (step > (1 << (32 - FIXPOINT_FRAC_BITS)))
                 step = 0;
-            unsigned int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
-            unsigned int outofs     = 0;
+            size_t step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
+            size_t outofs     = 0;
 
             if (voice->mDelaySamples)
             {
@@ -1302,7 +1302,7 @@ void Engine::mixBus_internal(float*       aBuffer,
                 }
 
                 // Clear scratch where we're skipping
-                for (unsigned int k = 0; k < voice->mChannels; k++)
+                for (size_t k = 0; k < voice->mChannels; k++)
                 {
                     memset(aScratch + k * aBufferSize, 0, sizeof(float) * outofs);
                 }
@@ -1351,7 +1351,7 @@ void Engine::mixBus_internal(float*       aBuffer,
                     // Clear remaining of the resample data if the full scratch wasn't used
                     if (readcount < SAMPLE_GRANULARITY)
                     {
-                        for (unsigned int k = 0; k < voice->mChannels; k++)
+                        for (size_t k = 0; k < voice->mChannels; k++)
                         {
                             memset(voice->mResampleData[0] + readcount + SAMPLE_GRANULARITY * k,
                                    0,
@@ -1394,7 +1394,7 @@ void Engine::mixBus_internal(float*       aBuffer,
                 // Figure out how many samples we can generate from this source data.
                 // The value may be zero.
 
-                unsigned int writesamples = 0;
+                size_t writesamples = 0;
 
                 if (voice->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
                 {
@@ -1487,7 +1487,7 @@ void Engine::mixBus_internal(float*       aBuffer,
             // audiosource for data)
             float        step       = voice->mSamplerate / aSamplerate;
             int          step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
-            unsigned int outofs     = 0;
+            size_t outofs     = 0;
 
             if (voice->mDelaySamples)
             {
@@ -1558,7 +1558,7 @@ void Engine::mixBus_internal(float*       aBuffer,
                 // Figure out how many samples we can generate from this source data.
                 // The value may be zero.
 
-                unsigned int writesamples = 0;
+                size_t writesamples = 0;
 
                 if (voice->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
                 {
@@ -1604,9 +1604,9 @@ void Engine::mapResampleBuffers_internal()
     assert(mMaxActiveVoices < 256);
     std::array<char, 256> live{};
 
-    for (unsigned int i = 0; i < mMaxActiveVoices; i++)
+    for (size_t i = 0; i < mMaxActiveVoices; i++)
     {
-        for (unsigned int j = 0; j < mMaxActiveVoices; j++)
+        for (size_t j = 0; j < mMaxActiveVoices; j++)
         {
             if (mResampleDataOwner[i] && mResampleDataOwner[i] == mVoice[mActiveVoice[j]])
             {
@@ -1616,7 +1616,7 @@ void Engine::mapResampleBuffers_internal()
         }
     }
 
-    for (unsigned int i = 0; i < mMaxActiveVoices; i++)
+    for (size_t i = 0; i < mMaxActiveVoices; i++)
     {
         if (!(live[i] & 1) && mResampleDataOwner[i]) // For all dead channels with owners..
         {
@@ -1627,12 +1627,12 @@ void Engine::mapResampleBuffers_internal()
     }
 
     int latestfree = 0;
-    for (unsigned int i = 0; i < mActiveVoiceCount; i++)
+    for (size_t i = 0; i < mActiveVoiceCount; i++)
     {
         if (!(live[i] & 2) && mVoice[mActiveVoice[i]]) // For all live voices with no channel..
         {
             int found = -1;
-            for (unsigned int j = latestfree; found == -1 && j < mMaxActiveVoices; j++)
+            for (size_t j = latestfree; found == -1 && j < mMaxActiveVoices; j++)
             {
                 if (mResampleDataOwner[j] == 0)
                 {
@@ -1663,10 +1663,10 @@ void Engine::calcActiveVoices_internal()
     mActiveVoiceDirty = false;
 
     // Populate
-    unsigned int candidates = 0;
-    unsigned int mustlive   = 0;
+    size_t candidates = 0;
+    size_t mustlive   = 0;
 
-    for (unsigned int i = 0; i < mHighestVoice; i++)
+    for (size_t i = 0; i < mHighestVoice; i++)
     {
         const auto voice = mVoice[i];
         if (voice == nullptr)
@@ -1715,7 +1715,7 @@ void Engine::calcActiveVoices_internal()
     // Iterative partial quicksort:
     int           left = 0, stack[24], pos = 0, right;
     int           len  = candidates - mustlive;
-    unsigned int* data = mActiveVoice + mustlive;
+    size_t* data = mActiveVoice + mustlive;
     int           k    = mActiveVoiceCount;
     for (;;)
     {
@@ -1754,14 +1754,14 @@ void Engine::calcActiveVoices_internal()
     mapResampleBuffers_internal();
 }
 
-void Engine::mix_internal(unsigned int aSamples, unsigned int aStride)
+void Engine::mix_internal(size_t aSamples, size_t aStride)
 {
 #ifdef FLOATING_POINT_DEBUG
     // This needs to be done in the audio thread as well..
     static int done = 0;
     if (!done)
     {
-        unsigned int u;
+        size_t u;
         u = _controlfp(0, 0);
         u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE |
                   _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
@@ -1967,28 +1967,28 @@ void Engine::mix_internal(unsigned int aSamples, unsigned int aStride)
     }
 }
 
-void Engine::mix(float* aBuffer, unsigned int aSamples)
+void Engine::mix(float* aBuffer, size_t aSamples)
 {
-    unsigned int stride = (aSamples + 15) & ~0xf;
+    size_t stride = (aSamples + 15) & ~0xf;
     mix_internal(aSamples, stride);
     interlace_samples_float(mScratch.mData, aBuffer, aSamples, mChannels, stride);
 }
 
-void Engine::mixSigned16(short* aBuffer, unsigned int aSamples)
+void Engine::mixSigned16(short* aBuffer, size_t aSamples)
 {
-    unsigned int stride = (aSamples + 15) & ~0xf;
+    size_t stride = (aSamples + 15) & ~0xf;
     mix_internal(aSamples, stride);
     interlace_samples_s16(mScratch.mData, aBuffer, aSamples, mChannels, stride);
 }
 
 void interlace_samples_float(const float* aSourceBuffer,
                              float*       aDestBuffer,
-                             unsigned int aSamples,
-                             unsigned int aChannels,
-                             unsigned int aStride)
+                             size_t aSamples,
+                             size_t aChannels,
+                             size_t aStride)
 {
     // 111222 -> 121212
-    unsigned int i, j, c;
+    size_t i, j, c;
     c = 0;
     for (j = 0; j < aChannels; j++)
     {
@@ -2003,16 +2003,16 @@ void interlace_samples_float(const float* aSourceBuffer,
 
 void interlace_samples_s16(const float* aSourceBuffer,
                            short*       aDestBuffer,
-                           unsigned int aSamples,
-                           unsigned int aChannels,
-                           unsigned int aStride)
+                           size_t aSamples,
+                           size_t aChannels,
+                           size_t aStride)
 {
     // 111222 -> 121212
-    for (unsigned int j = 0; j < aChannels; j++)
+    for (size_t j = 0; j < aChannels; j++)
     {
-        unsigned int c = j * aStride;
+        size_t c = j * aStride;
 
-        for (unsigned int i = j; i < aSamples * aChannels; i += aChannels)
+        for (size_t i = j; i < aSamples * aChannels; i += aChannels)
         {
             aDestBuffer[i] = short(aSourceBuffer[c] * 0x7fff);
             ++c;

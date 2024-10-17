@@ -40,9 +40,9 @@ class BusInstance final : public AudioSourceInstance
   public:
     explicit BusInstance(Bus* aParent);
 
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
 
     bool hasEnded() override;
 
@@ -50,7 +50,7 @@ class BusInstance final : public AudioSourceInstance
 
   private:
     Bus*               mParent;
-    unsigned int       mScratchSize;
+    size_t       mScratchSize;
     AlignedFloatBuffer mScratch;
 
     // Approximate volume for channels.
@@ -68,7 +68,7 @@ class Bus final : public AudioSource
     BusInstance* createInstance() override;
 
     // Set filter. Set to nullptr to clear the filter.
-    void setFilter(unsigned int aFilterId, Filter* aFilter) override;
+    void setFilter(size_t aFilterId, Filter* aFilter) override;
 
     // Play sound through the bus
     handle play(AudioSource& aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0);
@@ -89,7 +89,7 @@ class Bus final : public AudioSource
         time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel = {}, float aVolume = 1.0f);
 
     // Set number of channels for the bus (default 2)
-    void setChannels(unsigned int aChannels);
+    void setChannels(size_t aChannels);
 
     // Enable or disable visualization data gathering
     void setVisualizationEnable(bool aEnable);
@@ -106,10 +106,10 @@ class Bus final : public AudioSource
 
     // Get approximate volume for output channel for visualization. Visualization has to be enabled
     // before use.
-    float getApproximateVolume(unsigned int aChannel);
+    float getApproximateVolume(size_t aChannel);
 
     // Get number of immediate child voices to this bus
-    unsigned int getActiveVoiceCount();
+    size_t getActiveVoiceCount();
 
     // Get current the resampler for this bus
     Resampler getResampler() const;
@@ -118,7 +118,7 @@ class Bus final : public AudioSource
     void setResampler(Resampler aResampler);
 
     BusInstance* mInstance;
-    unsigned int mChannelHandle;
+    size_t mChannelHandle;
     Resampler    mResampler;
 
     // FFT output data

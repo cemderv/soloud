@@ -51,14 +51,14 @@ static float catmullrom(float t, float p0, float p1, float p2, float p3)
 
 
 void EqFilterInstance::fftFilterChannel(float*       aFFTBuffer,
-                                        unsigned int aSamples,
+                                        size_t aSamples,
                                         float /*aSamplerate*/,
                                         time_t /*aTime*/,
-                                        unsigned int /*aChannel*/,
-                                        unsigned int /*aChannels*/)
+                                        size_t /*aChannel*/,
+                                        size_t /*aChannels*/)
 {
     comp2MagPhase(aFFTBuffer, aSamples / 2);
-    unsigned int p;
+    size_t p;
     for (p = 0; p < aSamples / 2; p++)
     {
         int i  = (int)floor(sqrt(p / (float)(aSamples / 2)) * (aSamples / 2));

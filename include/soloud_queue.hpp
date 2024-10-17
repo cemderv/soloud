@@ -39,9 +39,9 @@ class QueueInstance : public AudioSourceInstance
   public:
     explicit QueueInstance(Queue* aParent);
 
-    unsigned int getAudio(float*       aBuffer,
-                          unsigned int aSamplesToRead,
-                          unsigned int aBufferSize) override;
+    size_t getAudio(float*       aBuffer,
+                          size_t aSamplesToRead,
+                          size_t aBufferSize) override;
 
     bool hasEnded() override;
 };
@@ -55,7 +55,7 @@ class Queue : public AudioSource
     void play(AudioSource& aSound);
 
     // Number of audio sources queued for replay
-    unsigned int getQueueCount() const;
+    size_t getQueueCount() const;
 
     // Is this audio source currently playing?
     bool isCurrentlyPlaying(const AudioSource& aSound) const;
@@ -64,13 +64,13 @@ class Queue : public AudioSource
     void setParamsFromAudioSource(const AudioSource& aSound);
 
     // Set params manually
-    void setParams(float aSamplerate, unsigned int aChannels = 2);
+    void setParams(float aSamplerate, size_t aChannels = 2);
 
     void findQueueHandle();
 
-    unsigned int                                       mReadIndex  = 0;
-    unsigned int                                       mWriteIndex = 0;
-    unsigned int                                       mCount      = 0;
+    size_t                                       mReadIndex  = 0;
+    size_t                                       mWriteIndex = 0;
+    size_t                                       mCount      = 0;
     std::array<AudioSourceInstance*, SOLOUD_QUEUE_MAX> mSource{};
     QueueInstance*                                     mInstance    = nullptr;
     handle                                             mQueueHandle = 0;

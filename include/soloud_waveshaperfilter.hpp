@@ -36,11 +36,11 @@ class WaveShaperFilterInstance : public FilterInstance
 
   public:
     void filterChannel(float*       aBuffer,
-                       unsigned int aSamples,
+                       size_t aSamples,
                        float        aSamplerate,
                        time_t       aTime,
-                       unsigned int aChannel,
-                       unsigned int aChannels) override;
+                       size_t aChannel,
+                       size_t aChannels) override;
 
     explicit WaveShaperFilterInstance(WaveShaperFilter* aParent);
 };

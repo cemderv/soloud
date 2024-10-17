@@ -41,12 +41,12 @@ SfxrInstance::SfxrInstance(Sfxr* aParent)
 
 #define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
 
-unsigned int SfxrInstance::getAudio(float*       aBuffer,
-                                    unsigned int aSamplesToRead,
-                                    unsigned int /*aBufferSize*/)
+size_t SfxrInstance::getAudio(float*       aBuffer,
+                                    size_t aSamplesToRead,
+                                    size_t /*aBufferSize*/)
 {
     float*       buffer = aBuffer;
-    unsigned int i;
+    size_t i;
     for (i = 0; i < aSamplesToRead; i++)
     {
         rep_time++;

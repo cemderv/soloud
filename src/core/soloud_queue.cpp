@@ -33,16 +33,16 @@ QueueInstance::QueueInstance(Queue* aParent)
     mFlags |= AudioSourceInstanceFlags::Protected;
 }
 
-unsigned int QueueInstance::getAudio(float*       aBuffer,
-                                     unsigned int aSamplesToRead,
-                                     unsigned int aBufferSize)
+size_t QueueInstance::getAudio(float*       aBuffer,
+                                     size_t aSamplesToRead,
+                                     size_t aBufferSize)
 {
     if (mParent->mCount == 0)
     {
         return 0;
     }
-    unsigned int copycount = aSamplesToRead;
-    unsigned int copyofs   = 0;
+    size_t copycount = aSamplesToRead;
+    size_t copyofs   = 0;
     while (copycount && mParent->mCount)
     {
         int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs,
@@ -118,7 +118,7 @@ void Queue::play(AudioSource& aSound)
 }
 
 
-unsigned int Queue::getQueueCount() const
+size_t Queue::getQueueCount() const
 {
     if (!mSoloud)
     {
@@ -126,7 +126,7 @@ unsigned int Queue::getQueueCount() const
     }
 
     mSoloud->lockAudioMutex_internal();
-    unsigned int count = mCount;
+    size_t count = mCount;
     mSoloud->unlockAudioMutex_internal();
     return count;
 }
@@ -150,7 +150,7 @@ void Queue::setParamsFromAudioSource(const AudioSource& aSound)
     mBaseSamplerate = aSound.mBaseSamplerate;
 }
 
-void Queue::setParams(float aSamplerate, unsigned int aChannels)
+void Queue::setParams(float aSamplerate, size_t aChannels)
 {
     assert(aChannels >= 1);
     assert(aChannels <= MAX_CHANNELS);

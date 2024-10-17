@@ -36,15 +36,15 @@ BusInstance::BusInstance(Bus* aParent)
     mFlags |= AudioSourceInstanceFlags::Protected | AudioSourceInstanceFlags::InaudibleTick;
 }
 
-unsigned int BusInstance::getAudio(float*       aBuffer,
-                                   unsigned int aSamplesToRead,
-                                   unsigned int aBufferSize)
+size_t BusInstance::getAudio(float*       aBuffer,
+                                   size_t aSamplesToRead,
+                                   size_t aBufferSize)
 {
     int handle = mParent->mChannelHandle;
     if (handle == 0)
     {
         // Avoid reuse of scratch data if this bus hasn't played anything yet
-        unsigned int i;
+        size_t i;
         for (i = 0; i < aBufferSize * mChannels; i++)
             aBuffer[i] = 0;
         return aSamplesToRead;
@@ -238,7 +238,7 @@ void Bus::annexSound(handle aVoiceHandle)
     FOR_ALL_VOICES_POST_EXT
 }
 
-void Bus::setFilter(unsigned int aFilterId, Filter* aFilter)
+void Bus::setFilter(size_t aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -259,7 +259,7 @@ void Bus::setFilter(unsigned int aFilterId, Filter* aFilter)
     }
 }
 
-void Bus::setChannels(unsigned int aChannels)
+void Bus::setChannels(size_t aChannels)
 {
     assert(aChannels != 0 && aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
@@ -321,7 +321,7 @@ float* Bus::getWave()
     return mWaveData;
 }
 
-float Bus::getApproximateVolume(unsigned int aChannel)
+float Bus::getApproximateVolume(size_t aChannel)
 {
     if (aChannel > mChannels)
         return 0;
@@ -335,10 +335,10 @@ float Bus::getApproximateVolume(unsigned int aChannel)
     return vol;
 }
 
-unsigned int Bus::getActiveVoiceCount()
+size_t Bus::getActiveVoiceCount()
 {
     int          i;
-    unsigned int count = 0;
+    size_t count = 0;
     findBusHandle();
     mSoloud->lockAudioMutex_internal();
     for (i = 0; i < VOICE_COUNT; i++)

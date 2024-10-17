@@ -67,7 +67,7 @@ void Engine::setPause(handle aVoiceHandle, bool aPause)
     FOR_ALL_VOICES_POST
 }
 
-void Engine::setMaxActiveVoiceCount(unsigned int aVoiceCount)
+void Engine::setMaxActiveVoiceCount(size_t aVoiceCount)
 {
     assert(aVoiceCount > 0);
     assert(aVoiceCount <= VOICE_COUNT);
@@ -122,7 +122,7 @@ void Engine::setPan(handle aVoiceHandle, float aPan)
     FOR_ALL_VOICES_POST
 }
 
-void Engine::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume)
+void Engine::setChannelVolume(handle aVoiceHandle, size_t aChannel, float aVolume)
 {
     FOR_ALL_VOICES_PRE
     if (mVoice[ch]->mChannels > aChannel)
@@ -221,7 +221,7 @@ void Engine::setVolume(handle aVoiceHandle, float aVolume)
     FOR_ALL_VOICES_POST
 }
 
-void Engine::setDelaySamples(handle aVoiceHandle, unsigned int aSamples)
+void Engine::setDelaySamples(handle aVoiceHandle, size_t aSamples)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mDelaySamples = aSamples;
@@ -240,7 +240,7 @@ void Engine::setVisualizationEnable(bool aEnable)
     }
 }
 
-void Engine::setSpeakerPosition(unsigned int aChannel, vec3 value)
+void Engine::setSpeakerPosition(size_t aChannel, vec3 value)
 {
     m3dSpeakerPosition.at(aChannel) = value;
 }

@@ -30,9 +30,9 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 result sdl2static_init(Soloud*      aSoloud,
-                       unsigned int aFlags,
-                       unsigned int aSamplerate,
-                       unsigned int aBuffer)
+                       size_t aFlags,
+                       size_t aSamplerate,
+                       size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -70,10 +70,10 @@ static void soloud_sdl2static_deinit(Soloud* aSoloud)
 }
 
 result sdl2static_init(Soloud*      aSoloud,
-                       unsigned int aFlags,
-                       unsigned int aSamplerate,
-                       unsigned int aBuffer,
-                       unsigned int aChannels)
+                       size_t aFlags,
+                       size_t aSamplerate,
+                       size_t aBuffer,
+                       size_t aChannels)
 {
     if (!SDL_WasInit(SDL_INIT_AUDIO))
     {

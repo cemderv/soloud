@@ -41,7 +41,7 @@ struct MonotoneSong
     unsigned char mTotalTracks;
     unsigned char mCellSize; // must be 2 for version 1
     unsigned char mOrder[256];
-    unsigned int* mPatternData; // 64 rows * mTotalPatterns * mTotalTracks
+    size_t* mPatternData; // 64 rows * mTotalPatterns * mTotalTracks
 };
 
 struct MonotoneChannel
@@ -82,7 +82,7 @@ class MonotoneInstance : public AudioSourceInstance
     int                     mRowTick;
 
     explicit MonotoneInstance(Monotone* aParent);
-    unsigned int getAudio(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize) override;
+    size_t getAudio(float* aBuffer, size_t aSamples, size_t aBufferSize) override;
     bool         hasEnded() override;
 };
 

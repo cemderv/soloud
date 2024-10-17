@@ -37,11 +37,11 @@ class BassboostFilterInstance : public FFTFilterInstance
     BassboostFilterInstance(BassboostFilter* aParent);
 
     void fftFilterChannel(float*       aFFTBuffer,
-                          unsigned int aSamples,
+                          size_t aSamples,
                           float        aSamplerate,
                           time_t       aTime,
-                          unsigned int aChannel,
-                          unsigned int aChannels) override;
+                          size_t aChannel,
+                          size_t aChannels) override;
 
   protected:
     enum FILTERATTRIBUTE

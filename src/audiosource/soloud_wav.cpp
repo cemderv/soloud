@@ -41,15 +41,15 @@ WavInstance::WavInstance(Wav* aParent)
     mOffset = 0;
 }
 
-unsigned int WavInstance::getAudio(float*       aBuffer,
-                                   unsigned int aSamplesToRead,
-                                   unsigned int aBufferSize)
+size_t WavInstance::getAudio(float*       aBuffer,
+                                   size_t aSamplesToRead,
+                                   size_t aBufferSize)
 {
     if (mParent->mData == nullptr)
         return 0;
 
-    unsigned int dataleft = mParent->mSampleCount - mOffset;
-    unsigned int copylen  = dataleft;
+    size_t dataleft = mParent->mSampleCount - mOffset;
+    size_t copylen  = dataleft;
 
     if (copylen > aSamplesToRead)
         copylen = aSamplesToRead;
@@ -122,15 +122,15 @@ void Wav::loadwav(MemoryFile& aReader)
     mSampleCount    = samples;
     mChannels       = decoder.channels;
 
-    for (unsigned int i = 0; i < mSampleCount; i += 512)
+    for (size_t i = 0; i < mSampleCount; i += 512)
     {
         float      tmp[512 * MAX_CHANNELS];
         const auto blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drwav_read_pcm_frames_f32(&decoder, blockSize, tmp);
 
-        for (unsigned int j = 0; j < blockSize; j++)
+        for (size_t j = 0; j < blockSize; j++)
         {
-            for (unsigned int k = 0; k < decoder.channels; k++)
+            for (size_t k = 0; k < decoder.channels; k++)
             {
                 mData[k * mSampleCount + i + j] = tmp[j * decoder.channels + k];
             }
@@ -177,7 +177,7 @@ void Wav::loadogg(MemoryFile& aReader)
             break;
         }
 
-        for (unsigned int ch = 0; ch < mChannels; ch++)
+        for (size_t ch = 0; ch < mChannels; ch++)
         {
             memcpy(mData.get() + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
         }
@@ -211,15 +211,15 @@ void Wav::loadmp3(MemoryFile& aReader)
     mChannels       = decoder.channels;
     drmp3_seek_to_pcm_frame(&decoder, 0);
 
-    for (unsigned int i = 0; i < mSampleCount; i += 512)
+    for (size_t i = 0; i < mSampleCount; i += 512)
     {
         float        tmp[512 * MAX_CHANNELS];
-        unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
+        size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drmp3_read_pcm_frames_f32(&decoder, blockSize, tmp);
 
-        for (unsigned int j = 0; j < blockSize; j++)
+        for (size_t j = 0; j < blockSize; j++)
         {
-            for (unsigned int k = 0; k < decoder.channels; k++)
+            for (size_t k = 0; k < decoder.channels; k++)
             {
                 mData[k * mSampleCount + i + j] = tmp[j * decoder.channels + k];
             }
@@ -252,14 +252,14 @@ void Wav::loadflac(MemoryFile& aReader)
     mChannels       = decoder->channels;
     drflac_seek_to_pcm_frame(decoder, 0);
 
-    for (unsigned int i = 0; i < mSampleCount; i += 512)
+    for (size_t i = 0; i < mSampleCount; i += 512)
     {
         float        tmp[512 * MAX_CHANNELS];
-        unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
+        size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drflac_read_pcm_frames_f32(decoder, blockSize, tmp);
-        for (unsigned int j = 0; j < blockSize; j++)
+        for (size_t j = 0; j < blockSize; j++)
         {
-            for (unsigned int k = 0; k < decoder->channels; k++)
+            for (size_t k = 0; k < decoder->channels; k++)
             {
                 mData[k * mSampleCount + i + j] = tmp[j * decoder->channels + k];
             }

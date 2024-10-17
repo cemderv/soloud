@@ -35,9 +35,9 @@ NoiseInstance::NoiseInstance(Noise* aParent)
     mPrg.srand(0xfade);
 }
 
-unsigned int NoiseInstance::getAudio(float*       aBuffer,
-                                     unsigned int aSamplesToRead,
-                                     unsigned int /*aBufferSize*/)
+size_t NoiseInstance::getAudio(float*       aBuffer,
+                                     size_t aSamplesToRead,
+                                     size_t /*aBufferSize*/)
 {
     int   octavestep[10];
     float octavevalue[10];
@@ -49,7 +49,7 @@ unsigned int NoiseInstance::getAudio(float*       aBuffer,
         totalscale += mOctaveScale[j];
     }
 
-    for (unsigned int i = 0; i < aSamplesToRead; i++)
+    for (size_t i = 0; i < aSamplesToRead; i++)
     {
         aBuffer[i] = mPrg.rand_float() - 0.5f;
         for (int j = 0; j < 10; j++)

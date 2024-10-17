@@ -41,15 +41,15 @@ LofiFilterInstance::LofiFilterInstance(LofiFilter* aParent)
 }
 
 void LofiFilterInstance::filterChannel(float*       aBuffer,
-                                       unsigned int aSamples,
+                                       size_t aSamples,
                                        float        aSamplerate,
                                        double       aTime,
-                                       unsigned int aChannel,
-                                       unsigned int /*aChannels*/)
+                                       size_t aChannel,
+                                       size_t /*aChannels*/)
 {
     updateParams(aTime);
 
-    unsigned int i;
+    size_t i;
     for (i = 0; i < aSamples; i++)
     {
         if (mChannelData[aChannel].mSamplesToSkip <= 0)

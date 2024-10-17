@@ -52,7 +52,7 @@ uint32_t MemoryFile::read32()
     return d;
 }
 
-unsigned int MemoryFile::read(unsigned char* aDst, unsigned int aBytes)
+size_t MemoryFile::read(unsigned char* aDst, size_t aBytes)
 {
     if (mOffset + aBytes >= mData.size())
     {

@@ -35,7 +35,7 @@ void FilterInstance::initParams(int aNumParams)
     mParam      = new float[mNumParams];
     mParamFader = new Fader[mNumParams];
 
-    for (unsigned int i = 0; i < mNumParams; i++)
+    for (size_t i = 0; i < mNumParams; i++)
     {
         mParam[i]              = 0;
         mParamFader[i].mActive = 0;
@@ -46,7 +46,7 @@ void FilterInstance::initParams(int aNumParams)
 
 void FilterInstance::updateParams(double aTime)
 {
-    for (unsigned int i = 0; i < mNumParams; i++)
+    for (size_t i = 0; i < mNumParams; i++)
     {
         if (mParamFader[i].mActive > 0)
         {
@@ -62,7 +62,7 @@ FilterInstance::~FilterInstance()
     delete[] mParamFader;
 }
 
-void FilterInstance::setFilterParameter(unsigned int aAttributeId, float aValue)
+void FilterInstance::setFilterParameter(size_t aAttributeId, float aValue)
 {
     if (aAttributeId >= mNumParams)
         return;
@@ -72,7 +72,7 @@ void FilterInstance::setFilterParameter(unsigned int aAttributeId, float aValue)
     mParamChanged |= 1 << aAttributeId;
 }
 
-void FilterInstance::fadeFilterParameter(unsigned int aAttributeId,
+void FilterInstance::fadeFilterParameter(size_t aAttributeId,
                                          float        aTo,
                                          double       aTime,
                                          double       aStartTime)
@@ -84,7 +84,7 @@ void FilterInstance::fadeFilterParameter(unsigned int aAttributeId,
 }
 
 void FilterInstance::oscillateFilterParameter(
-    unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
+    size_t aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
 {
     if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
         return;
@@ -92,7 +92,7 @@ void FilterInstance::oscillateFilterParameter(
     mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
 }
 
-float FilterInstance::getFilterParameter(unsigned int aAttributeId)
+float FilterInstance::getFilterParameter(size_t aAttributeId)
 {
     if (aAttributeId >= mNumParams)
         return 0;
@@ -101,24 +101,24 @@ float FilterInstance::getFilterParameter(unsigned int aAttributeId)
 }
 
 void FilterInstance::filter(float*       aBuffer,
-                            unsigned int aSamples,
-                            unsigned int aBufferSize,
-                            unsigned int aChannels,
+                            size_t aSamples,
+                            size_t aBufferSize,
+                            size_t aChannels,
                             float        aSamplerate,
                             double       aTime)
 {
-    for (unsigned int i = 0; i < aChannels; i++)
+    for (size_t i = 0; i < aChannels; i++)
     {
         filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
     }
 }
 
 void FilterInstance::filterChannel(float* /*aBuffer*/,
-                                   unsigned int /*aSamples*/,
+                                   size_t /*aSamples*/,
                                    float /*aSamplerate*/,
                                    double /*aTime*/,
-                                   unsigned int /*aChannel*/,
-                                   unsigned int /*aChannels*/)
+                                   size_t /*aChannel*/,
+                                   size_t /*aChannels*/)
 {
 }
 
