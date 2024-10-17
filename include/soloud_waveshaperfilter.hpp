@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -38,7 +38,7 @@ public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
-                       time         aTime,
+                       time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
     ~WaveShaperFilterInstance() override;
@@ -57,7 +57,7 @@ public:
 
     float                     mAmount;
     WaveShaperFilterInstance* createInstance() override;
-    result                    setParams(float aAmount);
+    void                      setParams(float aAmount);
     WaveShaperFilter();
     ~WaveShaperFilter() override;
     int          getParamCount() override;

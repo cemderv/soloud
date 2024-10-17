@@ -264,7 +264,7 @@ void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, unsigned int aSamples)
 void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
                                          unsigned int aSamples,
                                          float        aSamplerate,
-                                         time /*aTime*/,
+                                         time_t /*aTime*/,
                                          unsigned int aChannel,
                                          unsigned int /*aChannels*/)
 {

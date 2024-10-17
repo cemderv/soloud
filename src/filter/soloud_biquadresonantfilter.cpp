@@ -28,8 +28,6 @@ Phil Burk, Game Programming Gems 3, p. 606
 */
 
 #include "soloud_biquadresonantfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cmath>
 
 namespace SoLoud
@@ -156,16 +154,16 @@ BiquadResonantFilter::BiquadResonantFilter()
     setParams(LOWPASS, 1000, 2);
 }
 
-result BiquadResonantFilter::setParams(int aType, float aFrequency, float aResonance)
+void BiquadResonantFilter::setParams(int aType, float aFrequency, float aResonance)
 {
-    if (aType < 0 || aType > 3 || aFrequency <= 0 || aResonance <= 0)
-        return INVALID_PARAMETER;
+    assert(aType >= 0);
+    assert(aType <= 3);
+    assert(aFrequency > 0.0f);
+    assert(aResonance > 0.0f);
 
     mFilterType = aType;
     mFrequency  = aFrequency;
     mResonance  = aResonance;
-
-    return 0;
 }
 
 int BiquadResonantFilter::getParamCount()
@@ -176,17 +174,16 @@ int BiquadResonantFilter::getParamCount()
 const char* BiquadResonantFilter::getParamName(unsigned int aParamIndex)
 {
     if (aParamIndex > 3)
-        return 0;
+        return nullptr;
 
     const char* name[4] = {"Wet", "Type", "Frequency", "Resonance"};
+
     return name[aParamIndex];
 }
 
 unsigned int BiquadResonantFilter::getParamType(unsigned int aParamIndex)
 {
-    if (aParamIndex == TYPE)
-        return INT_PARAM;
-    return FLOAT_PARAM;
+    return aParamIndex == TYPE ? INT_PARAM : FLOAT_PARAM;
 }
 
 float BiquadResonantFilter::getParamMax(unsigned int aParamIndex)
@@ -197,6 +194,7 @@ float BiquadResonantFilter::getParamMax(unsigned int aParamIndex)
         case TYPE: return 2;
         case FREQUENCY: return 8000;
         case RESONANCE: return 20;
+        default: break;
     }
     return 1;
 }

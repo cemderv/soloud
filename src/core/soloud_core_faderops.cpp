@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-void Soloud::schedulePause(handle aVoiceHandle, time aTime)
+void Soloud::schedulePause(handle aVoiceHandle, time_t aTime)
 {
     if (aTime <= 0)
     {
@@ -40,7 +40,7 @@ void Soloud::schedulePause(handle aVoiceHandle, time aTime)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::scheduleStop(handle aVoiceHandle, time aTime)
+void Soloud::scheduleStop(handle aVoiceHandle, time_t aTime)
 {
     if (aTime <= 0)
     {
@@ -52,7 +52,7 @@ void Soloud::scheduleStop(handle aVoiceHandle, time aTime)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time aTime)
+void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time_t aTime)
 {
     float from = getVolume(aVoiceHandle);
     if (aTime <= 0 || aTo == from)
@@ -66,7 +66,7 @@ void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time aTime)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::fadePan(handle aVoiceHandle, float aTo, time aTime)
+void Soloud::fadePan(handle aVoiceHandle, float aTo, time_t aTime)
 {
     float from = getPan(aVoiceHandle);
     if (aTime <= 0 || aTo == from)
@@ -80,7 +80,7 @@ void Soloud::fadePan(handle aVoiceHandle, float aTo, time aTime)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime)
+void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time_t aTime)
 {
     float from = getRelativePlaySpeed(aVoiceHandle);
     if (aTime <= 0 || aTo == from)
@@ -93,7 +93,7 @@ void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::fadeGlobalVolume(float aTo, time aTime)
+void Soloud::fadeGlobalVolume(float aTo, time_t aTime)
 {
     float from = getGlobalVolume();
     if (aTime <= 0 || aTo == from)
@@ -105,7 +105,7 @@ void Soloud::fadeGlobalVolume(float aTo, time aTime)
 }
 
 
-void Soloud::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time aTime)
+void Soloud::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
 {
     if (aTime <= 0 || aTo == aFrom)
     {
@@ -118,7 +118,7 @@ void Soloud::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time a
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTime)
+void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
 {
     if (aTime <= 0 || aTo == aFrom)
     {
@@ -131,7 +131,7 @@ void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTim
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time aTime)
+void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
 {
     if (aTime <= 0 || aTo == aFrom)
     {
@@ -144,7 +144,7 @@ void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float 
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::oscillateGlobalVolume(float aFrom, float aTo, time aTime)
+void Soloud::oscillateGlobalVolume(float aFrom, float aTo, time_t aTime)
 {
     if (aTime <= 0 || aTo == aFrom)
     {

@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "soloud_duckfilter.hpp"
 #include "soloud.hpp"
 #include "soloud_bus.hpp"
-#include "soloud_error.hpp"
+#include "soloud_engine.hpp"
 
 namespace SoLoud
 {
@@ -105,20 +105,24 @@ DuckFilter::DuckFilter()
     mLevel   = 0.5f;
 }
 
-result DuckFilter::setParams(
-    Soloud* aSoloud, handle aListenTo, float aOnRamp, float aOffRamp, float aLevel)
+void DuckFilter::setParams(
+    Soloud* aSoloud,
+    handle  aListenTo,
+    float   aOnRamp,
+    float   aOffRamp,
+    float   aLevel)
 {
-    if (aOnRamp < 0.0f || aOffRamp < 0.0f || aLevel < 0.0f || aSoloud == 0 ||
-        !aSoloud->isValidVoiceHandle(aListenTo))
-        return INVALID_PARAMETER;
+    assert(aOnRamp>=0.0f);
+    assert(aOffRamp>=0.0f);
+    assert(aLevel>=0.0f);
+    assert(aSoloud!=nullptr);
+    assert(aSoloud->isValidVoiceHandle(aListenTo));
 
     mListenTo = aListenTo;
     mOnRamp   = aOnRamp;
     mOffRamp  = aOffRamp;
     mLevel    = aLevel;
     mSoloud   = aSoloud;
-
-    return 0;
 }
 
 int DuckFilter::getParamCount()

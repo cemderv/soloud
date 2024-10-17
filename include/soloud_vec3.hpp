@@ -11,7 +11,9 @@ struct vec3
     vec3() = default;
 
     vec3(float x, float y, float z)
-        : mX(x), mY(y), mZ(z)
+        : mX(x)
+        , mY(y)
+        , mZ(z)
     {
     }
 
@@ -62,4 +64,4 @@ static vec3 normalize(const vec3& v)
     return m == 0.0f ? vec3{} : vec3{v.mX / m, v.mY / m, v.mZ / m};
 }
 
-}
+} // namespace SoLoud

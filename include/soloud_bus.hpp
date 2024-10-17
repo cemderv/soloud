@@ -24,6 +24,9 @@ freely, subject to the following restrictions:
 
 #pragma once
 
+#include "soloud_audiosource.hpp"
+#include "soloud_misc.hpp"
+
 namespace SoLoud
 {
 class Bus;
@@ -58,25 +61,27 @@ public:
     // Play sound through the bus
     handle play(AudioSource& aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0);
     // Play sound through the bus, delayed in relation to other sounds called via this function.
-    handle playClocked(time         aSoundTime,
+    handle playClocked(time_t       aSoundTime,
                        AudioSource& aSound,
                        float        aVolume = 1.0f,
                        float        aPan    = 0.0f);
     // Start playing a 3d audio source through the bus
-    handle play3d(AudioSource& aSound,
-                  vec3         aPos,
-                  vec3         aVel    = {},
-                  float        aVolume = 1.0f,
-                  bool         aPaused = 0);
+    handle play3d(
+        AudioSource& aSound,
+        vec3         aPos,
+        vec3         aVel    = {},
+        float        aVolume = 1.0f,
+        bool         aPaused = 0);
     // Start playing a 3d audio source through the bus, delayed in relation to other sounds called
     // via this function.
-    handle play3dClocked(time         aSoundTime,
-                         AudioSource& aSound,
-                         vec3         aPos,
-                         vec3         aVel    = {},
-                         float        aVolume = 1.0f);
+    handle play3dClocked(
+        time_t       aSoundTime,
+        AudioSource& aSound,
+        vec3         aPos,
+        vec3         aVel    = {},
+        float        aVolume = 1.0f);
     // Set number of channels for the bus (default 2)
-    result setChannels(unsigned int aChannels);
+    void setChannels(unsigned int aChannels);
     // Enable or disable visualization data gathering
     void setVisualizationEnable(bool aEnable);
     // Move a live sound to this bus
@@ -97,14 +102,13 @@ public:
     unsigned int getActiveVoiceCount();
 
     // Get current the resampler for this bus
-    unsigned int getResampler();
+    RESAMPLER getResampler() const;
     // Set the resampler for this bus
-    void setResampler(unsigned int aResampler);
+    void setResampler(RESAMPLER aResampler);
 
-public:
     BusInstance* mInstance;
     unsigned int mChannelHandle;
-    unsigned int mResampler;
+    RESAMPLER    mResampler;
     // FFT output data
     float mFFTData[256];
     // Snapshot of wave data for visualization

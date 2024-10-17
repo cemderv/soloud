@@ -25,15 +25,14 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
-#include "soloud_thread.hpp"
+#include "soloud_engine.hpp"
+#include <stdexcept>
 
 #if !defined(WITH_COREAUDIO)
 
 namespace SoLoud
 {
-result coreaudio_init(SoLoud::Soloud* aSoloud,
+result coreaudio_init(Soloud* aSoloud,
                       unsigned int    aFlags,
                       unsigned int    aSamplerate,
                       unsigned int    aBuffer)
@@ -51,44 +50,44 @@ static AudioQueueRef audioQueue = 0;
 
 namespace SoLoud
 {
-void soloud_coreaudio_deinit(SoLoud::Soloud* aSoloud)
+void soloud_coreaudio_deinit(Soloud* aSoloud)
 {
     AudioQueueStop(audioQueue, true);
     AudioQueueDispose(audioQueue, false);
 }
 
-result soloud_coreaudio_pause(SoLoud::Soloud* aSoloud)
+bool soloud_coreaudio_pause(Soloud* aSoloud)
 {
     if (!audioQueue)
-        return UNKNOWN_ERROR;
+        return false;
 
     AudioQueuePause(audioQueue); // TODO: Error code
 
-    return 0;
+    return true;
 }
 
-result soloud_coreaudio_resume(SoLoud::Soloud* aSoloud)
+bool soloud_coreaudio_resume(Soloud* aSoloud)
 {
     if (!audioQueue)
-        return UNKNOWN_ERROR;
+        return false;
 
     AudioQueueStart(audioQueue, nil); // TODO: Error code
 
-    return 0;
+    return true;
 }
 
 static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueueBufferRef buffer)
 {
-    SoLoud::Soloud* aSoloud = (SoLoud::Soloud*)context;
+    auto aSoloud = static_cast<Soloud*>(context);
     aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 
-result coreaudio_init(SoLoud::Soloud* aSoloud,
-                      unsigned int    aFlags,
-                      unsigned int    aSamplerate,
-                      unsigned int    aBuffer,
-                      unsigned int    aChannels)
+void coreaudio_init(Soloud*      aSoloud,
+                    FLAGS        aFlags,
+                    unsigned int aSamplerate,
+                    unsigned int aBuffer,
+                    unsigned int aChannels)
 {
     aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
     aSoloud->mBackendCleanupFunc = soloud_coreaudio_deinit;
@@ -116,8 +115,7 @@ result coreaudio_init(SoLoud::Soloud* aSoloud,
                                           &audioQueue);
     if (result)
     {
-        // printf("AudioQueueNewOutput failed (%d)\n", result);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"AudioQueueNewOutput failed"};
     }
 
     // allocate and prime audio buffers
@@ -127,8 +125,7 @@ result coreaudio_init(SoLoud::Soloud* aSoloud,
         result = AudioQueueAllocateBuffer(audioQueue, aBuffer * 4, &buffer);
         if (result)
         {
-            // printf("AudioQueueAllocateBuffer failed (%d)\n", result);
-            return UNKNOWN_ERROR;
+            throw std::runtime_error{"AudioQueueAllocateBuffer failed"};
         }
         buffer->mAudioDataByteSize = aBuffer * 4;
         memset(buffer->mAudioData, 0, buffer->mAudioDataByteSize);
@@ -139,12 +136,8 @@ result coreaudio_init(SoLoud::Soloud* aSoloud,
     result = AudioQueueStart(audioQueue, nullptr);
     if (result)
     {
-        // printf("AudioQueueStart failed (%d)\n", result);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"AudioQueueStart failed"};
     }
-
-    aSoloud->mBackendString = "CoreAudio";
-    return 0;
 }
 }; // namespace SoLoud
 #endif

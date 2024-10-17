@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_error.hpp"
 #include "soloud_internal.hpp"
 
 // Setters - set various bits of SoLoud state
@@ -34,10 +33,9 @@ void Soloud::setPostClipScaler(float aScaler)
     mPostClipScaler = aScaler;
 }
 
-void Soloud::setMainResampler(unsigned int aResampler)
+void Soloud::setMainResampler(RESAMPLER aResampler)
 {
-    if (aResampler <= RESAMPLER_CATMULLROM)
-        mResampler = aResampler;
+    mResampler = aResampler;
 }
 
 void Soloud::setGlobalVolume(float aVolume)
@@ -46,14 +44,12 @@ void Soloud::setGlobalVolume(float aVolume)
     mGlobalVolume              = aVolume;
 }
 
-result Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
+void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
 {
-    result retVal = 0;
     FOR_ALL_VOICES_PRE
         mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
-        retVal = setVoiceRelativePlaySpeed_internal(ch, aSpeed);
+        setVoiceRelativePlaySpeed_internal(ch, aSpeed);
     FOR_ALL_VOICES_POST
-    return retVal;
 }
 
 void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
@@ -71,10 +67,11 @@ void Soloud::setPause(handle aVoiceHandle, bool aPause)
     FOR_ALL_VOICES_POST
 }
 
-result Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
+void Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
 {
-    if (aVoiceCount == 0 || aVoiceCount >= VOICE_COUNT)
-        return INVALID_PARAMETER;
+    assert(aVoiceCount > 0);
+    assert(aVoiceCount <= VOICE_COUNT);
+
     lockAudioMutex_internal();
     mMaxActiveVoices = aVoiceCount;
 
@@ -83,14 +80,14 @@ result Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
 
     mResampleDataBuffer = AlignedFloatBuffer{SAMPLE_GRANULARITY * MAX_CHANNELS * aVoiceCount * 2};
 
-    unsigned int i;
-    for (i               = 0; i < aVoiceCount * 2; i++)
+    for (size_t i        = 0; i < aVoiceCount * 2; i++)
         mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
-    for (i                    = 0; i < aVoiceCount; i++)
+
+    for (size_t i             = 0; i < aVoiceCount; i++)
         mResampleDataOwner[i] = nullptr;
+
     mActiveVoiceDirty = true;
     unlockAudioMutex_internal();
-    return SO_NO_ERROR;
 }
 
 void Soloud::setPauseAll(bool aPause)
@@ -169,8 +166,7 @@ void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKil
 {
     FOR_ALL_VOICES_PRE
         mVoice[ch]->mFlags &=
-            ~(AudioSourceInstanceFlags::INAUDIBLE_KILL |
-              AudioSourceInstanceFlags::INAUDIBLE_TICK);
+            ~(AudioSourceInstanceFlags::INAUDIBLE_KILL | AudioSourceInstanceFlags::INAUDIBLE_TICK);
         if (aMustTick)
         {
             mVoice[ch]->mFlags |= AudioSourceInstanceFlags::INAUDIBLE_TICK;
@@ -182,7 +178,7 @@ void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKil
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setLoopPoint(handle aVoiceHandle, time aLoopPoint)
+void Soloud::setLoopPoint(handle aVoiceHandle, time_t aLoopPoint)
 {
     FOR_ALL_VOICES_PRE
         mVoice[ch]->mLoopPoint = aLoopPoint;
@@ -236,11 +232,11 @@ void Soloud::setVisualizationEnable(bool aEnable)
 {
     if (aEnable)
     {
-        mFlags |= ENABLE_VISUALIZATION;
+        mFlags |= FLAGS::ENABLE_VISUALIZATION;
     }
     else
     {
-        mFlags &= ~ENABLE_VISUALIZATION;
+        mFlags &= ~FLAGS::ENABLE_VISUALIZATION;
     }
 }
 

@@ -47,7 +47,7 @@ int  getTimeMillis();
 
 class PoolTask
 {
-public:
+  public:
     virtual ~PoolTask() noexcept = default;
 
     virtual void work() = 0;
@@ -55,7 +55,7 @@ public:
 
 class Pool
 {
-public:
+  public:
     // Initialize and run thread pool. For thread count 0, work is done at addWork call.
     void init(int aThreadCount);
     // Ctor, sets known state
@@ -76,4 +76,3 @@ public:
     volatile int  mRunning; // running flag, used to flag threads to stop
 };
 } // namespace SoLoud::Thread
-

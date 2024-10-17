@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -57,11 +57,11 @@ class BiquadResonantFilterInstance : public FilterInstance
     BiquadResonantFilter* mParent;
     void                  calcBQRParams();
 
-public:
+  public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
-                       time         aTime,
+                       time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
     ~BiquadResonantFilterInstance() override;
@@ -70,10 +70,10 @@ public:
 
 class BiquadResonantFilter : public Filter
 {
-public:
+  public:
     enum FILTERTYPE
     {
-        LOWPASS = 0,
+        LOWPASS  = 0,
         HIGHPASS = 1,
         BANDPASS = 2
     };
@@ -97,7 +97,7 @@ public:
 
     BiquadResonantFilterInstance* createInstance() override;
     BiquadResonantFilter();
-    result setParams(int aType, float aFrequency, float aResonance);
+    void setParams(int aType, float aFrequency, float aResonance);
     ~BiquadResonantFilter() override;
 };
 } // namespace SoLoud

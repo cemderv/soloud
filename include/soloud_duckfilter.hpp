@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -42,7 +42,7 @@ public:
                 unsigned int aBufferSize,
                 unsigned int aChannels,
                 float        aSamplerate,
-                time         aTime) override;
+                time_t       aTime) override;
     ~DuckFilterInstance() override;
     explicit DuckFilterInstance(DuckFilter* aParent);
 };
@@ -70,10 +70,10 @@ public:
     float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
     DuckFilter();
-    result setParams(Soloud* aSoloud,
-                     handle  aListenTo,
-                     float   aOnRamp  = 0.1f,
-                     float   aOffRamp = 0.5f,
-                     float   aLevel   = 0.1f);
+    void setParams(Soloud* aSoloud,
+                   handle  aListenTo,
+                   float   aOnRamp  = 0.1f,
+                   float   aOffRamp = 0.5f,
+                   float   aLevel   = 0.1f);
 };
 } // namespace SoLoud

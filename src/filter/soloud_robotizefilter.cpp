@@ -39,7 +39,7 @@ RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
 void RobotizeFilterInstance::filterChannel(float*       aBuffer,
                                            unsigned int aSamples,
                                            float        aSamplerate,
-                                           time         aTime,
+                                           time_t       aTime,
                                            unsigned int aChannel,
                                            unsigned int aChannels)
 {
@@ -50,7 +50,7 @@ void RobotizeFilterInstance::filterChannel(float*       aBuffer,
     {
         float s    = aBuffer[i];
         float wpos = ((start + i) % period) / (float)period;
-        s *= SoLoud::Misc::generateWaveform((int)mParam[WAVE], wpos) + 0.5f;
+        s *= Misc::generateWaveform(WAVEFORM(int(mParam[WAVE])), wpos) + 0.5f;
         aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
     }
 }

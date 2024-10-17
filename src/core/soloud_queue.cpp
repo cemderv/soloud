@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_queue.hpp"
-#include "soloud_error.hpp"
+#include "soloud_engine.hpp"
 
 namespace SoLoud
 {
@@ -46,8 +46,8 @@ unsigned int QueueInstance::getAudio(float*       aBuffer,
     while (copycount && mParent->mCount)
     {
         int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs,
-            copycount,
-            aBufferSize);
+                                                                        copycount,
+                                                                        aBufferSize);
         copyofs += readcount;
         copycount -= readcount;
         if (mParent->mSource[mParent->mReadIndex]->hasEnded())
@@ -81,8 +81,7 @@ QueueInstance* Queue::createInstance()
 void Queue::findQueueHandle()
 {
     // Find the channel the queue is playing on to calculate handle..
-    int i;
-    for (i = 0; mQueueHandle == 0 && i < (signed)mSoloud->mHighestVoice; i++)
+    for (int i = 0; mQueueHandle == 0 && i < (signed)mSoloud->mHighestVoice; i++)
     {
         if (mSoloud->mVoice[i] == mInstance)
         {
@@ -91,20 +90,14 @@ void Queue::findQueueHandle()
     }
 }
 
-result Queue::play(AudioSource& aSound)
+void Queue::play(AudioSource& aSound)
 {
-    if (!mSoloud)
-    {
-        return INVALID_PARAMETER;
-    }
+    assert(mSoloud != nullptr);
 
     findQueueHandle();
 
-    if (mQueueHandle == 0)
-        return INVALID_PARAMETER;
-
-    if (mCount >= SOLOUD_QUEUE_MAX)
-        return OUT_OF_MEMORY;
+    assert(mQueueHandle != 0);
+    assert(mCount < SOLOUD_QUEUE_MAX);
 
     if (!aSound.mAudioSourceID)
     {
@@ -112,12 +105,8 @@ result Queue::play(AudioSource& aSound)
         mSoloud->mAudioSourceID++;
     }
 
-    SoLoud::AudioSourceInstance* instance = aSound.createInstance();
+    auto* instance = aSound.createInstance();
 
-    if (instance == 0)
-    {
-        return OUT_OF_MEMORY;
-    }
     instance->init(aSound, 0);
     instance->mAudioSourceID = aSound.mAudioSourceID;
 
@@ -126,48 +115,47 @@ result Queue::play(AudioSource& aSound)
     mWriteIndex          = (mWriteIndex + 1) % SOLOUD_QUEUE_MAX;
     mCount++;
     mSoloud->unlockAudioMutex_internal();
-
-    return SO_NO_ERROR;
 }
 
 
-unsigned int Queue::getQueueCount()
+unsigned int Queue::getQueueCount() const
 {
     if (!mSoloud)
     {
         return 0;
     }
-    unsigned int count;
+
     mSoloud->lockAudioMutex_internal();
-    count = mCount;
+    unsigned int count = mCount;
     mSoloud->unlockAudioMutex_internal();
     return count;
 }
 
-bool Queue::isCurrentlyPlaying(AudioSource& aSound)
+bool Queue::isCurrentlyPlaying(const AudioSource& aSound) const
 {
-    if (mSoloud == 0 || mCount == 0 || aSound.mAudioSourceID == 0)
+    if (mSoloud == nullptr || mCount == 0 || aSound.mAudioSourceID == 0)
+    {
         return false;
+    }
+
     mSoloud->lockAudioMutex_internal();
-    bool res = mSource[mReadIndex]->mAudioSourceID == aSound.mAudioSourceID;
+    const bool res = mSource[mReadIndex]->mAudioSourceID == aSound.mAudioSourceID;
     mSoloud->unlockAudioMutex_internal();
     return res;
 }
 
-result Queue::setParamsFromAudioSource(AudioSource& aSound)
+void Queue::setParamsFromAudioSource(const AudioSource& aSound)
 {
     mChannels       = aSound.mChannels;
     mBaseSamplerate = aSound.mBaseSamplerate;
-
-    return SO_NO_ERROR;
 }
 
-result Queue::setParams(float aSamplerate, unsigned int aChannels)
+void Queue::setParams(float aSamplerate, unsigned int aChannels)
 {
-    if (aChannels < 1 || aChannels > MAX_CHANNELS)
-        return INVALID_PARAMETER;
+    assert(aChannels >= 1);
+    assert(aChannels <= MAX_CHANNELS);
+
     mChannels       = aChannels;
     mBaseSamplerate = aSamplerate;
-    return SO_NO_ERROR;
 }
 }; // namespace SoLoud

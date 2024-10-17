@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -44,7 +44,7 @@ public:
                 unsigned int aBufferSize,
                 unsigned int aChannels,
                 float        aSamplerate,
-                time         aTime) override;
+                time_t       aTime) override;
     ~DCRemovalFilterInstance() override;
     explicit DCRemovalFilterInstance(DCRemovalFilter* aParent);
 };
@@ -55,6 +55,6 @@ public:
     float           mLength;
     FilterInstance* createInstance() override;
     DCRemovalFilter();
-    result setParams(float aLength = 0.1f);
+    void setParams(float aLength = 0.1f);
 };
 } // namespace SoLoud

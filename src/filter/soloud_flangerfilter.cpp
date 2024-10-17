@@ -22,8 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include "soloud_flangerfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cstring>
 
 namespace SoLoud
@@ -76,7 +74,10 @@ void FlangerFilterInstance::filter(float*       aBuffer,
             mIndex += inc;
             mBuffer[mbofs + mOffset % mBufferLength] = aBuffer[abofs];
             float n                                  = 0.5f * (aBuffer[abofs] +
-                              mBuffer[mbofs + (mBufferLength - delay + mOffset) % mBufferLength]);
+                                                               mBuffer[mbofs + (
+                                                                       mBufferLength - delay +
+                                                                       mOffset)
+                                                                   % mBufferLength]);
             mOffset++;
             aBuffer[abofs] += (n - aBuffer[abofs]) * mParam[FlangerFilter::WET];
         }
@@ -97,15 +98,13 @@ FlangerFilter::FlangerFilter()
     mFreq  = 10;
 }
 
-result FlangerFilter::setParams(float aDelay, float aFreq)
+void FlangerFilter::setParams(float aDelay, float aFreq)
 {
-    if (aDelay <= 0 || aFreq <= 0)
-        return INVALID_PARAMETER;
+    assert(aDelay>0.0f);
+    assert(aFreq>0.0f);
 
     mDelay = aDelay;
     mFreq  = aFreq;
-
-    return 0;
 }
 
 int FlangerFilter::getParamCount()

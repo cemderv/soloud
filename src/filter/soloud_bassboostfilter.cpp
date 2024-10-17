@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 
 #include "soloud_bassboostfilter.hpp"
 #include "soloud.hpp"
-#include "soloud_error.hpp"
 
 namespace SoLoud
 {
@@ -38,25 +37,22 @@ BassboostFilterInstance::BassboostFilterInstance(BassboostFilter* aParent)
 void BassboostFilterInstance::fftFilterChannel(float* aFFTBuffer,
                                                unsigned int /*aSamples*/,
                                                float /*aSamplerate*/,
-                                               time /*aTime*/,
+                                               time_t /*aTime*/,
                                                unsigned int /*aChannel*/,
                                                unsigned int /*aChannels*/)
 {
     comp2MagPhase(aFFTBuffer, 2);
-    unsigned int i;
-    for (i = 0; i < 2; i++)
+    for (unsigned int i = 0; i < 2; i++)
     {
         aFFTBuffer[i * 2] *= mParam[BOOST];
     }
     magPhase2Comp(aFFTBuffer, 2);
 }
 
-result BassboostFilter::setParams(float aBoost)
+void BassboostFilter::setParams(float aBoost)
 {
-    if (aBoost < 0)
-        return INVALID_PARAMETER;
+    assert(aBoost >= 0.0f);
     mBoost = aBoost;
-    return SO_NO_ERROR;
 }
 
 int BassboostFilter::getParamCount()

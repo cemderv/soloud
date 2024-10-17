@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -43,7 +43,7 @@ public:
                 unsigned int aBufferSize,
                 unsigned int aChannels,
                 float        aSamplerate,
-                time         aTime) override;
+                time_t       aTime) override;
     ~EchoFilterInstance() override;
     explicit EchoFilterInstance(EchoFilter* aParent);
 };
@@ -69,6 +69,6 @@ public:
     float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
     EchoFilter();
-    result setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
+    void setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
 };
 } // namespace SoLoud

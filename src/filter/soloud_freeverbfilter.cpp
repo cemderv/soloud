@@ -23,10 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_freeverbfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
-#include <cstring>
-
 
 namespace SoLoud
 {
@@ -38,7 +34,7 @@ namespace FreeverbImpl
 
 class Comb
 {
-  public:
+public:
     Comb();
     void   setbuffer(float* aBuf, int aSize);
     float  process(float aInp);
@@ -56,7 +52,7 @@ class Comb
 
 class Allpass
 {
-  public:
+public:
     Allpass();
     void   setbuffer(float* aBuf, int aSize);
     float  process(float aInp);
@@ -118,7 +114,7 @@ const int gAllpasstuningR4 = 225 + gStereospread;
 
 class Revmodel
 {
-  public:
+public:
     Revmodel();
     void mute();
     void process(float* aSampleData, long aNumSamples, long aStride);
@@ -132,8 +128,8 @@ class Revmodel
 
     float mGain;
     float mRoomsize, mRoomsize1;
-    float mDamp, mDamp1;
-    float mWet, mWet1, mWet2;
+    float mDamp,     mDamp1;
+    float mWet,      mWet1, mWet2;
     float mDry;
     float mWidth;
     float mMode;
@@ -213,7 +209,7 @@ void Allpass::setbuffer(float* aBuf, int aSize)
 
 void Allpass::mute()
 {
-    for (int i = 0; i < mBufsize; i++)
+    for (int i     = 0; i < mBufsize; i++)
         mBuffer[i] = 0;
 }
 
@@ -257,7 +253,7 @@ void Comb::setbuffer(float* aBuf, int aSize)
 
 void Comb::mute()
 {
-    for (int i = 0; i < mBufsize; i++)
+    for (int i     = 0; i < mBufsize; i++)
         mBuffer[i] = 0;
 }
 
@@ -353,7 +349,7 @@ void Revmodel::mute()
 
 void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
 {
-    float *inputL, *inputR;
+    float* inputL,* inputR;
     inputL = aSampleData;
     inputR = aSampleData + aStride;
 
@@ -364,8 +360,8 @@ void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
     while (aNumSamples-- > 0)
     {
         float outL, outR, input;
-        outL = outR = 0;
-        input       = (*inputL + *inputR) * mGain;
+        outL  = outR = 0;
+        input = (*inputL + *inputR) * mGain;
 
         // Accumulate comb filters in parallel
         for (int i = 0; i < gNumcombs; i++)
@@ -482,7 +478,7 @@ void FreeverbFilterInstance::filter(float*       aBuffer,
                                     unsigned int aBufferSize,
                                     unsigned int aChannels,
                                     float        aSamplerate,
-                                    time         aTime)
+                                    time_t       aTime)
 {
     assert(aChannels == 2); // Only stereo supported at this time
     if (mParamChanged)
@@ -508,17 +504,17 @@ FreeverbFilter::FreeverbFilter()
     setParams(0, 0.5, 0.5, 1);
 }
 
-result FreeverbFilter::setParams(float aFreeze, float aRoomSize, float aDamp, float aWidth)
+void FreeverbFilter::setParams(float aFreeze, float aRoomSize, float aDamp, float aWidth)
 {
-    if (aFreeze < 0 || aFreeze > 1 || aRoomSize <= 0 || aDamp < 0 || aWidth <= 0)
-        return INVALID_PARAMETER;
+    assert(aFreeze>=0.0f && aFreeze<=1.0f);
+    assert(aRoomSize>0);
+    assert(aDamp>=0);
+    assert(aWidth>0);
 
     mMode     = aFreeze;
     mRoomSize = aRoomSize;
     mDamp     = aDamp;
     mWidth    = aWidth;
-
-    return 0;
 }
 
 int FreeverbFilter::getParamCount()

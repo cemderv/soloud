@@ -26,10 +26,46 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+enum class WAVEFORM;
+
+// Class that handles aligned allocations to support vectorized operations
+class AlignedFloatBuffer
+{
+  public:
+    AlignedFloatBuffer() = default;
+
+    // Allocate and align buffer
+    explicit AlignedFloatBuffer(size_t aFloats);
+
+    AlignedFloatBuffer(const AlignedFloatBuffer& aBuffer)            = delete;
+    AlignedFloatBuffer& operator=(const AlignedFloatBuffer& aBuffer) = delete;
+
+    AlignedFloatBuffer(AlignedFloatBuffer&& aBuffer) noexcept            = default;
+    AlignedFloatBuffer& operator=(AlignedFloatBuffer&& aBuffer) noexcept = default;
+
+    // Clear data to zero.
+    void clear();
+
+    float*                           mData = nullptr; // aligned pointer
+    std::unique_ptr<unsigned char[]> mBasePtr;
+    size_t                           mFloats = 0; // size of buffer (w/out padding)
+};
+
+// Lightweight class that handles small aligned buffer to support vectorized operations
+class TinyAlignedFloatBuffer
+{
+  public:
+    float*        mData; // aligned pointer
+    unsigned char mActualData[sizeof(float) * 16 + 16];
+
+    // ctor
+    TinyAlignedFloatBuffer();
+};
+
 namespace Misc
 {
 // Generate a waveform.
-float generateWaveform(int aWaveform, float p);
+float generateWaveform(WAVEFORM aWaveform, float p);
 
 // WELL512 random
 class Prg

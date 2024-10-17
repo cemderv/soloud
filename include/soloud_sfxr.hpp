@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 #include "soloud_misc.hpp"
 #include <array>
 
@@ -120,7 +120,7 @@ class SfxrInstance : public AudioSourceInstance
 
     void resetSample(bool aRestart);
 
-public:
+  public:
     explicit SfxrInstance(Sfxr* aParent);
 
     unsigned int getAudio(float*       aBuffer,
@@ -143,7 +143,7 @@ enum class SFXR_PRESETS
 
 class Sfxr : public AudioSource
 {
-public:
+  public:
     SfxrParams mParams;
 
     Misc::Prg mRand;
@@ -154,14 +154,14 @@ public:
 
     void resetParams();
 
-    result loadParamsMem(unsigned char* aMem,
-                         unsigned int   aLength,
-                         bool           aCopy          = false,
-                         bool           aTakeOwnership = true);
+    void loadParamsMem(unsigned char* aMem,
+                       unsigned int   aLength,
+                       bool           aCopy          = false,
+                       bool           aTakeOwnership = true);
 
-    result loadParamsFile(File* aFile);
+    void loadParamsFile(File* aFile);
 
-    result loadPreset(int aPresetNo, int aRandSeed);
+    void loadPreset(int aPresetNo, int aRandSeed);
 
     AudioSourceInstance* createInstance() override;
 };

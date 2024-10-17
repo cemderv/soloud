@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
+#include "soloud_fader.hpp"
 
 namespace SoLoud
 {

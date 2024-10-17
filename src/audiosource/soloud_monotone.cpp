@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_monotone.hpp"
-#include "soloud_error.hpp"
 #include "soloud_file.hpp"
 #include "soloud_misc.hpp"
 #include <cmath>
@@ -43,19 +42,19 @@ MonotoneInstance::MonotoneInstance(Monotone* aParent)
     int i;
     for (i = 0; i < 12; i++)
     {
-        mOutput[i].mSamplePos = 0;
+        mOutput[i].mSamplePos    = 0;
         mOutput[i].mSamplePosInc = 0;
-        mOutput[i].mEnabled = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
-        mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
-        mChannel[i].mActive = 0;
+        mOutput[i].mEnabled     = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
+        mChannel[i].mEnabled    = i < mParent->mSong.mTotalTracks;
+        mChannel[i].mActive     = 0;
         mChannel[i].mArpCounter = 0;
-        mChannel[i].mLastNote = 0;
+        mChannel[i].mLastNote   = 0;
         mChannel[i].mPortamentoToNote = 0;
-        mChannel[i].mArp = 0;
-        mChannel[i].mVibrato = 0;
-        mChannel[i].mVibratoIndex = 0;
-        mChannel[i].mVibratoDepth = 1;
-        mChannel[i].mVibratoSpeed = 1;
+        mChannel[i].mArp              = 0;
+        mChannel[i].mVibrato          = 0;
+        mChannel[i].mVibratoIndex     = 0;
+        mChannel[i].mVibratoDepth     = 1;
+        mChannel[i].mVibratoSpeed     = 1;
     }
 }
 
@@ -89,8 +88,7 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                 {
                     unsigned int d =
                         mParent->mSong
-                               .mPatternData[
-                            (pattern * 64 + mRow) * mParent->mSong.mTotalTracks + j];
+                            .mPatternData[(pattern * 64 + mRow) * mParent->mSong.mTotalTracks + j];
                     unsigned int note        = (d >> 9) & 127;
                     unsigned int effect      = (d >> 6) & 7;
                     unsigned int effectdata  = (d) & 63;
@@ -173,12 +171,12 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                         case 0x5:
                             // pattern jump
                             patternjump = effectdata;
-                            dojump = 1;
+                            dojump      = 1;
                             break;
                         case 0x6:
                             // row jump
                             rowjump = effectdata;
-                            dojump = 1;
+                            dojump  = 1;
                             break;
                         case 0x7:
                             // set speed
@@ -217,7 +215,7 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
                             mParent->mNotesHz[mChannel[j].mLastNote * 8 +
                                               (mParent->mVibTable[mChannel[j].mVibratoIndex] *
                                                mChannel[j].mVibratoDepth) /
-                                              64];
+                                                  64];
                         mChannel[j].mVibratoIndex += mChannel[j].mVibratoSpeed;
                         mChannel[j].mVibratoIndex %= 32;
                     }
@@ -244,7 +242,7 @@ unsigned int MonotoneInstance::getAudio(float*       aBuffer,
             int gotit = 0;
             int tries = 0;
 
-            for (j                       = 0; j < mParent->mHardwareChannels; j++)
+            for (j = 0; j < mParent->mHardwareChannels; j++)
                 mOutput[j].mSamplePosInc = 0;
 
             while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
@@ -338,7 +336,7 @@ Monotone::Monotone()
     mChannels       = 1;
 
     mHardwareChannels = 1;
-    mWaveform         = Soloud::WAVE_SQUARE;
+    mWaveform         = WAVEFORM::SQUARE;
 }
 
 void Monotone::clear()
@@ -369,31 +367,29 @@ static char* mystrdup(const char* src)
     return res;
 }
 
-result Monotone::setParams(int aHardwareChannels, int aWaveform)
+void Monotone::setParams(int aHardwareChannels, WAVEFORM aWaveform)
 {
-    if (aHardwareChannels <= 0 || aWaveform < 0)
-        return INVALID_PARAMETER;
+    assert(aHardwareChannels > 0);
+
     mHardwareChannels = aHardwareChannels;
     mWaveform         = aWaveform;
-    return SO_NO_ERROR;
 }
 
-result Monotone::loadMem(const unsigned char* aMem,
-                         unsigned int         aLength,
-                         bool                 aCopy,
-                         bool                 aTakeOwnership)
+void Monotone::loadMem(const unsigned char* aMem,
+                       unsigned int         aLength,
+                       bool                 aCopy,
+                       bool                 aTakeOwnership)
 {
     MemoryFile mf;
-    int        res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
-    if (res != SO_NO_ERROR)
-        return res;
+    mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
+
     return loadFile(&mf);
 }
 
-result Monotone::loadFile(File* aFile)
+void Monotone::loadFile(File* aFile)
 {
-    if (aFile == nullptr)
-        return INVALID_PARAMETER;
+    assert(aFile != nullptr);
+
     clear();
     int           i;
     unsigned char temp[200];
@@ -403,7 +399,7 @@ result Monotone::loadFile(File* aFile)
     {
         if (temp[i] != magic[i])
         {
-            return FILE_LOAD_FAILED;
+            throw std::runtime_error{"Failed to load monotone"};
         }
     }
     aFile->read(temp, 41);
@@ -419,7 +415,7 @@ result Monotone::loadFile(File* aFile)
     mSong.mCellSize      = temp[3];
     if (mSong.mVersion != 1 || mSong.mCellSize != 2)
     {
-        return FILE_LOAD_FAILED;
+        throw std::runtime_error{"Failed to load monotone"};
     }
     aFile->read(mSong.mOrder, 256);
     int totalnotes     = 64 * mSong.mTotalPatterns * mSong.mTotalTracks;
@@ -435,8 +431,6 @@ result Monotone::loadFile(File* aFile)
         // unsigned int effectdata1 = (datavalue >> 3) & 7;
         // unsigned int effectdata2 = (datavalue >> 0) & 7;
     }
-
-    return SO_NO_ERROR;
 }
 
 

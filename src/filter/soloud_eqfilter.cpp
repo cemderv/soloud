@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 
 #include "soloud_eqfilter.hpp"
 #include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cstring>
 
 
@@ -54,7 +53,7 @@ static float catmullrom(float t, float p0, float p1, float p2, float p3)
 void EqFilterInstance::fftFilterChannel(float*       aFFTBuffer,
                                         unsigned int aSamples,
                                         float /*aSamplerate*/,
-                                        time /*aTime*/,
+                                        time_t /*aTime*/,
                                         unsigned int /*aChannel*/,
                                         unsigned int /*aChannels*/)
 {
@@ -81,15 +80,12 @@ void EqFilterInstance::fftFilterChannel(float*       aFFTBuffer,
     magPhase2Comp(aFFTBuffer, aSamples / 2);
 }
 
-result EqFilter::setParam(unsigned int aBand, float aVolume)
+void EqFilter::setParam(unsigned int aBand, float aVolume)
 {
-    if (aBand < BAND1 || aBand > BAND8)
-        return INVALID_PARAMETER;
-    if (aVolume < getParamMin(BAND1) || aVolume > getParamMax(BAND1))
-        return INVALID_PARAMETER;
+    assert(aBand>=BAND1 && aBand <= BAND8);
+    assert(aVolume >= getParamMin(BAND1) && aVolume <= getParamMax(BAND1));
 
-    mVolume[aBand - BAND1] = aVolume;
-    return SO_NO_ERROR;
+    mVolume.at(aBand - BAND1) = aVolume;
 }
 
 int EqFilter::getParamCount()
@@ -132,7 +128,7 @@ float EqFilter::getParamMin(unsigned int aParamIndex)
 
 EqFilter::EqFilter()
 {
-    for (int i = 0; i < 8; i++)
+    for (int i     = 0; i < 8; i++)
         mVolume[i] = 1;
 }
 

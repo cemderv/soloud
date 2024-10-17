@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
+#include "soloud_engine.hpp"
 
 // Getters - return information about SoLoud state
 
@@ -34,7 +33,7 @@ float Soloud::getPostClipScaler() const
     return mPostClipScaler;
 }
 
-unsigned int Soloud::getMainResampler() const
+RESAMPLER Soloud::getMainResampler() const
 {
     return mResampler;
 }
@@ -120,7 +119,7 @@ bool Soloud::isValidVoiceHandle(handle aVoiceHandle)
 }
 
 
-time Soloud::getLoopPoint(handle aVoiceHandle)
+time_t Soloud::getLoopPoint(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -129,7 +128,7 @@ time Soloud::getLoopPoint(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return 0;
     }
-    const time v = mVoice[ch]->mLoopPoint;
+    const time_t v = mVoice[ch]->mLoopPoint;
     unlockAudioMutex_internal();
     return v;
 }
@@ -218,7 +217,7 @@ float Soloud::getPan(handle aVoiceHandle)
     return v;
 }
 
-time Soloud::getStreamTime(handle aVoiceHandle)
+time_t Soloud::getStreamTime(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -232,7 +231,7 @@ time Soloud::getStreamTime(handle aVoiceHandle)
     return v;
 }
 
-time Soloud::getStreamPosition(handle aVoiceHandle)
+time_t Soloud::getStreamPosition(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -344,18 +343,6 @@ unsigned int Soloud::getLoopCount(handle aVoiceHandle)
     int v = mVoice[ch]->mLoopCount;
     unlockAudioMutex_internal();
     return v;
-}
-
-// Returns current backend ID
-unsigned int Soloud::getBackendId() const
-{
-    return mBackendID;
-}
-
-// Returns current backend string
-const char* Soloud::getBackendString() const
-{
-    return mBackendString;
 }
 
 // Returns current backend channel count (1 mono, 2 stereo, etc)

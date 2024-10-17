@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -53,7 +53,7 @@ public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
-                       time         aTime,
+                       time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
     ~LofiFilterInstance() override;
@@ -79,7 +79,7 @@ public:
     float               getParamMax(unsigned int aParamIndex) override;
     float               getParamMin(unsigned int aParamIndex) override;
     LofiFilter();
-    result setParams(float aSampleRate, float aBitdepth);
+    void setParams(float aSampleRate, float aBitdepth);
     ~LofiFilter() override;
 };
 } // namespace SoLoud

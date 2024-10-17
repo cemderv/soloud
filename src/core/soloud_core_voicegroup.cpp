@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
+#include "soloud_engine.hpp"
 
 // Voice group operations
 
@@ -96,28 +95,28 @@ handle Soloud::createVoiceGroup()
 }
 
 // Destroy a voice group.
-result Soloud::destroyVoiceGroup(handle aVoiceGroupHandle)
+void Soloud::destroyVoiceGroup(handle aVoiceGroupHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
-        return INVALID_PARAMETER;
-    int c = aVoiceGroupHandle & 0xfff;
+        return;
+
+    const int c = aVoiceGroupHandle & 0xfff;
 
     lockAudioMutex_internal();
     delete[] mVoiceGroup[c];
     mVoiceGroup[c] = nullptr;
     unlockAudioMutex_internal();
-    return SO_NO_ERROR;
 }
 
 // Add a voice handle to a voice group
-result Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
+void Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
-        return INVALID_PARAMETER;
+        return;
 
     // Don't consider adding invalid voice handles as an error, since the voice may just have ended.
     if (!isValidVoiceHandle(aVoiceHandle))
-        return SO_NO_ERROR;
+        return;
 
     trimVoiceGroup_internal(aVoiceGroupHandle);
 
@@ -131,7 +130,7 @@ result Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
         if (mVoiceGroup[c][i] == aVoiceHandle)
         {
             unlockAudioMutex_internal();
-            return SO_NO_ERROR; // already there
+            return; // already there
         }
 
         if (mVoiceGroup[c][i] == 0)
@@ -140,26 +139,22 @@ result Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
             mVoiceGroup[c][i + 1] = 0;
 
             unlockAudioMutex_internal();
-            return SO_NO_ERROR;
+            return;
         }
     }
 
     // Full group, allocate more memory
-    unsigned int* n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
-    if (n == nullptr)
-    {
-        unlockAudioMutex_internal();
-        return OUT_OF_MEMORY;
-    }
-    for (i = 0; i < mVoiceGroup[c][0]; i++)
+    const auto n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
+
+    for (i   = 0; i < mVoiceGroup[c][0]; i++)
         n[i] = mVoiceGroup[c][i];
+
     n[n[0]]     = aVoiceHandle;
     n[n[0] + 1] = 0;
     n[0] *= 2;
     delete[] mVoiceGroup[c];
     mVoiceGroup[c] = n;
     unlockAudioMutex_internal();
-    return SO_NO_ERROR;
 }
 
 // Is this handle a valid voice group?

@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
+#include "soloud_audiosource.hpp"
+#include "soloud_engine.hpp"
 #include <algorithm>
 #include <ranges>
 
@@ -98,20 +98,20 @@ void AudioSourceInstance::init(AudioSource& aSource, int aPlayIndex)
     }
 }
 
-result AudioSourceInstance::rewind()
+bool AudioSourceInstance::rewind()
 {
-    return NOT_IMPLEMENTED;
+    return false;
 }
 
-result AudioSourceInstance::seek(double aSeconds, float* mScratch, unsigned int mScratchSize)
+bool AudioSourceInstance::seek(double aSeconds, float* mScratch, unsigned int mScratchSize)
 {
     double offset = aSeconds - mStreamPosition;
     if (offset <= 0)
     {
-        if (rewind() != SO_NO_ERROR)
+        if (!rewind())
         {
             // can't do generic seek backwards unless we can rewind.
-            return NOT_IMPLEMENTED;
+            return false;
         }
         offset = aSeconds;
     }
@@ -125,8 +125,10 @@ result AudioSourceInstance::seek(double aSeconds, float* mScratch, unsigned int 
         getAudio(mScratch, samples, samples);
         samples_to_discard -= samples;
     }
+
     mStreamPosition = aSeconds;
-    return SO_NO_ERROR;
+
+    return true;
 }
 
 
@@ -164,12 +166,12 @@ void AudioSource::setVolume(float aVolume)
     mVolume = aVolume;
 }
 
-void AudioSource::setLoopPoint(time aLoopPoint)
+void AudioSource::setLoopPoint(time_t aLoopPoint)
 {
     mLoopPoint = aLoopPoint;
 }
 
-time AudioSource::getLoopPoint()
+time_t AudioSource::getLoopPoint()
 {
     return mLoopPoint;
 }

@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_echofilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 
 namespace SoLoud
 {
@@ -98,16 +96,16 @@ EchoFilter::EchoFilter()
     mFilter = 0.0f;
 }
 
-result EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
+void EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
 {
-    if (aDelay <= 0 || aDecay <= 0 || aFilter < 0 || aFilter >= 1.0f)
-        return INVALID_PARAMETER;
+    assert(aDelay>0.0f);
+    assert(aDecay>0.0f);
+    assert(aFilter>=0.0f);
+    assert(aFilter<1.0f);
 
     mDecay  = aDecay;
     mDelay  = aDelay;
     mFilter = aFilter;
-
-    return 0;
 }
 
 int EchoFilter::getParamCount()
@@ -133,6 +131,7 @@ float EchoFilter::getParamMax(unsigned int aParamIndex)
     switch (aParamIndex)
     {
         case DELAY: return mDelay;
+        default: break;
     }
     return 1;
 }

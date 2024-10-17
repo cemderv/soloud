@@ -1,0 +1,485 @@
+#pragma once
+
+#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
+#include "soloud_misc.hpp"
+#include "soloud_vec3.hpp"
+#include <optional>
+#include <vector>
+
+namespace SoLoud
+{
+class AudioSource;
+class AudioSourceInstance;
+class Filter;
+
+// Soloud core class.
+class Soloud
+{
+public:
+    // Back-end data; content is up to the back-end implementation.
+    void* mBackendData;
+    // Pointer for the audio thread mutex.
+    void* mAudioThreadMutex;
+    // Flag for when we're inside the mutex, used for debugging.
+    bool mInsideAudioThreadMutex;
+    // Called by SoLoud to shut down the back-end. If nullptr, not called. Should be set by
+    // back-end.
+    soloudCallFunction mBackendCleanupFunc;
+
+    // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as
+    // instance.
+    soloudResultFunction mBackendPauseFunc;
+    soloudResultFunction mBackendResumeFunc;
+
+    // CTor
+    Soloud();
+    // DTor
+    ~Soloud();
+
+    // Initialize SoLoud. Must be called before SoLoud can be used.
+    void init(FLAGS                       aFlags      = FLAGS::CLIP_ROUNDOFF,
+              std::optional<unsigned int> aSamplerate = std::nullopt,
+              std::optional<unsigned int> aBufferSize = std::nullopt,
+              unsigned int                aChannels   = 2);
+
+    void pause();
+
+    void resume();
+
+    // Deinitialize SoLoud. Must be called before shutting down.
+    void deinit();
+
+    // Returns current backend channel count (1 mono, 2 stereo, etc)
+    unsigned int getBackendChannels() const;
+    // Returns current backend sample rate
+    unsigned int getBackendSamplerate() const;
+    // Returns current backend buffer size
+    unsigned int getBackendBufferSize() const;
+
+    // Set speaker position in 3d space
+    void setSpeakerPosition(unsigned int aChannel, vec3 value);
+
+    // Get speaker position in 3d space
+    vec3 getSpeakerPosition(unsigned int aChannel) const;
+
+    // Start playing a sound. Returns voice handle, which can be ignored or used to alter the
+    // playing sound's parameters. Negative volume means to use default.
+    handle play(AudioSource& aSound,
+                float        aVolume = -1.0f,
+                float        aPan    = 0.0f,
+                bool         aPaused = 0,
+                unsigned int aBus    = 0);
+    // Start playing a sound delayed in relation to other sounds called via this function. Negative
+    // volume means to use default.
+    handle playClocked(time_t       aSoundTime,
+                       AudioSource& aSound,
+                       float        aVolume = -1.0f,
+                       float        aPan    = 0.0f,
+                       unsigned int aBus    = 0);
+    // Start playing a 3d audio source
+    handle play3d(AudioSource& aSound,
+                  vec3         aPos,
+                  vec3         aVel    = {},
+                  float        aVolume = 1.0f,
+                  bool         aPaused = 0,
+                  unsigned int aBus    = 0);
+    // Start playing a 3d audio source, delayed in relation to other sounds called via this
+    // function.
+    handle play3dClocked(time_t       aSoundTime,
+                         AudioSource& aSound,
+                         vec3         aPos,
+                         vec3         aVel    = {},
+                         float        aVolume = 1.0f,
+                         unsigned int aBus    = 0);
+    // Start playing a sound without any panning. It will be played at full volume.
+    handle playBackground(AudioSource& aSound,
+                          float        aVolume = -1.0f,
+                          bool         aPaused = 0,
+                          unsigned int aBus    = 0);
+
+    // Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative
+    // play speed affects time.
+    bool seek(handle aVoiceHandle, time_t aSeconds);
+    // Stop the sound.
+    void stop(handle aVoiceHandle);
+    // Stop all voices.
+    void stopAll();
+    // Stop all voices that play this sound source
+    void stopAudioSource(AudioSource& aSound);
+    // Count voices that play this audio source
+    int countAudioSource(AudioSource& aSound);
+
+    // Set a live filter parameter. Use 0 for the global filters.
+    void setFilterParameter(handle       aVoiceHandle,
+                            unsigned int aFilterId,
+                            unsigned int aAttributeId,
+                            float        aValue);
+    // Get a live filter parameter. Use 0 for the global filters.
+    std::optional<float> getFilterParameter(handle       aVoiceHandle,
+                                            unsigned int aFilterId,
+                                            unsigned int aAttributeId);
+    // Fade a live filter parameter. Use 0 for the global filters.
+    void fadeFilterParameter(handle       aVoiceHandle,
+                             unsigned int aFilterId,
+                             unsigned int aAttributeId,
+                             float        aTo,
+                             time_t       aTime);
+    // Oscillate a live filter parameter. Use 0 for the global filters.
+    void oscillateFilterParameter(handle       aVoiceHandle,
+                                  unsigned int aFilterId,
+                                  unsigned int aAttributeId,
+                                  float        aFrom,
+                                  float        aTo,
+                                  time_t       aTime);
+
+    // Get current play time, in seconds.
+    time_t getStreamTime(handle aVoiceHandle);
+    // Get current sample position, in seconds.
+    time_t getStreamPosition(handle aVoiceHandle);
+    // Get current pause state.
+    bool getPause(handle aVoiceHandle);
+    // Get current volume.
+    float getVolume(handle aVoiceHandle);
+    // Get current overall volume (set volume * 3d volume)
+    float getOverallVolume(handle aVoiceHandle);
+    // Get current pan.
+    float getPan(handle aVoiceHandle);
+    // Get current sample rate.
+    float getSamplerate(handle aVoiceHandle);
+    // Get current voice protection state.
+    bool getProtectVoice(handle aVoiceHandle);
+    // Get the current number of busy voices.
+    unsigned int getActiveVoiceCount();
+    // Get the current number of voices in SoLoud
+    unsigned int getVoiceCount();
+    // Check if the handle is still valid, or if the sound has stopped.
+    bool isValidVoiceHandle(handle aVoiceHandle);
+    // Get current relative play speed.
+    float getRelativePlaySpeed(handle aVoiceHandle);
+    // Get current post-clip scaler value.
+    float getPostClipScaler() const;
+    // Get the current main resampler
+    RESAMPLER getMainResampler() const;
+    // Get current global volume
+    float getGlobalVolume() const;
+    // Get current maximum active voice setting
+    unsigned int getMaxActiveVoiceCount() const;
+    // Query whether a voice is set to loop.
+    bool getLooping(handle aVoiceHandle);
+    // Query whether a voice is set to auto-stop when it ends.
+    bool getAutoStop(handle aVoiceHandle);
+    // Get voice loop point value
+    time_t getLoopPoint(handle aVoiceHandle);
+
+    // Set voice loop point value
+    void setLoopPoint(handle aVoiceHandle, time_t aLoopPoint);
+    // Set voice's loop state
+    void setLooping(handle aVoiceHandle, bool aLooping);
+    // Set whether sound should auto-stop when it ends
+    void setAutoStop(handle aVoiceHandle, bool aAutoStop);
+    // Set current maximum active voice setting
+    void setMaxActiveVoiceCount(unsigned int aVoiceCount);
+    // Set behavior for inaudible sounds
+    void setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill);
+    // Set the global volume
+    void setGlobalVolume(float aVolume);
+    // Set the post clip scaler value
+    void setPostClipScaler(float aScaler);
+    // Set the main resampler
+    void setMainResampler(RESAMPLER aResampler);
+    // Set the pause state
+    void setPause(handle aVoiceHandle, bool aPause);
+    // Pause all voices
+    void setPauseAll(bool aPause);
+    // Set the relative play speed
+    void setRelativePlaySpeed(handle aVoiceHandle, float aSpeed);
+    // Set the voice protection state
+    void setProtectVoice(handle aVoiceHandle, bool aProtect);
+    // Set the sample rate
+    void setSamplerate(handle aVoiceHandle, float aSamplerate);
+    // Set panning value; -1 is left, 0 is center, 1 is right
+    void setPan(handle aVoiceHandle, float aPan);
+    // Set absolute left/right volumes
+    void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume);
+    // Set channel volume (volume for a specific speaker)
+    void setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume);
+    // Set overall volume
+    void setVolume(handle aVoiceHandle, float aVolume);
+    // Set delay, in samples, before starting to play samples. Calling this on a live sound will
+    // cause glitches.
+    void setDelaySamples(handle aVoiceHandle, unsigned int aSamples);
+
+    // Set up volume fader
+    void fadeVolume(handle aVoiceHandle, float aTo, time_t aTime);
+    // Set up panning fader
+    void fadePan(handle aVoiceHandle, float aTo, time_t aTime);
+    // Set up relative play speed fader
+    void fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time_t aTime);
+    // Set up global volume fader
+    void fadeGlobalVolume(float aTo, time_t aTime);
+    // Schedule a stream to pause
+    void schedulePause(handle aVoiceHandle, time_t aTime);
+    // Schedule a stream to stop
+    void scheduleStop(handle aVoiceHandle, time_t aTime);
+
+    // Set up volume oscillator
+    void oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time_t aTime);
+    // Set up panning oscillator
+    void oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time_t aTime);
+    // Set up relative play speed oscillator
+    void oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time_t aTime);
+    // Set up global volume oscillator
+    void oscillateGlobalVolume(float aFrom, float aTo, time_t aTime);
+
+    // Set global filters. Set to nullptr to clear the filter.
+    void setGlobalFilter(unsigned int aFilterId, Filter* aFilter);
+
+    // Enable or disable visualization data gathering
+    void setVisualizationEnable(bool aEnable);
+
+    // Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled
+    // before use.
+    float* calcFFT();
+
+    // Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
+    float* getWave();
+
+    // Get approximate output volume for a channel for visualization. Visualization has to be
+    // enabled before use.
+    float getApproximateVolume(unsigned int aChannel);
+
+    // Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update
+    // loop count)
+    unsigned int getLoopCount(handle aVoiceHandle);
+
+    // Get audiosource-specific information from a voice.
+    float getInfo(handle aVoiceHandle, unsigned int aInfoKey);
+
+    // Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
+    handle createVoiceGroup();
+    // Destroy a voice group.
+    void destroyVoiceGroup(handle aVoiceGroupHandle);
+    // Add a voice handle to a voice group
+    void addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle);
+    // Is this handle a valid voice group?
+    bool isVoiceGroup(handle aVoiceGroupHandle);
+    // Is this voice group empty?
+    bool isVoiceGroupEmpty(handle aVoiceGroupHandle);
+
+    // Perform 3d audio parameter update
+    void update3dAudio();
+
+    // Set the speed of sound constant for doppler
+    void set3dSoundSpeed(float aSpeed);
+    // Get the current speed of sound constant for doppler
+    float get3dSoundSpeed() const;
+    // Set 3d listener parameters
+    void set3dListenerParameters(vec3 pos, vec3 at, vec3 up, vec3 velocity = {});
+    // Set 3d listener position
+    void set3dListenerPosition(vec3 value);
+    // Set 3d listener "at" vector
+    void set3dListenerAt(vec3 value);
+    // set 3d listener "up" vector
+    void set3dListenerUp(vec3 value);
+    // Set 3d listener velocity
+    void set3dListenerVelocity(vec3 value);
+
+    // Set 3d audio source parameters
+    void set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocity = {});
+
+    // Set 3d audio source position
+    void set3dSourcePosition(handle aVoiceHandle, vec3 pos);
+    // Set 3d audio source velocity
+    void set3dSourceVelocity(handle aVoiceHandle, vec3 velocity);
+    // Set 3d audio source min/max distance (distance < min means max volume)
+    void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
+    // Set 3d audio source attenuation parameters
+    void set3dSourceAttenuation(handle       aVoiceHandle,
+                                unsigned int aAttenuationModel,
+                                float        aAttenuationRolloffFactor);
+    // Set 3d audio source doppler factor to reduce or enhance doppler effect. Default = 1.0
+    void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
+
+    // Rest of the stuff is used internally.
+
+    // Returns mixed float samples in buffer. Called by the back-end, or user with null driver.
+    void mix(float* aBuffer, unsigned int aSamples);
+    // Returns mixed 16-bit signed integer samples in buffer. Called by the back-end, or user with
+    // null driver.
+    void mixSigned16(short* aBuffer, unsigned int aSamples);
+
+public:
+    // Mix N samples * M channels. Called by other mix_ functions.
+    void mix_internal(unsigned int aSamples, unsigned int aStride);
+
+    // Handle rest of initialization (called from backend)
+    void postinit_internal(unsigned int aSamplerate,
+                           unsigned int aBufferSize,
+                           FLAGS        aFlags,
+                           unsigned int aChannels);
+
+    // Update list of active voices
+    void calcActiveVoices_internal();
+    // Map resample buffers to active voices
+    void mapResampleBuffers_internal();
+    // Perform mixing for a specific bus
+    void mixBus_internal(float*       aBuffer,
+                         unsigned int aSamplesToRead,
+                         unsigned int aBufferSize,
+                         float*       aScratch,
+                         unsigned int aBus,
+                         float        aSamplerate,
+                         unsigned int aChannels,
+                         RESAMPLER    aResampler);
+    // Find a free voice, stopping the oldest if no free voice is found.
+    int findFreeVoice_internal();
+    // Converts handle to voice, if the handle is valid. Returns -1 if not.
+    int getVoiceFromHandle_internal(handle aVoiceHandle) const;
+    // Converts voice + playindex into handle
+    handle getHandleFromVoice_internal(unsigned int aVoice) const;
+    // Stop voice (not handle).
+    void stopVoice_internal(unsigned int aVoice);
+    // Set voice (not handle) pan.
+    void setVoicePan_internal(unsigned int aVoice, float aPan);
+    // Set voice (not handle) relative play speed.
+    void setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpeed);
+    // Set voice (not handle) volume.
+    void setVoiceVolume_internal(unsigned int aVoice, float aVolume);
+    // Set voice (not handle) pause state.
+    void setVoicePause_internal(unsigned int aVoice, int aPause);
+    // Update overall volume from set and 3d volumes
+    void updateVoiceVolume_internal(unsigned int aVoice);
+    // Update overall relative play speed from set and 3d speeds
+    void updateVoiceRelativePlaySpeed_internal(unsigned int aVoice);
+    // Perform 3d audio calculation for array of voices
+    void update3dVoices_internal(unsigned int* aVoiceList, unsigned int aVoiceCount);
+    // Clip the samples in the buffer
+
+    void clip_internal(AlignedFloatBuffer& aBuffer,
+                       AlignedFloatBuffer& aDestBuffer,
+                       unsigned int        aSamples,
+                       float               aVolume0,
+                       float               aVolume1);
+    // Remove all non-active voices from group
+    void trimVoiceGroup_internal(handle aVoiceGroupHandle);
+
+    // Get pointer to the zero-terminated array of voice handles in a voice group
+    handle* voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const;
+
+    // Lock audio thread mutex.
+    void lockAudioMutex_internal();
+
+    // Unlock audio thread mutex.
+    void unlockAudioMutex_internal();
+
+    // Max. number of active voices. Busses and tickable inaudibles also count against this.
+    unsigned int mMaxActiveVoices;
+
+    // Highest voice in use so far
+    unsigned int mHighestVoice;
+
+    // Scratch buffer, used for resampling.
+    AlignedFloatBuffer mScratch;
+
+    // Current size of the scratch, in samples.
+    unsigned int mScratchSize;
+
+    // Output scratch buffer, used in mix_().
+    AlignedFloatBuffer mOutputScratch;
+
+    // Pointers to resampler buffers, two per active voice.
+    std::vector<float*> mResampleData;
+
+    // Actual allocated memory for resampler buffers
+    AlignedFloatBuffer mResampleDataBuffer;
+
+    // Owners of the resample data
+    std::vector<AudioSourceInstance*> mResampleDataOwner;
+
+    // Audio voices.
+    std::array<AudioSourceInstance*, VOICE_COUNT> mVoice{};
+
+    // Resampler for the main bus
+    RESAMPLER mResampler;
+
+    // Output sample rate (not float)
+    unsigned int mSamplerate;
+
+    // Output channel count
+    unsigned int mChannels;
+
+    // Maximum size of output buffer; used to calculate needed scratch.
+    unsigned int mBufferSize;
+
+    // Flags; see Soloud::FLAGS
+    FLAGS mFlags;
+
+    // Global volume. Applied before clipping.
+    float mGlobalVolume;
+
+    // Post-clip scaler. Applied after clipping.
+    float mPostClipScaler;
+
+    // Current play index. Used to create audio handles.
+    unsigned int mPlayIndex;
+
+    // Current sound source index. Used to create sound source IDs.
+    unsigned int mAudioSourceID;
+
+    // Fader for the global volume.
+    Fader mGlobalVolumeFader;
+
+    // Global stream time, for the global volume fader.
+    time_t mStreamTime;
+
+    // Last time seen by the playClocked call
+    time_t mLastClockedTime;
+
+    // Global filter
+    std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
+
+    // Global filter instance
+    std::array<FilterInstance*, FILTERS_PER_STREAM> mFilterInstance{};
+
+    // Approximate volume for channels.
+    std::array<float, MAX_CHANNELS> mVisualizationChannelVolume{};
+
+    // Mono-mixed wave data for visualization and for visualization FFT input
+    std::array<float, 256> mVisualizationWaveData{};
+
+    // FFT output data
+    std::array<float, 256> mFFTData{};
+
+    // Snapshot of wave data for visualization
+    std::array<float, 256> mWaveData{};
+
+    vec3 m3dPosition{};
+    vec3 m3dAt{0, 0, -1};
+    vec3 m3dUp{0, 1, 0};
+    vec3 m3dVelocity;
+
+    // 3d speed of sound (for doppler)
+    float m3dSoundSpeed;
+
+    // 3d position of speakers
+    std::array<vec3, MAX_CHANNELS> m3dSpeakerPosition;
+
+    // Data related to 3d processing, separate from AudioSource so we can do 3d calculations without
+    // audio mutex.
+    AudioSourceInstance3dData m3dData[VOICE_COUNT];
+
+    // For each voice group, first int is number of ints alocated.
+    unsigned int** mVoiceGroup;
+    unsigned int   mVoiceGroupCount;
+
+    // List of currently active voices
+    unsigned int mActiveVoice[VOICE_COUNT];
+
+    // Number of currently active voices
+    unsigned int mActiveVoiceCount;
+
+    // Active voices list needs to be recalculated
+    bool mActiveVoiceDirty;
+};
+}; // namespace SoLoud

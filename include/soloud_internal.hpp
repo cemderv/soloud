@@ -24,65 +24,65 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_engine.hpp"
 
 namespace SoLoud
 {
 // SDL2 "non-dynamic" back-end initialization call
-result sdl2static_init(SoLoud::Soloud* aSoloud,
-                       unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                       unsigned int    aSamplerate = 44100,
-                       unsigned int    aBuffer     = 2048,
-                       unsigned int    aChannels   = 2);
+void sdl2static_init(Soloud*      aSoloud,
+                     FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                     unsigned int aSamplerate = 44100,
+                     unsigned int aBuffer     = 2048,
+                     unsigned int aChannels   = 2);
 
 // Core Audio driver back-end initialization call
-result coreaudio_init(SoLoud::Soloud* aSoloud,
-                      unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                      unsigned int    aSamplerate = 44100,
-                      unsigned int    aBuffer     = 2048,
-                      unsigned int    aChannels   = 2);
+void coreaudio_init(Soloud*      aSoloud,
+                    FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                    unsigned int aSamplerate = 44100,
+                    unsigned int aBuffer     = 2048,
+                    unsigned int aChannels   = 2);
 
 // OpenSL ES back-end initialization call
-result opensles_init(SoLoud::Soloud* aSoloud,
-                     unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                     unsigned int    aSamplerate = 44100,
-                     unsigned int    aBuffer     = 2048,
-                     unsigned int    aChannels   = 2);
+void opensles_init(Soloud*      aSoloud,
+                   FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                   unsigned int aSamplerate = 44100,
+                   unsigned int aBuffer     = 2048,
+                   unsigned int aChannels   = 2);
 
 // WinMM back-end initialization call
-result winmm_init(SoLoud::Soloud* aSoloud,
-                  unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                  unsigned int    aSamplerate = 44100,
-                  unsigned int    aBuffer     = 4096,
-                  unsigned int    aChannels   = 2);
+void winmm_init(Soloud*      aSoloud,
+                FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                unsigned int aSamplerate = 44100,
+                unsigned int aBuffer     = 4096,
+                unsigned int aChannels   = 2);
 
 // XAudio2 back-end initialization call
-result xaudio2_init(SoLoud::Soloud* aSoloud,
-                    unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                    unsigned int    aSamplerate = 44100,
-                    unsigned int    aBuffer     = 2048,
-                    unsigned int    aChannels   = 2);
+void xaudio2_init(Soloud*      aSoloud,
+                  FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                  unsigned int aSamplerate = 44100,
+                  unsigned int aBuffer     = 2048,
+                  unsigned int aChannels   = 2);
 
 // WASAPI back-end initialization call
-result wasapi_init(SoLoud::Soloud* aSoloud,
-                   unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                   unsigned int    aSamplerate = 44100,
-                   unsigned int    aBuffer     = 4096,
-                   unsigned int    aChannels   = 2);
+void wasapi_init(Soloud*      aSoloud,
+                 FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                 unsigned int aSamplerate = 44100,
+                 unsigned int aBuffer     = 4096,
+                 unsigned int aChannels   = 2);
 
 // PS Vita homebrew back-end initialization call
-result vita_homebrew_init(SoLoud::Soloud* aSoloud,
-                          unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                          unsigned int    aSamplerate = 44100,
-                          unsigned int    aBuffer     = 2048,
-                          unsigned int    aChannels   = 2);
+void vita_homebrew_init(Soloud*      aSoloud,
+                        FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+                        unsigned int aSamplerate = 44100,
+                        unsigned int aBuffer     = 2048,
+                        unsigned int aChannels   = 2);
 
 // ALSA back-end initialization call
-result alsa_init(SoLoud::Soloud* aSoloud,
-                 unsigned int    aFlags      = Soloud::CLIP_ROUNDOFF,
-                 unsigned int    aSamplerate = 44100,
-                 unsigned int    aBuffer     = 2048,
-                 unsigned int    aChannels   = 2);
+void alsa_init(Soloud*      aSoloud,
+               FLAGS        aFlags      = FLAGS::CLIP_ROUNDOFF,
+               unsigned int aSamplerate = 44100,
+               unsigned int aBuffer     = 2048,
+               unsigned int aChannels   = 2);
 
 // Interlace samples in a buffer. From 11112222 to 12121212
 void interlace_samples_float(const float* aSourceBuffer,
@@ -100,11 +100,11 @@ void interlace_samples_s16(const float* aSourceBuffer,
 }; // namespace SoLoud
 
 #define FOR_ALL_VOICES_PRE                                                                         \
-    handle* h_     = nullptr;                                                                         \
+    handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     lockAudioMutex_internal();                                                                     \
     h_ = voiceGroupHandleToArray_internal(aVoiceHandle);                                           \
-    if (h_ == nullptr)                                                                                \
+    if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -119,10 +119,10 @@ void interlace_samples_s16(const float* aSourceBuffer,
     unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D                                                                      \
-    handle* h_     = nullptr;                                                                         \
+    handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     h_             = voiceGroupHandleToArray_internal(aVoiceHandle);                               \
-    if (h_ == nullptr)                                                                                \
+    if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -136,11 +136,11 @@ void interlace_samples_s16(const float* aSourceBuffer,
     }
 
 #define FOR_ALL_VOICES_PRE_EXT                                                                     \
-    handle* h_     = nullptr;                                                                         \
+    handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     mSoloud->lockAudioMutex_internal();                                                            \
     h_ = mSoloud->voiceGroupHandleToArray_internal(aVoiceHandle);                                  \
-    if (h_ == nullptr)                                                                                \
+    if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -155,10 +155,10 @@ void interlace_samples_s16(const float* aSourceBuffer,
     mSoloud->unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D_EXT                                                                  \
-    handle* h_     = nullptr;                                                                         \
+    handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     h_             = mSoloud->voiceGroupHandleToArray(aVoiceHandle);                               \
-    if (h_ == nullptr)                                                                                \
+    if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \

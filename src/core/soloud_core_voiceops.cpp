@@ -22,29 +22,23 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
+#include "soloud_engine.hpp"
 
 // Direct voice operations (no mutexes - called from other functions)
 
 namespace SoLoud
 {
-result Soloud::setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpeed)
+void Soloud::setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpeed)
 {
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
-    if (aSpeed <= 0.0f)
-    {
-        return INVALID_PARAMETER;
-    }
+    assert(aSpeed > 0.0f);
 
     if (mVoice[aVoice])
     {
         mVoice[aVoice]->mSetRelativePlaySpeed = aSpeed;
         updateVoiceRelativePlaySpeed_internal(aVoice);
     }
-
-    return 0;
 }
 
 void Soloud::setVoicePause_internal(unsigned int aVoice, int aPause)
@@ -52,6 +46,7 @@ void Soloud::setVoicePause_internal(unsigned int aVoice, int aPause)
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
     mActiveVoiceDirty = true;
+
     if (mVoice[aVoice])
     {
         mVoice[aVoice]->mPauseScheduler.mActive = 0;
@@ -74,8 +69,8 @@ void Soloud::setVoicePan_internal(unsigned int aVoice, float aPan)
     if (mVoice[aVoice])
     {
         mVoice[aVoice]->mPan              = aPan;
-        float l                           = (float)cos((aPan + 1) * M_PI / 4);
-        float r                           = (float)sin((aPan + 1) * M_PI / 4);
+        float l                           = float(std::cos((aPan + 1) * M_PI / 4));
+        float r                           = float(std::sin((aPan + 1) * M_PI / 4));
         mVoice[aVoice]->mChannelVolume[0] = l;
         mVoice[aVoice]->mChannelVolume[1] = r;
         if (mVoice[aVoice]->mChannels == 4)

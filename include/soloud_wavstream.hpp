@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 
 struct stb_vorbis;
 #ifndef dr_flac_h
@@ -48,8 +48,7 @@ class WavStreamInstance : public AudioSourceInstance
     unsigned int mOffset;
     File*        mFile;
 
-    union codec
-    {
+    union codec {
         stb_vorbis* mOgg;
         drflac*     mFlac;
         drmp3*      mMp3;
@@ -60,48 +59,50 @@ class WavStreamInstance : public AudioSourceInstance
     unsigned int mOggFrameOffset;
     float**      mOggOutputs;
 
-public:
-    explicit     WavStreamInstance(WavStream* aParent);
+  public:
+    explicit WavStreamInstance(WavStream* aParent);
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    result seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
-    result rewind() override;
-    bool   hasEnded() override;
+    bool         seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
+    bool         rewind() override;
+    bool         hasEnded() override;
     ~WavStreamInstance() override;
 };
 
 enum WAVSTREAM_FILETYPE
 {
-    WAVSTREAM_WAV = 0,
-    WAVSTREAM_OGG = 1,
+    WAVSTREAM_WAV  = 0,
+    WAVSTREAM_OGG  = 1,
     WAVSTREAM_FLAC = 2,
-    WAVSTREAM_MP3 = 3
+    WAVSTREAM_MP3  = 3
 };
 
 class WavStream : public AudioSource
 {
-    result loadwav(File* fp);
-    result loadogg(File* fp);
-    result loadflac(File* fp);
-    result loadmp3(File* fp);
+    void loadwav(File& fp);
+    void loadogg(File& fp);
+    void loadflac(File& fp);
+    void loadmp3(File& fp);
 
-public:
-    int          mFiletype;
-    File*        mMemFile;
-    File*        mStreamFile;
-    unsigned int mSampleCount;
+  public:
+    int          mFiletype    = 0;
+    File*        mMemFile     = nullptr;
+    File*        mStreamFile  = nullptr;
+    unsigned int mSampleCount = 0;
 
     WavStream();
-    ~WavStream() override;
-    result loadMem(const unsigned char* aData,
-                   unsigned int         aDataLen,
-                   bool                 aCopy          = false,
-                   bool                 aTakeOwnership = true);
-    AudioSourceInstance* createInstance() override;
-    time                 getLength();
 
-public:
-    result parse(File* aFile);
+    ~WavStream() override;
+
+    void loadMem(const unsigned char* aData,
+                 unsigned int         aDataLen,
+                 bool                 aCopy          = false,
+                 bool                 aTakeOwnership = true);
+
+    AudioSourceInstance* createInstance() override;
+    time_t               getLength() const;
+
+    void parse(File& aFile);
 };
 }; // namespace SoLoud

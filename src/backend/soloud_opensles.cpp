@@ -26,13 +26,12 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 
 #include "soloud.hpp"
-#include "soloud_error.hpp"
 #include "soloud_thread.hpp"
 
 #if !defined(WITH_OPENSLES)
 namespace SoLoud
 {
-result opensles_init(SoLoud::Soloud* aSoloud,
+result opensles_init(Soloud* aSoloud,
                      unsigned int    aFlags,
                      unsigned int    aSamplerate,
                      unsigned int    aBuffer)
@@ -128,14 +127,14 @@ struct BackendData
     SLDataLocator_AndroidSimpleBufferQueue inLocator;
 };
 
-void soloud_opensles_deinit(SoLoud::Soloud* aSoloud)
+void soloud_opensles_deinit(Soloud* aSoloud)
 {
     BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
     delete data;
     aSoloud->mBackendData = nullptr;
 }
 
-static void opensles_iterate(SoLoud::Soloud* aSoloud)
+static void opensles_iterate(Soloud* aSoloud)
 {
     BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
 
@@ -182,7 +181,7 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
     }
 }
 
-result opensles_init(SoLoud::Soloud* aSoloud,
+result opensles_init(Soloud* aSoloud,
                      unsigned int    aFlags,
                      unsigned int    aSamplerate,
                      unsigned int    aBuffer,

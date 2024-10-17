@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.hpp"
-#include "soloud_error.hpp"
+#include "soloud_filter.hpp"
+#include "soloud_fader.hpp"
 
 namespace SoLoud
 {
@@ -69,7 +69,7 @@ FilterInstance::FilterInstance()
     mParamFader   = 0;
 }
 
-result FilterInstance::initParams(int aNumParams)
+void FilterInstance::initParams(int aNumParams)
 {
     mNumParams = aNumParams;
     delete[] mParam;
@@ -77,31 +77,18 @@ result FilterInstance::initParams(int aNumParams)
     mParam      = new float[mNumParams];
     mParamFader = new Fader[mNumParams];
 
-    if (mParam == nullptr || mParamFader == nullptr)
-    {
-        delete[] mParam;
-        delete[] mParamFader;
-        mParam      = nullptr;
-        mParamFader = nullptr;
-        mNumParams  = 0;
-        return OUT_OF_MEMORY;
-    }
-
-    unsigned int i;
-    for (i = 0; i < mNumParams; i++)
+    for (unsigned int i = 0; i < mNumParams; i++)
     {
         mParam[i]              = 0;
         mParamFader[i].mActive = 0;
     }
-    mParam[0] = 1; // set 'wet' to 1
 
-    return 0;
+    mParam[0] = 1; // set 'wet' to 1
 }
 
 void FilterInstance::updateParams(double aTime)
 {
-    unsigned int i;
-    for (i = 0; i < mNumParams; i++)
+    for (unsigned int i = 0; i < mNumParams; i++)
     {
         if (mParamFader[i].mActive > 0)
         {
@@ -162,8 +149,7 @@ void FilterInstance::filter(float*       aBuffer,
                             float        aSamplerate,
                             double       aTime)
 {
-    unsigned int i;
-    for (i = 0; i < aChannels; i++)
+    for (unsigned int i = 0; i < aChannels; i++)
     {
         filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
     }

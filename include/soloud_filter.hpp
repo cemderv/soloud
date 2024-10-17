@@ -37,28 +37,28 @@ class FilterInstance
     Fader*       mParamFader;
 
     FilterInstance();
-    virtual result initParams(int aNumParams);
-    virtual void   updateParams(time aTime);
-    virtual void   filter(float*       aBuffer,
-                          unsigned int aSamples,
-                          unsigned int aBufferSize,
-                          unsigned int aChannels,
-                          float        aSamplerate,
-                          time         aTime);
-    virtual void   filterChannel(float*       aBuffer,
-                                 unsigned int aSamples,
-                                 float        aSamplerate,
-                                 time         aTime,
-                                 unsigned int aChannel,
-                                 unsigned int aChannels);
-    virtual float  getFilterParameter(unsigned int aAttributeId);
-    virtual void   setFilterParameter(unsigned int aAttributeId, float aValue);
-    virtual void   fadeFilterParameter(unsigned int aAttributeId,
-                                       float        aTo,
-                                       time         aTime,
-                                       time         aStartTime);
-    virtual void   oscillateFilterParameter(
-          unsigned int aAttributeId, float aFrom, float aTo, time aTime, time aStartTime);
+    virtual void  initParams(int aNumParams);
+    virtual void  updateParams(time_t aTime);
+    virtual void  filter(float*       aBuffer,
+                         unsigned int aSamples,
+                         unsigned int aBufferSize,
+                         unsigned int aChannels,
+                         float        aSamplerate,
+                         time_t       aTime);
+    virtual void  filterChannel(float*       aBuffer,
+                                unsigned int aSamples,
+                                float        aSamplerate,
+                                time_t       aTime,
+                                unsigned int aChannel,
+                                unsigned int aChannels);
+    virtual float getFilterParameter(unsigned int aAttributeId);
+    virtual void  setFilterParameter(unsigned int aAttributeId, float aValue);
+    virtual void  fadeFilterParameter(unsigned int aAttributeId,
+                                      float        aTo,
+                                      time_t       aTime,
+                                      time_t       aStartTime);
+    virtual void  oscillateFilterParameter(
+         unsigned int aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
     virtual ~FilterInstance();
 };
 
@@ -71,6 +71,7 @@ class Filter
         INT_PARAM,
         BOOL_PARAM
     };
+
     Filter();
     virtual int          getParamCount();
     virtual const char*  getParamName(unsigned int aParamIndex);

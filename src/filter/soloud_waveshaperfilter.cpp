@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_waveshaperfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cmath>
 
 namespace SoLoud
@@ -65,12 +63,10 @@ WaveShaperFilterInstance::~WaveShaperFilterInstance()
 {
 }
 
-result WaveShaperFilter::setParams(float aAmount)
+void WaveShaperFilter::setParams(float aAmount)
 {
-    if (aAmount < -1 || aAmount > 1)
-        return INVALID_PARAMETER;
+    assert(aAmount>=-1 && aAmount<=1);
     mAmount = aAmount;
-    return 0;
 }
 
 WaveShaperFilter::WaveShaperFilter()

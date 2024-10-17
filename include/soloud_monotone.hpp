@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 
 namespace SoLoud
 {
@@ -70,7 +70,7 @@ class MonotoneInstance : public AudioSourceInstance
 {
     Monotone* mParent;
 
-public:
+  public:
     MonotoneChannel         mChannel[12]{};
     MonotoneHardwareChannel mOutput[12]{};
     int                     mNextChannel;
@@ -80,30 +80,30 @@ public:
     int                     mSampleCount;
     int                     mRowTick;
 
-    explicit     MonotoneInstance(Monotone* aParent);
+    explicit MonotoneInstance(Monotone* aParent);
     unsigned int getAudio(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize) override;
     bool         hasEnded() override;
 };
 
 class Monotone : public AudioSource
 {
-public:
+  public:
     int          mNotesHz[800];
     int          mVibTable[32];
     int          mHardwareChannels;
-    int          mWaveform;
+    WAVEFORM     mWaveform;
     MonotoneSong mSong;
     Monotone();
     ~Monotone() override;
-    result setParams(int aHardwareChannels, int aWaveform = Soloud::WAVE_SQUARE);
-    result loadMem(const unsigned char* aMem,
-                   unsigned int         aLength,
-                   bool                 aCopy          = false,
-                   bool                 aTakeOwnership = true);
-    result               loadFile(File* aFile);
+    void                 setParams(int aHardwareChannels, WAVEFORM aWaveform = WAVEFORM::SQUARE);
+    void                 loadMem(const unsigned char* aMem,
+                                 unsigned int         aLength,
+                                 bool                 aCopy          = false,
+                                 bool                 aTakeOwnership = true);
+    void                 loadFile(File* aFile);
     AudioSourceInstance* createInstance() override;
 
-public:
+  public:
     void clear();
 };
 }; // namespace SoLoud

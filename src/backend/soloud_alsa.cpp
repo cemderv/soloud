@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.hpp"
-#include "soloud_error.hpp"
 #include "soloud_thread.hpp"
 
 #if !defined(WITH_ALSA)

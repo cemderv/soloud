@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_error.hpp"
 #include "soloud_internal.hpp"
 #include "soloud_vec3.hpp"
 #include <array>
@@ -50,16 +49,6 @@ static mat3 lookatRH(const vec3& at, vec3 up)
     const auto z = normalize(at);
     const auto x = normalize(up.cross(z));
     const auto y = z.cross(x);
-
-    return {x, y, z};
-}
-
-static mat3 lookatLH(const vec3& at, vec3 up)
-{
-    const auto z = normalize(at);
-    auto       x = normalize(up.cross(z));
-    const auto y = z.cross(x);
-    x            = -x;
 
     return {x, y, z};
 }
@@ -131,15 +120,13 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
     const auto lvel = m3dVelocity;
     const auto at   = m3dAt;
     const auto up   = m3dUp;
-    const auto m    = mFlags & LEFT_HANDED_3D ? lookatLH(at, up) : lookatRH(at, up);
+    const auto m    = lookatRH(at, up);
 
     for (unsigned int i = 0; i < aVoiceCount; i++)
     {
         auto& v = m3dData[aVoiceArray[i]];
 
-        auto vol = v.mCollider != nullptr
-                       ? v.mCollider->collide(this, v, v.mColliderData)
-                       : 1.0f;
+        auto vol = v.mCollider != nullptr ? v.mCollider->collide(this, v, v.mColliderData) : 1.0f;
 
         auto       pos = v.m3dPosition;
         const auto vel = v.m3dVelocity;
@@ -274,12 +261,13 @@ void Soloud::update3dAudio()
 }
 
 
-handle Soloud::play3d(AudioSource& aSound,
-                      vec3         aPos,
-                      vec3         aVel,
-                      float        aVolume,
-                      bool         aPaused,
-                      unsigned int aBus)
+handle Soloud::play3d(
+    AudioSource& aSound,
+    vec3         aPos,
+    vec3         aVel,
+    float        aVolume,
+    bool         aPaused,
+    unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -344,12 +332,13 @@ handle Soloud::play3d(AudioSource& aSound,
     return h;
 }
 
-handle Soloud::play3dClocked(time         aSoundTime,
-                             AudioSource& aSound,
-                             vec3         aPos,
-                             vec3         aVel,
-                             float        aVolume,
-                             unsigned int aBus)
+handle Soloud::play3dClocked(
+    time_t       aSoundTime,
+    AudioSource& aSound,
+    vec3         aPos,
+    vec3         aVel,
+    float        aVolume,
+    unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -362,7 +351,7 @@ handle Soloud::play3dClocked(time         aSoundTime,
     m3dData[v].mHandle = h;
     mVoice[v]->mFlags |= AudioSourceInstanceFlags::PROCESS_3D;
     set3dSourceParameters(h, aPos, aVel);
-    time lasttime = mLastClockedTime;
+    time_t lasttime = mLastClockedTime;
     if (lasttime == 0)
     {
         lasttime         = aSoundTime;
@@ -422,12 +411,10 @@ handle Soloud::play3dClocked(time         aSoundTime,
 }
 
 
-result Soloud::set3dSoundSpeed(float aSpeed)
+void Soloud::set3dSoundSpeed(float aSpeed)
 {
-    if (aSpeed <= 0)
-        return INVALID_PARAMETER;
+    assert(aSpeed>0.0f);
     m3dSoundSpeed = aSpeed;
-    return SO_NO_ERROR;
 }
 
 
@@ -437,11 +424,7 @@ float Soloud::get3dSoundSpeed() const
 }
 
 
-void Soloud::set3dListenerParameters(vec3 pos,
-                                     vec3 at,
-                                     vec3 up,
-                                     vec3 velocity
-    )
+void Soloud::set3dListenerParameters(vec3 pos, vec3 at, vec3 up, vec3 velocity)
 {
     m3dPosition = pos;
     m3dAt       = at;
@@ -474,9 +457,7 @@ void Soloud::set3dListenerVelocity(vec3 value)
 }
 
 
-void Soloud::set3dSourceParameters(handle aVoiceHandle,
-                                   vec3   aPos,
-                                   vec3   aVelocity)
+void Soloud::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocity)
 {
     FOR_ALL_VOICES_PRE_3D
         m3dData[ch].m3dPosition = aPos;
@@ -493,8 +474,7 @@ void Soloud::set3dSourcePosition(handle aVoiceHandle, vec3 value)
 }
 
 
-void Soloud::set3dSourceVelocity(handle aVoiceHandle,
-                                 vec3   velocity)
+void Soloud::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
 {
     FOR_ALL_VOICES_PRE_3D
         m3dData[ch].m3dVelocity = velocity;

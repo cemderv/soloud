@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 
 #pragma once
 
+#include "soloud_audiosource.hpp"
+
 #define SOLOUD_QUEUE_MAX 32
 
 namespace SoLoud
@@ -34,7 +36,7 @@ class QueueInstance : public AudioSourceInstance
 {
     Queue* mParent = nullptr;
 
-public:
+  public:
     explicit QueueInstance(Queue* aParent);
 
     unsigned int getAudio(float*       aBuffer,
@@ -46,23 +48,23 @@ public:
 
 class Queue : public AudioSource
 {
-public:
+  public:
     QueueInstance* createInstance() override;
 
     // Play sound through the queue
-    result play(AudioSource& aSound);
+    void play(AudioSource& aSound);
 
     // Number of audio sources queued for replay
-    unsigned int getQueueCount();
+    unsigned int getQueueCount() const;
 
     // Is this audio source currently playing?
-    bool isCurrentlyPlaying(AudioSource& aSound);
+    bool isCurrentlyPlaying(const AudioSource& aSound) const;
 
     // Set params by reading them from an audio source
-    result setParamsFromAudioSource(AudioSource& aSound);
+    void setParamsFromAudioSource(const AudioSource& aSound);
 
     // Set params manually
-    result setParams(float aSamplerate, unsigned int aChannels = 2);
+    void setParams(float aSamplerate, unsigned int aChannels = 2);
 
     void findQueueHandle();
 
@@ -72,6 +74,5 @@ public:
     std::array<AudioSourceInstance*, SOLOUD_QUEUE_MAX> mSource{};
     QueueInstance*                                     mInstance    = nullptr;
     handle                                             mQueueHandle = 0;
-
 };
 }; // namespace SoLoud

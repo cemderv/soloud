@@ -21,16 +21,15 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include <stdlib.h>
 
 #include "soloud.hpp"
-#include "soloud_error.hpp"
+#include <cstdlib>
 
 #if !defined(WITH_SDL2_STATIC)
 
 namespace SoLoud
 {
-result sdl2static_init(SoLoud::Soloud* aSoloud,
+result sdl2static_init(Soloud* aSoloud,
                        unsigned int    aFlags,
                        unsigned int    aSamplerate,
                        unsigned int    aBuffer)
@@ -52,7 +51,7 @@ static SDL_AudioDeviceID gAudioDeviceID;
 void soloud_sdl2static_audiomixer(void* userdata, Uint8* stream, int len)
 {
     short*          buf    = (short*)stream;
-    SoLoud::Soloud* soloud = (SoLoud::Soloud*)userdata;
+    Soloud* soloud = (Soloud*)userdata;
     if (gActiveAudioSpec.format == AUDIO_F32)
     {
         int samples = len / (gActiveAudioSpec.channels * sizeof(float));
@@ -65,12 +64,12 @@ void soloud_sdl2static_audiomixer(void* userdata, Uint8* stream, int len)
     }
 }
 
-static void soloud_sdl2static_deinit(SoLoud::Soloud* aSoloud)
+static void soloud_sdl2static_deinit(Soloud* aSoloud)
 {
     SDL_CloseAudioDevice(gAudioDeviceID);
 }
 
-result sdl2static_init(SoLoud::Soloud* aSoloud,
+result sdl2static_init(Soloud* aSoloud,
                        unsigned int    aFlags,
                        unsigned int    aSamplerate,
                        unsigned int    aBuffer,

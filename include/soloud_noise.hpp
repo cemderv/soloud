@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 #include "soloud_misc.hpp"
 
 namespace SoLoud
@@ -33,23 +33,23 @@ class Noise;
 
 class NoiseInstance : public AudioSourceInstance
 {
-public:
+  public:
     explicit NoiseInstance(Noise* aParent);
     ~NoiseInstance() override;
 
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    bool hasEnded() override;
+    bool         hasEnded() override;
 
-public:
+  public:
     float     mOctaveScale[10];
     Misc::Prg mPrg;
 };
 
 class Noise : public AudioSource
 {
-public:
+  public:
     enum NOISETYPES
     {
         WHITE = 0,
@@ -74,7 +74,7 @@ public:
 
     ~Noise() override;
 
-public:
+  public:
     AudioSourceInstance* createInstance() override;
     float                mOctaveScale[10];
 };

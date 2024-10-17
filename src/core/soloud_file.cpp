@@ -26,8 +26,6 @@ distribution.
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "soloud_file.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cstdio>
 #include <cstring>
 
@@ -104,17 +102,18 @@ MemoryFile::MemoryFile()
     mDataOwned  = false;
 }
 
-result MemoryFile::openMem(const unsigned char* aData,
-                           unsigned int         aDataLength,
-                           bool                 aCopy,
-                           bool                 aTakeOwnership)
+void MemoryFile::openMem(const unsigned char* aData,
+                         unsigned int         aDataLength,
+                         bool                 aCopy,
+                         bool                 aTakeOwnership)
 {
-    if (aData == nullptr || aDataLength == 0)
-        return INVALID_PARAMETER;
+    assert(aData != nullptr);
+    assert(aDataLength > 0);
 
     if (mDataOwned)
         delete[] mDataPtr;
-    mDataPtr = 0;
+
+    mDataPtr = nullptr;
     mOffset  = 0;
 
     mDataLength = aDataLength;
@@ -123,33 +122,29 @@ result MemoryFile::openMem(const unsigned char* aData,
     {
         mDataOwned = true;
         mDataPtr   = new unsigned char[aDataLength];
-        if (mDataPtr == nullptr)
-            return OUT_OF_MEMORY;
         memcpy((void*)mDataPtr, aData, aDataLength);
-        return SO_NO_ERROR;
     }
-
-    mDataPtr   = aData;
-    mDataOwned = aTakeOwnership;
-    return SO_NO_ERROR;
+    else
+    {
+        mDataPtr   = aData;
+        mDataOwned = aTakeOwnership;
+    }
 }
 
-result MemoryFile::openFileToMem(File* aFile)
+void MemoryFile::openFileToMem(File* aFile)
 {
-    if (!aFile)
-        return INVALID_PARAMETER;
+    assert(aFile != nullptr);
+
     if (mDataOwned)
         delete[] mDataPtr;
+
     mDataPtr = 0;
     mOffset  = 0;
 
     mDataLength = aFile->length();
     mDataPtr    = new unsigned char[mDataLength];
-    if (mDataPtr == nullptr)
-        return OUT_OF_MEMORY;
     aFile->read((unsigned char*)mDataPtr, mDataLength);
     mDataOwned = true;
-    return SO_NO_ERROR;
 }
 
 int MemoryFile::eof()
@@ -162,44 +157,42 @@ int MemoryFile::eof()
 
 extern "C"
 {
-int Soloud_Filehack_fgetc(Soloud_Filehack* f)
-{
-    SoLoud::File* fp = (SoLoud::File*)f;
-    if (fp->eof())
-        return EOF;
-    return fp->read8();
-}
-
-int Soloud_Filehack_fread(void* dst, int s, int c, Soloud_Filehack* f)
-{
-    SoLoud::File* fp = (SoLoud::File*)f;
-    return fp->read((unsigned char*)dst, s * c) / s;
-}
-
-int Soloud_Filehack_fseek(Soloud_Filehack* f, int idx, int base)
-{
-    SoLoud::File* fp = (SoLoud::File*)f;
-    switch (base)
+    int Soloud_Filehack_fgetc(Soloud_Filehack* f)
     {
-        case SEEK_CUR: fp->seek(fp->pos() + idx);
-            break;
-        case SEEK_END: fp->seek(fp->length() + idx);
-            break;
-        default: fp->seek(idx);
+        SoLoud::File* fp = (SoLoud::File*)f;
+        if (fp->eof())
+            return EOF;
+        return fp->read8();
     }
-    return 0;
-}
 
-int Soloud_Filehack_ftell(Soloud_Filehack* f)
-{
-    SoLoud::File* fp = (SoLoud::File*)f;
-    return fp->pos();
-}
+    int Soloud_Filehack_fread(void* dst, int s, int c, Soloud_Filehack* f)
+    {
+        SoLoud::File* fp = (SoLoud::File*)f;
+        return fp->read((unsigned char*)dst, s * c) / s;
+    }
 
-int Soloud_Filehack_fclose(Soloud_Filehack* f)
-{
-    SoLoud::File* fp = (SoLoud::File*)f;
-    delete fp;
-    return 0;
-}
+    int Soloud_Filehack_fseek(Soloud_Filehack* f, int idx, int base)
+    {
+        SoLoud::File* fp = (SoLoud::File*)f;
+        switch (base)
+        {
+            case SEEK_CUR: fp->seek(fp->pos() + idx); break;
+            case SEEK_END: fp->seek(fp->length() + idx); break;
+            default: fp->seek(idx);
+        }
+        return 0;
+    }
+
+    int Soloud_Filehack_ftell(Soloud_Filehack* f)
+    {
+        SoLoud::File* fp = (SoLoud::File*)f;
+        return fp->pos();
+    }
+
+    int Soloud_Filehack_fclose(Soloud_Filehack* f)
+    {
+        SoLoud::File* fp = (SoLoud::File*)f;
+        delete fp;
+        return 0;
+    }
 }

@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_error.hpp"
 #include "soloud_internal.hpp"
 
 // Core "basic" operations - play, stop, etc
@@ -39,8 +38,8 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     // Creation of an audio instance may take significant amount of time,
     // so let's not do it inside the audio thread mutex.
-    aSound.mSoloud                        = this;
-    SoLoud::AudioSourceInstance* instance = aSound.createInstance();
+    aSound.mSoloud = this;
+    auto* instance = aSound.createInstance();
 
     lockAudioMutex_internal();
     int ch = findFreeVoice_internal();
@@ -48,7 +47,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     {
         unlockAudioMutex_internal();
         delete instance;
-        return UNKNOWN_ERROR;
+        return 7; // TODO: this was "UNKNOWN_ERROR"
     }
     if (!aSound.mAudioSourceID)
     {
@@ -85,8 +84,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     }
 
     // Fix initial voice volume ramp up
-    int i;
-    for (i = 0; i < MAX_CHANNELS; i++)
+    for (int i = 0; i < MAX_CHANNELS; i++)
     {
         mVoice[ch]->mCurrentChannelVolume[i] =
             mVoice[ch]->mChannelVolume[i] * mVoice[ch]->mOverallVolume;
@@ -94,7 +92,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     setVoiceRelativePlaySpeed_internal(ch, 1);
 
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
+    for (int i = 0; i < FILTERS_PER_STREAM; i++)
     {
         if (aSound.mFilter[i])
         {
@@ -106,12 +104,11 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     unlockAudioMutex_internal();
 
-    int handle = getHandleFromVoice_internal(ch);
-    return handle;
+    return getHandleFromVoice_internal(ch);
 }
 
 handle Soloud::playClocked(
-    time         aSoundTime,
+    time_t       aSoundTime,
     AudioSource& aSound,
     float        aVolume,
     float        aPan,
@@ -120,7 +117,7 @@ handle Soloud::playClocked(
     handle h = play(aSound, aVolume, aPan, 1, aBus);
     lockAudioMutex_internal();
     // mLastClockedTime is cleared to zero at start of every output buffer
-    time lasttime = mLastClockedTime;
+    time_t lasttime = mLastClockedTime;
     if (lasttime == 0)
     {
         mLastClockedTime = aSoundTime;
@@ -143,13 +140,12 @@ handle Soloud::playBackground(AudioSource& aSound, float aVolume, bool aPaused, 
     return h;
 }
 
-result Soloud::seek(handle aVoiceHandle, time aSeconds)
+bool Soloud::seek(handle aVoiceHandle, time_t aSeconds)
 {
-    result res       = SO_NO_ERROR;
-    result singleres = SO_NO_ERROR;
+    bool res = true;
     FOR_ALL_VOICES_PRE
-        singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
-        if (singleres != SO_NO_ERROR)
+        const auto singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+        if (!singleres)
             res = singleres;
     FOR_ALL_VOICES_POST
     return res;

@@ -42,11 +42,11 @@ class RobotizeFilterInstance : public FilterInstance
 
     RobotizeFilter* mParent;
 
-public:
+  public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
-                       time         aTime,
+                       time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
     explicit RobotizeFilterInstance(RobotizeFilter* aParent);
@@ -54,7 +54,7 @@ public:
 
 class RobotizeFilter : public Filter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
         WET = 0,

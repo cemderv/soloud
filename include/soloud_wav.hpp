@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 
 struct stb_vorbis;
 
@@ -39,27 +39,27 @@ class WavInstance : public AudioSourceInstance
     Wav*         mParent;
     unsigned int mOffset;
 
-public:
+  public:
     explicit WavInstance(Wav* aParent);
 
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
 
-    result rewind() override;
+    bool rewind() override;
 
     bool hasEnded() override;
 };
 
 class Wav : public AudioSource
 {
-    result loadwav(MemoryFile* aReader);
-    result loadogg(MemoryFile* aReader);
-    result loadmp3(MemoryFile* aReader);
-    result loadflac(MemoryFile* aReader);
-    result testAndLoadFile(MemoryFile* aReader);
+    void loadwav(MemoryFile* aReader);
+    void loadogg(MemoryFile* aReader);
+    void loadmp3(MemoryFile* aReader);
+    void loadflac(MemoryFile* aReader);
+    void testAndLoadFile(MemoryFile* aReader);
 
-public:
+  public:
     float*       mData;
     unsigned int mSampleCount;
 
@@ -67,31 +67,31 @@ public:
 
     ~Wav() override;
 
-    result loadMem(const unsigned char* aMem,
-                   unsigned int         aLength,
-                   bool                 aCopy          = false,
-                   bool                 aTakeOwnership = true);
+    void loadMem(const unsigned char* aMem,
+                 unsigned int         aLength,
+                 bool                 aCopy          = false,
+                 bool                 aTakeOwnership = true);
 
-    result loadFile(File* aFile);
+    void loadFile(File* aFile);
 
-    result loadRawWave8(unsigned char* aMem,
-                        unsigned int   aLength,
-                        float          aSamplerate = 44100.0f,
-                        unsigned int   aChannels   = 1);
+    void loadRawWave8(unsigned char* aMem,
+                      unsigned int   aLength,
+                      float          aSamplerate = 44100.0f,
+                      unsigned int   aChannels   = 1);
 
-    result loadRawWave16(short*       aMem,
-                         unsigned int aLength,
-                         float        aSamplerate = 44100.0f,
-                         unsigned int aChannels   = 1);
-
-    result loadRawWave(float*       aMem,
+    void loadRawWave16(short*       aMem,
                        unsigned int aLength,
-                       float        aSamplerate    = 44100.0f,
-                       unsigned int aChannels      = 1,
-                       bool         aCopy          = false,
-                       bool         aTakeOwnership = true);
+                       float        aSamplerate = 44100.0f,
+                       unsigned int aChannels   = 1);
+
+    void loadRawWave(float*       aMem,
+                     unsigned int aLength,
+                     float        aSamplerate    = 44100.0f,
+                     unsigned int aChannels      = 1,
+                     bool         aCopy          = false,
+                     bool         aTakeOwnership = true);
 
     AudioSourceInstance* createInstance() override;
-    time                 getLength() const;
+    time_t               getLength() const;
 };
 }; // namespace SoLoud

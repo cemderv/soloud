@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_bus.hpp"
-#include "soloud_error.hpp"
 #include "soloud_fft.hpp"
 #include "soloud_internal.hpp"
 
@@ -182,7 +181,7 @@ handle Bus::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused)
 }
 
 
-handle Bus::playClocked(time aSoundTime, AudioSource& aSound, float aVolume, float aPan)
+handle Bus::playClocked(time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan)
 {
     if (!mInstance || !mSoloud)
     {
@@ -199,11 +198,7 @@ handle Bus::playClocked(time aSoundTime, AudioSource& aSound, float aVolume, flo
     return mSoloud->playClocked(aSoundTime, aSound, aVolume, aPan, mChannelHandle);
 }
 
-handle Bus::play3d(AudioSource& aSound,
-                   vec3         aPos,
-                   vec3         aVel,
-                   float        aVolume,
-                   bool         aPaused)
+handle Bus::play3d(AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused)
 {
     if (!mInstance || !mSoloud)
     {
@@ -216,19 +211,15 @@ handle Bus::play3d(AudioSource& aSound,
     {
         return 0;
     }
-    return mSoloud->play3d(aSound,
-                           aPos,
-                           aVel,
-                           aVolume,
-                           aPaused,
-                           mChannelHandle);
+    return mSoloud->play3d(aSound, aPos, aVel, aVolume, aPaused, mChannelHandle);
 }
 
-handle Bus::play3dClocked(time         aSoundTime,
-                          AudioSource& aSound,
-                          vec3         aPos,
-                          vec3         aVel,
-                          float        aVolume)
+handle Bus::play3dClocked(
+    time_t       aSoundTime,
+    AudioSource& aSound,
+    vec3         aPos,
+    vec3         aVel,
+    float        aVolume)
 {
     if (!mInstance || !mSoloud)
     {
@@ -241,12 +232,7 @@ handle Bus::play3dClocked(time         aSoundTime,
     {
         return 0;
     }
-    return mSoloud->play3dClocked(aSoundTime,
-                                  aSound,
-                                  aPos,
-                                  aVel,
-                                  aVolume,
-                                  mChannelHandle);
+    return mSoloud->play3dClocked(aSoundTime, aSound, aPos, aVel, aVolume, mChannelHandle);
 }
 
 void Bus::annexSound(handle aVoiceHandle)
@@ -278,13 +264,12 @@ void Bus::setFilter(unsigned int aFilterId, Filter* aFilter)
     }
 }
 
-result Bus::setChannels(unsigned int aChannels)
+void Bus::setChannels(unsigned int aChannels)
 {
-    if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels == 7 ||
-        aChannels > MAX_CHANNELS)
-        return INVALID_PARAMETER;
+    assert(aChannels!=0 && aChannels!=3 && aChannels!=5 && aChannels!=7);
+    assert(aChannels<=MAX_CHANNELS);
+
     mChannels = aChannels;
-    return SO_NO_ERROR;
 }
 
 void Bus::setVisualizationEnable(bool aEnable)
@@ -368,15 +353,13 @@ unsigned int Bus::getActiveVoiceCount()
     return count;
 }
 
-unsigned int Bus::getResampler()
+RESAMPLER Bus::getResampler() const
 {
     return mResampler;
 }
 
-void Bus::setResampler(unsigned int aResampler)
+void Bus::setResampler(RESAMPLER aResampler)
 {
-    if (aResampler <= Soloud::RESAMPLER_CATMULLROM)
-        mResampler = aResampler;
+    mResampler = aResampler;
 }
-
 }; // namespace SoLoud

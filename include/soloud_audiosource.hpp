@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "soloud_fader.hpp"
 #include "soloud_filter.hpp"
+#include "soloud_vec3.hpp"
 #include <array>
 #include <memory>
 
@@ -37,7 +38,7 @@ class AudioSourceInstance3dData;
 
 class AudioCollider
 {
-public:
+  public:
     virtual ~AudioCollider() noexcept = default;
 
     // Calculate volume multiplier. Assumed to return value between 0 and 1.
@@ -48,7 +49,7 @@ public:
 
 class AudioAttenuator
 {
-public:
+  public:
     virtual ~AudioAttenuator() noexcept = default;
 
     virtual float attenuate(float aDistance,
@@ -82,7 +83,7 @@ enum class AudioSourceInstanceFlags
 
 class AudioSourceInstance3dData
 {
-public:
+  public:
     AudioSourceInstance3dData() = default;
 
     explicit AudioSourceInstance3dData(AudioSource& aSource);
@@ -125,7 +126,7 @@ public:
 // Base class for audio instances
 class AudioSourceInstance
 {
-public:
+  public:
     AudioSourceInstance();
 
     virtual ~AudioSourceInstance() noexcept;
@@ -168,10 +169,10 @@ public:
     float mOverallRelativePlaySpeed = 1.0f;
 
     // How long this stream has played, in seconds.
-    time mStreamTime = 0.0f;
+    time_t mStreamTime = 0.0f;
 
     // Position of this stream, in seconds.
-    time mStreamPosition = 0.0f;
+    time_t mStreamPosition = 0.0f;
 
     // Fader for the audio panning
     Fader mPanFader;
@@ -219,7 +220,7 @@ public:
     unsigned int mDelaySamples = 0;
 
     // When looping, start playing from this time
-    time mLoopPoint = 0;
+    time_t mLoopPoint = 0;
 
     // Get N samples from the stream to the buffer. Report samples written.
     virtual unsigned int getAudio(float*       aBuffer,
@@ -230,10 +231,10 @@ public:
     virtual bool hasEnded() = 0;
 
     // Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-    virtual result seek(time aSeconds, float* mScratch, unsigned int mScratchSize);
+    virtual bool seek(time_t aSeconds, float* mScratch, unsigned int mScratchSize);
 
     // Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
-    virtual result rewind();
+    virtual bool rewind();
 
     // Get information. Returns 0 by default.
     virtual float getInfo(unsigned int aInfoKey);
@@ -272,7 +273,7 @@ static inline AudioSourceInstanceFlags& operator|=(AudioSourceInstanceFlags& lhs
 
 static inline bool testFlag(AudioSourceInstanceFlags value, AudioSourceInstanceFlags toTest)
 {
-    return int(value) & int(toTest) == int(toTest);
+    return (int(value) & int(toTest)) == int(toTest);
 }
 
 class Soloud;
@@ -280,7 +281,7 @@ class Soloud;
 // Base class for audio sources
 class AudioSource
 {
-public:
+  public:
     enum FLAGS
     {
         // The instances from this audio source should loop
@@ -346,7 +347,7 @@ public:
     // User data related to audio collider
     int mColliderData;
     // When looping, start playing from this time
-    time mLoopPoint;
+    time_t mLoopPoint;
 
     // CTor
     AudioSource();
@@ -379,9 +380,9 @@ public:
     void setInaudibleBehavior(bool aMustTick, bool aKill);
 
     // Set time to jump to when looping
-    void setLoopPoint(time aLoopPoint);
+    void setLoopPoint(time_t aLoopPoint);
     // Get current loop point value
-    time getLoopPoint();
+    time_t getLoopPoint();
 
     // Set filter. Set to nullptr to clear the filter.
     virtual void setFilter(unsigned int aFilterId, Filter* aFilter);

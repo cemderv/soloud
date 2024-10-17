@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -42,19 +42,19 @@ class FFTFilterInstance : public FilterInstance
     unsigned int mReadOffset[MAX_CHANNELS];
     FFTFilter*   mParent;
 
-public:
+  public:
     virtual void fftFilterChannel(float*       aFFTBuffer,
                                   unsigned int aSamples,
                                   float        aSamplerate,
-                                  time         aTime,
+                                  time_t       aTime,
                                   unsigned int aChannel,
                                   unsigned int aChannels);
-    void filterChannel(float*       aBuffer,
-                       unsigned int aSamples,
-                       float        aSamplerate,
-                       time         aTime,
-                       unsigned int aChannel,
-                       unsigned int aChannels) override;
+    void         filterChannel(float*       aBuffer,
+                               unsigned int aSamples,
+                               float        aSamplerate,
+                               time_t       aTime,
+                               unsigned int aChannel,
+                               unsigned int aChannels) override;
     ~FFTFilterInstance() override;
     explicit FFTFilterInstance(FFTFilter* aParent);
     FFTFilterInstance();
@@ -73,7 +73,7 @@ public:
 
 class FFTFilter : public Filter
 {
-public:
+  public:
     FilterInstance* createInstance() override;
     FFTFilter();
 };

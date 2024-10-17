@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -55,7 +55,7 @@ public:
                 unsigned int aBufferSize,
                 unsigned int aChannels,
                 float        aSamplerate,
-                time         aTime) override;
+                time_t       aTime) override;
     ~FreeverbFilterInstance() override;
     explicit FreeverbFilterInstance(FreeverbFilter* aParent);
 };
@@ -84,7 +84,7 @@ public:
     float                   mWidth;
     FreeverbFilterInstance* createInstance() override;
     FreeverbFilter();
-    result setParams(float aMode, float aRoomSize, float aDamp, float aWidth);
+    void setParams(float aMode, float aRoomSize, float aDamp, float aWidth);
     ~FreeverbFilter() override;
 };
 } // namespace SoLoud

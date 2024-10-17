@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_lofifilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 #include <cmath>
 
 namespace SoLoud
@@ -77,14 +75,13 @@ LofiFilter::LofiFilter()
     setParams(4000, 3);
 }
 
-result LofiFilter::setParams(float aSampleRate, float aBitdepth)
+void LofiFilter::setParams(float aSampleRate, float aBitdepth)
 {
-    if (aSampleRate <= 0 || aBitdepth <= 0)
-        return INVALID_PARAMETER;
+    assert(aSampleRate>0.0f);
+    assert(aBitdepth>0.0f);
 
     mSampleRate = aSampleRate;
     mBitdepth   = aBitdepth;
-    return 0;
 }
 
 LofiFilter::~LofiFilter()
@@ -99,7 +96,8 @@ int LofiFilter::getParamCount()
 const char* LofiFilter::getParamName(unsigned int aParamIndex)
 {
     if (aParamIndex > 2)
-        return 0;
+        return nullptr;
+
     const char* names[3] = {"Wet", "Samplerate", "Bitdepth"};
     return names[aParamIndex];
 }

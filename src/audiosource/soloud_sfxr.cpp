@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_sfxr.hpp"
-#include "soloud_error.hpp"
 #include "soloud_file.hpp"
 #include <cmath>
 #include <cstdlib>
@@ -131,7 +130,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             if (env_length[1])
             {
                 env_vol = 1.0f + (float)pow(1.0f - float(env_time) / env_length[1], 1.0f) * 2.0f *
-                          mParams.p_env_punch;
+                                     mParams.p_env_punch;
             }
             else
             {
@@ -328,17 +327,18 @@ void SfxrInstance::resetSample(bool aRestart)
 #define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
 
 
-result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
+void Sfxr::loadPreset(int aPresetNo, int aRandSeed)
 {
-    if (aPresetNo < 0 || aPresetNo > 6)
-        return INVALID_PARAMETER;
+    assert(aPresetNo >= 0);
+    assert(aPresetNo <= 6);
 
     resetParams();
     mRand.srand(aRandSeed);
+
     switch (aPresetNo)
     {
         case 0: // pickup/coin
-            mParams.p_base_freq = 0.4f + frnd(0.5f);
+            mParams.p_base_freq   = 0.4f + frnd(0.5f);
             mParams.p_env_attack  = 0.0f;
             mParams.p_env_sustain = frnd(0.1f);
             mParams.p_env_decay   = 0.1f + frnd(0.4f);
@@ -464,7 +464,7 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
                 mParams.p_hpf_freq = frnd(0.3f);
             break;
         case 5: // jump
-            mParams.wave_type = 0;
+            mParams.wave_type     = 0;
             mParams.p_duty        = frnd(0.6f);
             mParams.p_base_freq   = 0.3f + frnd(0.3f);
             mParams.p_freq_ramp   = 0.1f + frnd(0.2f);
@@ -487,7 +487,6 @@ result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
             mParams.p_hpf_freq    = 0.1f;
             break;
     }
-    return 0;
 }
 
 void Sfxr::resetParams()
@@ -529,25 +528,21 @@ void Sfxr::resetParams()
     mParams.sound_vol  = 0.5f;
 }
 
-result Sfxr::loadParamsMem(unsigned char* aMem,
-                           unsigned int   aLength,
-                           bool           aCopy,
-                           bool           aTakeOwnership)
+void Sfxr::loadParamsMem(unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
 {
     MemoryFile mf;
-    int        res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
-    if (res != SO_NO_ERROR)
-        return res;
+    mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
+
     return loadParamsFile(&mf);
 }
 
-result Sfxr::loadParamsFile(File* aFile)
+void Sfxr::loadParamsFile(File* aFile)
 {
     int version = 0;
     aFile->read((unsigned char*)&version, sizeof(int));
     if (version != 100 && version != 101 && version != 102)
     {
-        return FILE_LOAD_FAILED;
+        throw std::runtime_error{"Failed to load sfxr"};
     }
 
     aFile->read((unsigned char*)&mParams.wave_type, sizeof(int));
@@ -591,8 +586,6 @@ result Sfxr::loadParamsFile(File* aFile)
         aFile->read((unsigned char*)&mParams.p_arp_speed, sizeof(float));
         aFile->read((unsigned char*)&mParams.p_arp_mod, sizeof(float));
     }
-
-    return 0;
 }
 
 Sfxr::~Sfxr()

@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_dcremovalfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 
 namespace SoLoud
 {
@@ -97,14 +95,11 @@ DCRemovalFilter::DCRemovalFilter()
     mLength = 0.1f;
 }
 
-result DCRemovalFilter::setParams(float aLength)
+void DCRemovalFilter::setParams(float aLength)
 {
-    if (aLength <= 0)
-        return INVALID_PARAMETER;
+    assert(aLength>0.0f);
 
     mLength = aLength;
-
-    return 0;
 }
 
 

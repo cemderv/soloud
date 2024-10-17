@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_error.hpp"
 #include "soloud_internal.hpp"
 
 // Core operations related to filters
@@ -46,13 +45,14 @@ void Soloud::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
     unlockAudioMutex_internal();
 }
 
-float Soloud::getFilterParameter(handle       aVoiceHandle,
-                                 unsigned int aFilterId,
-                                 unsigned int aAttributeId)
+std::optional<float> Soloud::getFilterParameter(handle       aVoiceHandle,
+                                                unsigned int aFilterId,
+                                                unsigned int aAttributeId)
 {
-    float ret = INVALID_PARAMETER;
     if (aFilterId >= FILTERS_PER_STREAM)
-        return ret;
+        return {};
+
+    auto ret = std::optional<float>{};
 
     if (aVoiceHandle == 0)
     {
@@ -65,11 +65,12 @@ float Soloud::getFilterParameter(handle       aVoiceHandle,
         return ret;
     }
 
-    int ch = getVoiceFromHandle_internal(aVoiceHandle);
+    const int ch = getVoiceFromHandle_internal(aVoiceHandle);
     if (ch == -1)
     {
         return ret;
     }
+
     lockAudioMutex_internal();
     if (mVoice[ch] && mVoice[ch]->mFilter[aFilterId])
     {

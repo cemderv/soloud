@@ -33,17 +33,17 @@ namespace SoLoud
 {
 class File
 {
-public:
+  public:
     virtual ~File() noexcept = default;
 
     unsigned int         read8();
     unsigned int         read16();
     unsigned int         read32();
-    virtual int          eof() = 0;
+    virtual int          eof()                                          = 0;
     virtual unsigned int read(unsigned char* aDst, unsigned int aBytes) = 0;
-    virtual unsigned int length() = 0;
-    virtual void         seek(int aOffset) = 0;
-    virtual unsigned int pos() = 0;
+    virtual unsigned int length()                                       = 0;
+    virtual void         seek(int aOffset)                              = 0;
+    virtual unsigned int pos()                                          = 0;
 
     virtual FILE* getFilePtr()
     {
@@ -58,7 +58,7 @@ public:
 
 class MemoryFile : public File
 {
-public:
+  public:
     const unsigned char* mDataPtr;
     unsigned int         mDataLength;
     unsigned int         mOffset;
@@ -72,10 +72,10 @@ public:
     const unsigned char* getMemPtr() override;
     ~MemoryFile() override;
     MemoryFile();
-    result openMem(const unsigned char* aData,
-                   unsigned int         aDataLength,
-                   bool                 aCopy          = false,
-                   bool                 aTakeOwnership = true);
-    result openFileToMem(File* aFile);
+    void openMem(const unsigned char* aData,
+                 unsigned int         aDataLength,
+                 bool                 aCopy          = false,
+                 bool                 aTakeOwnership = true);
+    void openFileToMem(File* aFile);
 };
 }; // namespace SoLoud

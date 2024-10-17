@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_fftfilter.hpp"
+#include <array>
 
 namespace SoLoud
 {
@@ -52,7 +53,7 @@ public:
     void fftFilterChannel(float*       aFFTBuffer,
                           unsigned int aSamples,
                           float        aSamplerate,
-                          time         aTime,
+                          time_t       aTime,
                           unsigned int aChannel,
                           unsigned int aChannels) override;
     explicit EqFilterInstance(EqFilter* aParent);
@@ -74,14 +75,14 @@ public:
         BAND8 = 8
     };
 
-    int             getParamCount() override;
-    const char*     getParamName(unsigned int aParamIndex) override;
-    unsigned int    getParamType(unsigned int aParamIndex) override;
-    float           getParamMax(unsigned int aParamIndex) override;
-    float           getParamMin(unsigned int aParamIndex) override;
-    float           mVolume[8];
-    result          setParam(unsigned int aBand, float aVolume);
-    FilterInstance* createInstance() override;
+    int                  getParamCount() override;
+    const char*          getParamName(unsigned int aParamIndex) override;
+    unsigned int         getParamType(unsigned int aParamIndex) override;
+    float                getParamMax(unsigned int aParamIndex) override;
+    float                getParamMin(unsigned int aParamIndex) override;
+    std::array<float, 8> mVolume{};
+    void                 setParam(unsigned int aBand, float aVolume);
+    FilterInstance*      createInstance() override;
     EqFilter();
 };
 } // namespace SoLoud

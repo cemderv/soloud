@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
@@ -44,7 +44,7 @@ public:
                 unsigned int aBufferSize,
                 unsigned int aChannels,
                 float        aSamplerate,
-                time         aTime) override;
+                time_t       aTime) override;
     ~FlangerFilterInstance() override;
     explicit FlangerFilterInstance(FlangerFilter* aParent);
 };
@@ -68,6 +68,6 @@ public:
     float           getParamMin(unsigned int aParamIndex) override;
     FilterInstance* createInstance() override;
     FlangerFilter();
-    result setParams(float aDelay, float aFreq);
+    void setParams(float aDelay, float aFreq);
 };
 } // namespace SoLoud

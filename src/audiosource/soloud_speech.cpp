@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 */
 #include "soloud_speech.hpp"
 #include "../src/audiosource/tts.h"
-#include "soloud.hpp"
-#include "soloud_error.hpp"
 
 namespace SoLoud
 {
@@ -95,7 +93,7 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
     return samples_out;
 }
 
-result SpeechInstance::rewind()
+bool SpeechInstance::rewind()
 {
     mSynth.init(mParent->mBaseFrequency,
                 mParent->mBaseSpeed,
@@ -105,39 +103,33 @@ result SpeechInstance::rewind()
     mOffset         = 10;
     mSampleCount    = 10;
     mStreamPosition = 0.0f;
-    return 0;
+
+    return true;
 }
 
 bool SpeechInstance::hasEnded()
 {
-    if (mSampleCount < 0)
-        return 1;
-    return 0;
+    return mSampleCount < 0;
 }
 
-result Speech::setParams(unsigned int aBaseFrequency,
-                         float        aBaseSpeed,
-                         float        aBaseDeclination,
-                         int          aBaseWaveform)
+void Speech::setParams(unsigned int aBaseFrequency,
+                       float        aBaseSpeed,
+                       float        aBaseDeclination,
+                       int          aBaseWaveform)
 {
     mBaseFrequency   = aBaseFrequency;
     mBaseSpeed       = aBaseSpeed;
     mBaseDeclination = aBaseDeclination;
     mBaseWaveform    = aBaseWaveform;
-    return 0;
 }
 
-result Speech::setText(const char* aText)
+void Speech::setText(const char* aText)
 {
-    if (aText == nullptr)
-        return INVALID_PARAMETER;
-
     stop();
     mElement.clear();
     darray phone;
     xlate_string(aText, &phone);
     mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
-    return 0;
 }
 
 Speech::Speech()

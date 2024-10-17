@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "../src/audiosource/darray.h"
 #include "../src/audiosource/klatt.h"
-#include "soloud.hpp"
+#include "soloud_audiosource.hpp"
 
 namespace SoLoud
 {
@@ -46,7 +46,7 @@ class Speech : public AudioSource
         KW_WARBLE
     };
 
-public:
+  public:
     int    mBaseFrequency;
     float  mBaseSpeed;
     float  mBaseDeclination;
@@ -54,11 +54,11 @@ public:
     int    mFrames;
     darray mElement;
     Speech();
-    result setText(const char* aText);
-    result setParams(unsigned int aBaseFrequency   = 1330,
-                     float        aBaseSpeed       = 10.0f,
-                     float        aBaseDeclination = 0.5f,
-                     int          aBaseWaveform    = KW_TRIANGLE);
+    void setText(const char* aText);
+    void setParams(unsigned int aBaseFrequency   = 1330,
+                   float        aBaseSpeed       = 10.0f,
+                   float        aBaseDeclination = 0.5f,
+                   int          aBaseWaveform    = KW_TRIANGLE);
     ~Speech() override;
     AudioSourceInstance* createInstance() override;
 };
@@ -71,13 +71,13 @@ class SpeechInstance : public AudioSourceInstance
     int     mSampleCount;
     int     mOffset;
 
-public:
+  public:
     explicit SpeechInstance(Speech* aParent);
     ~SpeechInstance() override;
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    result rewind() override;
-    bool   hasEnded() override;
+    bool         rewind() override;
+    bool         hasEnded() override;
 };
 }; // namespace SoLoud
