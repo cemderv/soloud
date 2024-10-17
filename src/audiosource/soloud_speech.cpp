@@ -50,9 +50,7 @@ static void writesamples(short* aSrc, float* aDst, int aCount)
     }
 }
 
-size_t SpeechInstance::getAudio(float*       aBuffer,
-                                      size_t aSamplesToRead,
-                                      size_t /*aBufferSize*/)
+size_t SpeechInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aBufferSize*/)
 {
     // TODO: check this, was .init() before (mLastElement etc)
     mSynth = klatt{mParent->mBaseFrequency,
@@ -116,9 +114,9 @@ bool SpeechInstance::hasEnded()
 }
 
 void Speech::setParams(size_t aBaseFrequency,
-                       float        aBaseSpeed,
-                       float        aBaseDeclination,
-                       int          aBaseWaveform)
+                       float  aBaseSpeed,
+                       float  aBaseDeclination,
+                       int    aBaseWaveform)
 {
     mBaseFrequency   = aBaseFrequency;
     mBaseSpeed       = aBaseSpeed;
@@ -152,6 +150,6 @@ Speech::~Speech()
 
 std::shared_ptr<AudioSourceInstance> Speech::createInstance()
 {
-    return std::make_shared< SpeechInstance>(this);
+    return std::make_shared<SpeechInstance>(this);
 }
 }; // namespace SoLoud

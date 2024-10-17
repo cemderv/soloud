@@ -71,10 +71,10 @@ FFTFilterInstance::FFTFilterInstance(FFTFilter* aParent)
     FilterInstance::initParams(1);
 }
 
-void FFTFilterInstance::filterChannel(float*       aBuffer,
+void FFTFilterInstance::filterChannel(float* aBuffer,
                                       size_t aSamples,
-                                      float        aSamplerate,
-                                      double       aTime,
+                                      float  aSamplerate,
+                                      double aTime,
                                       size_t aChannel,
                                       size_t aChannels)
 {
@@ -94,7 +94,7 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
         mSumPhase    = std::make_unique<float[]>(STFT_WINDOW_SIZE * aChannels);
     }
 
-    int          i;
+    int    i;
     size_t ofs      = 0;
     size_t chofs    = STFT_WINDOW_TWICE * aChannel;
     size_t inputofs = mInputOffset[aChannel];
@@ -126,7 +126,12 @@ void FFTFilterInstance::filterChannel(float*       aBuffer,
             FFT::fft(mTemp.get(), STFT_WINDOW_SIZE);
 
             // do magic
-            fftFilterChannel(mTemp.get(), STFT_WINDOW_HALF, aSamplerate, aTime, aChannel, aChannels);
+            fftFilterChannel(mTemp.get(),
+                             STFT_WINDOW_HALF,
+                             aSamplerate,
+                             aTime,
+                             aChannel,
+                             aChannels);
 
             FFT::ifft(mTemp.get(), STFT_WINDOW_SIZE);
 
@@ -167,9 +172,9 @@ void FFTFilterInstance::comp2MagPhase(float* aFFTBuffer, size_t aSamples)
     }
 }
 
-void FFTFilterInstance::magPhase2MagFreq(float*       aFFTBuffer,
+void FFTFilterInstance::magPhase2MagFreq(float* aFFTBuffer,
                                          size_t aSamples,
-                                         float        aSamplerate,
+                                         float  aSamplerate,
                                          size_t aChannel)
 {
     float stepsize   = aSamples / aSamplerate;
@@ -206,9 +211,9 @@ void FFTFilterInstance::magPhase2MagFreq(float*       aFFTBuffer,
     }
 }
 
-void FFTFilterInstance::magFreq2MagPhase(float*       aFFTBuffer,
+void FFTFilterInstance::magFreq2MagPhase(float* aFFTBuffer,
                                          size_t aSamples,
-                                         float        aSamplerate,
+                                         float  aSamplerate,
                                          size_t aChannel)
 {
     float stepsize   = aSamples / aSamplerate;
@@ -250,9 +255,9 @@ void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, size_t aSamples)
     }
 }
 
-void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
+void FFTFilterInstance::fftFilterChannel(float* aFFTBuffer,
                                          size_t aSamples,
-                                         float        aSamplerate,
+                                         float  aSamplerate,
                                          time_t /*aTime*/,
                                          size_t aChannel,
                                          size_t /*aChannels*/)
@@ -280,6 +285,6 @@ void FFTFilterInstance::fftFilterChannel(float*       aFFTBuffer,
 
 std::shared_ptr<FilterInstance> FFTFilter::createInstance()
 {
-    return std::make_shared< FFTFilterInstance>(this);
+    return std::make_shared<FFTFilterInstance>(this);
 }
 } // namespace SoLoud

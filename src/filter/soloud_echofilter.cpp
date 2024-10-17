@@ -38,19 +38,19 @@ EchoFilterInstance::EchoFilterInstance(EchoFilter* aParent)
     mParam[EchoFilter::FILTER] = aParent->mFilter;
 }
 
-void EchoFilterInstance::filter(float*       aBuffer,
+void EchoFilterInstance::filter(float* aBuffer,
                                 size_t aSamples,
                                 size_t aBufferSize,
                                 size_t aChannels,
-                                float        aSamplerate,
-                                double       aTime)
+                                float  aSamplerate,
+                                double aTime)
 {
     updateParams(aTime);
     if (mBuffer == 0)
     {
         // We only know channels and sample rate at this point.. not really optimal
         mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
-        mBuffer          = std::make_unique< float[]>(mBufferMaxLength * aChannels);
+        mBuffer          = std::make_unique<float[]>(mBufferMaxLength * aChannels);
     }
 
     mBufferLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
@@ -58,7 +58,7 @@ void EchoFilterInstance::filter(float*       aBuffer,
         mBufferLength = mBufferMaxLength;
 
     size_t i, j;
-    int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
+    int    prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
     for (i = 0; i < aSamples; i++)
     {
         for (j = 0; j < aChannels; j++)
@@ -81,6 +81,6 @@ void EchoFilterInstance::filter(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> EchoFilter::createInstance()
 {
-    return std::make_shared< EchoFilterInstance>(this);
+    return std::make_shared<EchoFilterInstance>(this);
 }
 } // namespace SoLoud

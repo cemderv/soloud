@@ -74,19 +74,9 @@ void BiquadResonantFilterInstance::calcBQRParams()
 
 
 BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter* aParent)
+    : mParent(aParent)
 {
-    int i;
-    for (i = 0; i < 8; i++)
-    {
-        mState[i].mX1 = 0;
-        mState[i].mY1 = 0;
-        mState[i].mX2 = 0;
-        mState[i].mY2 = 0;
-    }
-
-    mParent = aParent;
-
-    initParams(4);
+    FilterInstance::initParams(4);
 
     mParam[Resonance] = aParent->mResonance;
     mParam[Frequency] = aParent->mFrequency;
@@ -97,10 +87,10 @@ BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter*
     calcBQRParams();
 }
 
-void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
+void BiquadResonantFilterInstance::filterChannel(float* aBuffer,
                                                  size_t aSamples,
-                                                 float        aSamplerate,
-                                                 double       aTime,
+                                                 float  aSamplerate,
+                                                 double aTime,
                                                  size_t aChannel,
                                                  size_t /*aChannels*/)
 {
@@ -117,9 +107,9 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
         }
         mParamChanged = 0;
     }
-    float        x;
+    float  x;
     size_t i;
-    int          c = 0;
+    int    c = 0;
 
     BQRStateData& s = mState[aChannel];
 
@@ -152,6 +142,6 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> BiquadResonantFilter::createInstance()
 {
-    return std::make_shared< BiquadResonantFilterInstance>(this);
+    return std::make_shared<BiquadResonantFilterInstance>(this);
 }
 } // namespace SoLoud

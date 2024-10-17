@@ -50,7 +50,7 @@ static float catmullrom(float t, float p0, float p1, float p2, float p3)
 }
 
 
-void EqFilterInstance::fftFilterChannel(float*       aFFTBuffer,
+void EqFilterInstance::fftFilterChannel(float* aFFTBuffer,
                                         size_t aSamples,
                                         float /*aSamplerate*/,
                                         time_t /*aTime*/,
@@ -87,6 +87,6 @@ EqFilter::EqFilter()
 
 std::shared_ptr<FilterInstance> EqFilter::createInstance()
 {
-    return std::make_shared< EqFilterInstance>(this);
+    return std::make_shared<EqFilterInstance>(this);
 }
 } // namespace SoLoud

@@ -36,10 +36,10 @@ class BassboostFilterInstance : public FFTFilterInstance
   public:
     BassboostFilterInstance(BassboostFilter* aParent);
 
-    void fftFilterChannel(float*       aFFTBuffer,
+    void fftFilterChannel(float* aFFTBuffer,
                           size_t aSamples,
-                          float        aSamplerate,
-                          time_t       aTime,
+                          float  aSamplerate,
+                          time_t aTime,
                           size_t aChannel,
                           size_t aChannels) override;
 

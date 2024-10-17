@@ -58,16 +58,14 @@ MonotoneInstance::MonotoneInstance(Monotone* aParent)
     }
 }
 
-size_t MonotoneInstance::getAudio(float*       aBuffer,
-                                        size_t aSamplesToRead,
-                                        size_t /*aBufferSize*/)
+size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aBufferSize*/)
 {
-    int          samplesPerTick = (int)floor(mSamplerate / 60);
+    int    samplesPerTick = (int)floor(mSamplerate / 60);
     size_t i;
     for (i = 0; i < 12; i++)
     {
-        mOutput[i].mEnabled = i < (size_t)mParent->mHardwareChannels &&
-                              i < (size_t)mParent->mSong.mTotalTracks;
+        mOutput[i].mEnabled =
+            i < (size_t)mParent->mHardwareChannels && i < (size_t)mParent->mSong.mTotalTracks;
     }
     for (i = 0; i < aSamplesToRead; i++)
     {
@@ -412,8 +410,8 @@ void Monotone::loadMem(std::span<const std::byte> aData)
     for (i = 0; i < totalnotes; i++)
     {
         mf.read(temp, 2);
-        size_t datavalue = temp[0] | (temp[1] << 8);
-        mSong.mPatternData[i]  = datavalue;
+        size_t datavalue      = temp[0] | (temp[1] << 8);
+        mSong.mPatternData[i] = datavalue;
         // size_t note = (datavalue >> 9) & 127;
         // size_t effect = (datavalue >> 6) & 7;
         // size_t effectdata = (datavalue)& 63;
@@ -424,7 +422,7 @@ void Monotone::loadMem(std::span<const std::byte> aData)
 
 std::shared_ptr<AudioSourceInstance> Monotone::createInstance()
 {
-    return std::make_shared< MonotoneInstance>(this);
+    return std::make_shared<MonotoneInstance>(this);
 }
 
 }; // namespace SoLoud

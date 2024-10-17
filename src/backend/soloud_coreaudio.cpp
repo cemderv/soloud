@@ -32,10 +32,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result coreaudio_init(Soloud*      aSoloud,
-                      size_t aFlags,
-                      size_t aSamplerate,
-                      size_t aBuffer)
+result coreaudio_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -83,11 +80,8 @@ static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueue
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 
-void coreaudio_init(Engine*      aSoloud,
-                    Flags        aFlags,
-                    size_t aSamplerate,
-                    size_t aBuffer,
-                    size_t aChannels)
+void coreaudio_init(
+    Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
     aSoloud->mBackendCleanupFunc = soloud_coreaudio_deinit;

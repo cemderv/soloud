@@ -29,10 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result alsa_init(Soloud*      aSoloud,
-                 size_t aFlags,
-                 size_t aSamplerate,
-                 size_t aBuffer)
+result alsa_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -106,11 +103,8 @@ static void alsaCleanup(Soloud* aSoloud)
     aSoloud->mBackendData = 0;
 }
 
-result alsa_init(Soloud*      aSoloud,
-                 size_t aFlags,
-                 size_t aSamplerate,
-                 size_t aBuffer,
-                 size_t aChannels)
+result alsa_init(
+    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));
@@ -140,8 +134,8 @@ result alsa_init(Soloud*      aSoloud,
     snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
 
     size_t val = aSamplerate;
-    int          dir = 0;
-    rc               = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
+    int    dir = 0;
+    rc         = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
     if (rc < 0)
     {
         return UNKNOWN_ERROR;

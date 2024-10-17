@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_duckfilter.hpp"
-#include "soloud_engine.hpp"
 #include "soloud_bus.hpp"
+#include "soloud_engine.hpp"
 
 namespace SoLoud
 {
@@ -39,12 +39,12 @@ DuckFilterInstance::DuckFilterInstance(DuckFilter* aParent)
     mCurrentLevel               = 1;
 }
 
-void DuckFilterInstance::filter(float*       aBuffer,
+void DuckFilterInstance::filter(float* aBuffer,
                                 size_t aSamples,
                                 size_t aBufferSize,
                                 size_t aChannels,
-                                float        aSamplerate,
-                                double       aTime)
+                                float  aSamplerate,
+                                double aTime)
 {
     updateParams(aTime);
     float onramp_step = 1;
@@ -64,7 +64,7 @@ void DuckFilterInstance::filter(float*       aBuffer,
         {
             const auto bi = std::static_pointer_cast<BusInstance>(mSoloud->mVoice[voiceno]);
 
-            float        v  = 0;
+            float v = 0;
             for (size_t i = 0; i < bi->mChannels; i++)
                 v += bi->mVisualizationChannelVolume[i];
 
@@ -96,6 +96,6 @@ void DuckFilterInstance::filter(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> DuckFilter::createInstance()
 {
-    return std::make_shared< DuckFilterInstance>(this);
+    return std::make_shared<DuckFilterInstance>(this);
 }
 } // namespace SoLoud

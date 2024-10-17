@@ -76,8 +76,8 @@ class Prg
     size_t mState[16];
     size_t mIndex;
     size_t rand();
-    float        rand_float();
-    void         srand(int aSeed);
+    float  rand_float();
+    void   srand(int aSeed);
 };
 
 }; // namespace Misc

@@ -29,10 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result xaudio2_init(Soloud*      aSoloud,
-                    size_t aFlags,
-                    size_t aSamplerate,
-                    size_t aBuffer)
+result xaudio2_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -202,11 +199,8 @@ static void xaudio2Cleanup(Soloud* aSoloud)
     CoUninitialize();
 }
 
-result xaudio2_init(Soloud*      aSoloud,
-                    size_t aFlags,
-                    size_t aSamplerate,
-                    size_t aBuffer,
-                    size_t aChannels)
+result xaudio2_init(
+    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
     {

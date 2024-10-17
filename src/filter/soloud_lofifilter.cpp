@@ -40,10 +40,10 @@ LofiFilterInstance::LofiFilterInstance(LofiFilter* aParent)
     mChannelData[1].mSamplesToSkip = 0;
 }
 
-void LofiFilterInstance::filterChannel(float*       aBuffer,
+void LofiFilterInstance::filterChannel(float* aBuffer,
                                        size_t aSamples,
-                                       float        aSamplerate,
-                                       double       aTime,
+                                       float  aSamplerate,
+                                       double aTime,
                                        size_t aChannel,
                                        size_t /*aChannels*/)
 {
@@ -68,6 +68,6 @@ void LofiFilterInstance::filterChannel(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> LofiFilter::createInstance()
 {
-    return std::make_shared< LofiFilterInstance>(this);
+    return std::make_shared<LofiFilterInstance>(this);
 }
 } // namespace SoLoud

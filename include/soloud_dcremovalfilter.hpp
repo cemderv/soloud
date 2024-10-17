@@ -34,21 +34,21 @@ class DCRemovalFilter;
 class DCRemovalFilterInstance : public FilterInstance
 {
   public:
-    void filter(float*       aBuffer,
+    void filter(float* aBuffer,
                 size_t aSamples,
                 size_t aBufferSize,
                 size_t aChannels,
-                float        aSamplerate,
-                time_t       aTime) override;
+                float  aSamplerate,
+                time_t aTime) override;
 
     explicit DCRemovalFilterInstance(DCRemovalFilter* aParent);
 
-private:
-    std::unique_ptr<float[]>           mBuffer;
-    std::unique_ptr<float[]>           mTotals;
-    int              mBufferLength;
-    DCRemovalFilter* mParent;
-    int              mOffset;
+  private:
+    std::unique_ptr<float[]> mBuffer;
+    std::unique_ptr<float[]> mTotals;
+    int                      mBufferLength;
+    DCRemovalFilter*         mParent;
+    int                      mOffset;
 };
 
 class DCRemovalFilter : public Filter

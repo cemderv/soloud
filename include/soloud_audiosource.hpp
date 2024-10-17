@@ -234,9 +234,7 @@ class AudioSourceInstance
     time_t mLoopPoint = 0;
 
     // Get N samples from the stream to the buffer. Report samples written.
-    virtual size_t getAudio(float*       aBuffer,
-                                  size_t aSamplesToRead,
-                                  size_t aBufferSize) = 0;
+    virtual size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) = 0;
 
     // Has the stream ended?
     virtual bool hasEnded() = 0;

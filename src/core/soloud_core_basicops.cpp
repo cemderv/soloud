@@ -39,7 +39,7 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     // Creation of an audio instance may take significant amount of time,
     // so let's not do it inside the audio thread mutex.
     aSound.mSoloud = this;
-    auto instance = aSound.createInstance();
+    auto instance  = aSound.createInstance();
 
     lockAudioMutex_internal();
     int ch = findFreeVoice_internal();

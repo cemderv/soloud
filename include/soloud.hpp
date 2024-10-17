@@ -24,9 +24,9 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 #if !defined(DISABLE_SIMD)
 #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
@@ -55,7 +55,7 @@ typedef void (*mutexCallFunction)(void* aMutexPtr);
 typedef void (*soloudCallFunction)(Engine* aSoloud);
 typedef bool (*soloudResultFunction)(Engine* aSoloud);
 typedef size_t handle;
-typedef double       time_t;
+typedef double time_t;
 
 enum class Flags
 {

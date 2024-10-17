@@ -29,10 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result sdl2static_init(Soloud*      aSoloud,
-                       size_t aFlags,
-                       size_t aSamplerate,
-                       size_t aBuffer)
+result sdl2static_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -69,11 +66,8 @@ static void soloud_sdl2static_deinit(Soloud* aSoloud)
     SDL_CloseAudioDevice(gAudioDeviceID);
 }
 
-result sdl2static_init(Soloud*      aSoloud,
-                       size_t aFlags,
-                       size_t aSamplerate,
-                       size_t aBuffer,
-                       size_t aChannels)
+result sdl2static_init(
+    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (!SDL_WasInit(SDL_INIT_AUDIO))
     {

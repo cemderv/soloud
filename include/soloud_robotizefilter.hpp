@@ -43,10 +43,10 @@ class RobotizeFilterInstance : public FilterInstance
     RobotizeFilter* mParent;
 
   public:
-    void filterChannel(float*       aBuffer,
+    void filterChannel(float* aBuffer,
                        size_t aSamples,
-                       float        aSamplerate,
-                       time_t       aTime,
+                       float  aSamplerate,
+                       time_t aTime,
                        size_t aChannel,
                        size_t aChannels) override;
     explicit RobotizeFilterInstance(RobotizeFilter* aParent);
@@ -64,7 +64,7 @@ class RobotizeFilter : public Filter
 
     std::shared_ptr<FilterInstance> createInstance() override;
 
-    float                           mFreq=30.0f;
-    int                             mWave=0;
+    float mFreq = 30.0f;
+    int   mWave = 0;
 };
 } // namespace SoLoud

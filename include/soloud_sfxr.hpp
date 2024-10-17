@@ -123,9 +123,7 @@ class SfxrInstance : public AudioSourceInstance
   public:
     explicit SfxrInstance(Sfxr* aParent);
 
-    size_t getAudio(float*       aBuffer,
-                          size_t aSamplesToRead,
-                          size_t aBufferSize) override;
+    size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
 
     bool hasEnded() override;
 };

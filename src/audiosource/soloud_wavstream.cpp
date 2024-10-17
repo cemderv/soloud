@@ -108,7 +108,7 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
             auto& ogg = std::get<stb_vorbis*>(mCodec);
 
             int e = 0;
-            ogg = stb_vorbis_open_memory(mFile.data_uc(), int(mFile.size()), &e, nullptr);
+            ogg   = stb_vorbis_open_memory(mFile.data_uc(), int(mFile.size()), &e, nullptr);
 
             if (!ogg)
             {
@@ -217,9 +217,7 @@ static int getOggData(float** aOggOutputs,
 }
 
 
-size_t WavStreamInstance::getAudio(float*       aBuffer,
-                                         size_t aSamplesToRead,
-                                         size_t aBufferSize)
+size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize)
 {
     size_t                                offset = 0;
     std::array<float, 512 * MAX_CHANNELS> tmp{};

@@ -18,26 +18,26 @@ class Engine
 {
   public:
     // Back-end data; content is up to the back-end implementation.
-    void* mBackendData=nullptr;
+    void* mBackendData = nullptr;
     // Pointer for the audio thread mutex.
-    void* mAudioThreadMutex=nullptr;
+    void* mAudioThreadMutex = nullptr;
     // Flag for when we're inside the mutex, used for debugging.
-    bool mInsideAudioThreadMutex=false;
+    bool mInsideAudioThreadMutex = false;
     // Called by SoLoud to shut down the back-end. If nullptr, not called. Should be set by
     // back-end.
-    soloudCallFunction mBackendCleanupFunc=nullptr;
+    soloudCallFunction mBackendCleanupFunc = nullptr;
 
     // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as
     // instance.
-    soloudResultFunction mBackendPauseFunc=nullptr;
-    soloudResultFunction mBackendResumeFunc=nullptr;
+    soloudResultFunction mBackendPauseFunc  = nullptr;
+    soloudResultFunction mBackendResumeFunc = nullptr;
 
-    Engine(Flags                       aFlags      = Flags::ClipRoundoff,
-              std::optional<size_t> aSamplerate = std::nullopt,
-              std::optional<size_t> aBufferSize = std::nullopt,
-              size_t                aChannels   = 2);
+    Engine(Flags                 aFlags      = Flags::ClipRoundoff,
+           std::optional<size_t> aSamplerate = std::nullopt,
+           std::optional<size_t> aBufferSize = std::nullopt,
+           size_t                aChannels   = 2);
 
-    ~Engine()noexcept;
+    ~Engine() noexcept;
 
     void pause();
 
@@ -62,21 +62,21 @@ class Engine
                 float        aVolume = -1.0f,
                 float        aPan    = 0.0f,
                 bool         aPaused = 0,
-                size_t aBus    = 0);
+                size_t       aBus    = 0);
     // Start playing a sound delayed in relation to other sounds called via this function. Negative
     // volume means to use default.
     handle playClocked(time_t       aSoundTime,
                        AudioSource& aSound,
                        float        aVolume = -1.0f,
                        float        aPan    = 0.0f,
-                       size_t aBus    = 0);
+                       size_t       aBus    = 0);
     // Start playing a 3d audio source
     handle play3d(AudioSource& aSound,
                   vec3         aPos,
                   vec3         aVel    = {},
                   float        aVolume = 1.0f,
                   bool         aPaused = 0,
-                  size_t aBus    = 0);
+                  size_t       aBus    = 0);
     // Start playing a 3d audio source, delayed in relation to other sounds called via this
     // function.
     handle play3dClocked(time_t       aSoundTime,
@@ -84,12 +84,12 @@ class Engine
                          vec3         aPos,
                          vec3         aVel    = {},
                          float        aVolume = 1.0f,
-                         size_t aBus    = 0);
+                         size_t       aBus    = 0);
     // Start playing a sound without any panning. It will be played at full volume.
     handle playBackground(AudioSource& aSound,
                           float        aVolume = -1.0f,
                           bool         aPaused = 0,
-                          size_t aBus    = 0);
+                          size_t       aBus    = 0);
 
     // Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative
     // play speed affects time.
@@ -104,27 +104,24 @@ class Engine
     int countAudioSource(AudioSource& aSound);
 
     // Set a live filter parameter. Use 0 for the global filters.
-    void setFilterParameter(handle       aVoiceHandle,
+    void setFilterParameter(handle aVoiceHandle,
                             size_t aFilterId,
                             size_t aAttributeId,
-                            float        aValue);
+                            float  aValue);
     // Get a live filter parameter. Use 0 for the global filters.
-    std::optional<float> getFilterParameter(handle       aVoiceHandle,
+    std::optional<float> getFilterParameter(handle aVoiceHandle,
                                             size_t aFilterId,
                                             size_t aAttributeId);
     // Fade a live filter parameter. Use 0 for the global filters.
-    void fadeFilterParameter(handle       aVoiceHandle,
-                             size_t aFilterId,
-                             size_t aAttributeId,
-                             float        aTo,
-                             time_t       aTime);
+    void fadeFilterParameter(
+        handle aVoiceHandle, size_t aFilterId, size_t aAttributeId, float aTo, time_t aTime);
     // Oscillate a live filter parameter. Use 0 for the global filters.
-    void oscillateFilterParameter(handle       aVoiceHandle,
+    void oscillateFilterParameter(handle aVoiceHandle,
                                   size_t aFilterId,
                                   size_t aAttributeId,
-                                  float        aFrom,
-                                  float        aTo,
-                                  time_t       aTime);
+                                  float  aFrom,
+                                  float  aTo,
+                                  time_t aTime);
 
     // Get current play time, in seconds.
     time_t getStreamTime(handle aVoiceHandle);
@@ -288,9 +285,9 @@ class Engine
     // Set 3d audio source min/max distance (distance < min means max volume)
     void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
     // Set 3d audio source attenuation parameters
-    void set3dSourceAttenuation(handle       aVoiceHandle,
+    void set3dSourceAttenuation(handle aVoiceHandle,
                                 size_t aAttenuationModel,
-                                float        aAttenuationRolloffFactor);
+                                float  aAttenuationRolloffFactor);
     // Set 3d audio source doppler factor to reduce or enhance doppler effect. Default = 1.0
     void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
 
@@ -307,24 +304,21 @@ class Engine
     void mix_internal(size_t aSamples, size_t aStride);
 
     // Handle rest of initialization (called from backend)
-    void postinit_internal(size_t aSamplerate,
-                           size_t aBufferSize,
-                           Flags        aFlags,
-                           size_t aChannels);
+    void postinit_internal(size_t aSamplerate, size_t aBufferSize, Flags aFlags, size_t aChannels);
 
     // Update list of active voices
     void calcActiveVoices_internal();
     // Map resample buffers to active voices
     void mapResampleBuffers_internal();
     // Perform mixing for a specific bus
-    void mixBus_internal(float*       aBuffer,
-                         size_t aSamplesToRead,
-                         size_t aBufferSize,
-                         float*       aScratch,
-                         size_t aBus,
-                         float        aSamplerate,
-                         size_t aChannels,
-                         Resampler    aResampler);
+    void mixBus_internal(float*    aBuffer,
+                         size_t    aSamplesToRead,
+                         size_t    aBufferSize,
+                         float*    aScratch,
+                         size_t    aBus,
+                         float     aSamplerate,
+                         size_t    aChannels,
+                         Resampler aResampler);
     // Find a free voice, stopping the oldest if no free voice is found.
     int findFreeVoice_internal();
     // Converts handle to voice, if the handle is valid. Returns -1 if not.
@@ -351,7 +345,7 @@ class Engine
 
     void clip_internal(AlignedFloatBuffer& aBuffer,
                        AlignedFloatBuffer& aDestBuffer,
-                       size_t        aSamples,
+                       size_t              aSamples,
                        float               aVolume0,
                        float               aVolume1);
     // Remove all non-active voices from group
@@ -367,16 +361,16 @@ class Engine
     void unlockAudioMutex_internal();
 
     // Max. number of active voices. Busses and tickable inaudibles also count against this.
-    size_t mMaxActiveVoices=16;
+    size_t mMaxActiveVoices = 16;
 
     // Highest voice in use so far
-    size_t mHighestVoice=0;
+    size_t mHighestVoice = 0;
 
     // Scratch buffer, used for resampling.
     AlignedFloatBuffer mScratch;
 
     // Current size of the scratch, in samples.
-    size_t mScratchSize=0;
+    size_t mScratchSize = 0;
 
     // Output scratch buffer, used in mix_().
     AlignedFloatBuffer mOutputScratch;
@@ -394,40 +388,40 @@ class Engine
     std::array<std::shared_ptr<AudioSourceInstance>, VOICE_COUNT> mVoice;
 
     // Resampler for the main bus
-    Resampler mResampler=default_resampler;
+    Resampler mResampler = default_resampler;
 
     // Output sample rate (not float)
-    size_t mSamplerate=0;
+    size_t mSamplerate = 0;
 
     // Output channel count
-    size_t mChannels=2;
+    size_t mChannels = 2;
 
     // Maximum size of output buffer; used to calculate needed scratch.
-    size_t mBufferSize=0;
+    size_t mBufferSize = 0;
 
     // Flags; see Soloud::FLAGS
-    Flags mFlags=Flags::None;
+    Flags mFlags = Flags::None;
 
     // Global volume. Applied before clipping.
-    float mGlobalVolume=0.0f;
+    float mGlobalVolume = 0.0f;
 
     // Post-clip scaler. Applied after clipping.
-    float mPostClipScaler=0.0f;
+    float mPostClipScaler = 0.0f;
 
     // Current play index. Used to create audio handles.
-    size_t mPlayIndex=0;
+    size_t mPlayIndex = 0;
 
     // Current sound source index. Used to create sound source IDs.
-    size_t mAudioSourceID=1;
+    size_t mAudioSourceID = 1;
 
     // Fader for the global volume.
     Fader mGlobalVolumeFader;
 
     // Global stream time, for the global volume fader.
-    time_t mStreamTime=0;
+    time_t mStreamTime = 0;
 
     // Last time seen by the playClocked call
-    time_t mLastClockedTime=0;
+    time_t mLastClockedTime = 0;
 
     // Global filter
     std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
@@ -453,7 +447,7 @@ class Engine
     vec3 m3dVelocity;
 
     // 3d speed of sound (for doppler)
-    float m3dSoundSpeed=343.3f;
+    float m3dSoundSpeed = 343.3f;
 
     // 3d position of speakers
     std::array<vec3, MAX_CHANNELS> m3dSpeakerPosition;
@@ -470,9 +464,9 @@ class Engine
     std::array<size_t, VOICE_COUNT> mActiveVoice{};
 
     // Number of currently active voices
-    size_t mActiveVoiceCount=0;
+    size_t mActiveVoiceCount = 0;
 
     // Active voices list needs to be recalculated
-    bool mActiveVoiceDirty=true;
+    bool mActiveVoiceDirty = true;
 };
 }; // namespace SoLoud

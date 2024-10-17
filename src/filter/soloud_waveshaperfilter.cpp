@@ -35,7 +35,7 @@ WaveShaperFilterInstance::WaveShaperFilterInstance(WaveShaperFilter* aParent)
     mParam[WaveShaperFilter::AMOUNT] = mParent->mAmount;
 }
 
-void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
+void WaveShaperFilterInstance::filterChannel(float* aBuffer,
                                              size_t aSamples,
                                              float /*aSamplerate*/,
                                              double aTime,
@@ -45,7 +45,7 @@ void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
     updateParams(aTime);
 
     size_t i;
-    float        k = 0;
+    float  k = 0;
     if (mParam[1] == 1)
         k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
     else
@@ -61,6 +61,6 @@ void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> WaveShaperFilter::createInstance()
 {
-    return std::make_shared< WaveShaperFilterInstance>(this);
+    return std::make_shared<WaveShaperFilterInstance>(this);
 }
 } // namespace SoLoud

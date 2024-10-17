@@ -40,10 +40,10 @@ class BiquadResonantFilterInstance : public FilterInstance
   public:
     explicit BiquadResonantFilterInstance(BiquadResonantFilter* aParent);
 
-    void filterChannel(float*       aBuffer,
+    void filterChannel(float* aBuffer,
                        size_t aSamples,
-                       float        aSamplerate,
-                       time_t       aTime,
+                       float  aSamplerate,
+                       time_t aTime,
                        size_t aChannel,
                        size_t aChannels) override;
 
@@ -56,14 +56,14 @@ class BiquadResonantFilterInstance : public FilterInstance
         Resonance
     };
 
-    BQRStateData mState[8]{};
-    float        mA0 = 0.0f;
-    float        mA1 = 0.0f;
-    float        mA2 = 0.0f;
-    float        mB1 = 0.0f;
-    float        mB2 = 0.0f;
-    int          mDirty{};
-    float        mSamplerate;
+    std::array<BQRStateData, 8> mState{};
+    float                       mA0 = 0.0f;
+    float                       mA1 = 0.0f;
+    float                       mA2 = 0.0f;
+    float                       mB1 = 0.0f;
+    float                       mB2 = 0.0f;
+    int                         mDirty{};
+    float                       mSamplerate;
 
     BiquadResonantFilter* mParent;
     void                  calcBQRParams();

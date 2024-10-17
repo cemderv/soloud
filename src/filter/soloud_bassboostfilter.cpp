@@ -51,6 +51,6 @@ void BassboostFilterInstance::fftFilterChannel(float* aFFTBuffer,
 
 std::shared_ptr<FilterInstance> BassboostFilter::createInstance()
 {
-    return std::make_shared< BassboostFilterInstance>(this);
+    return std::make_shared<BassboostFilterInstance>(this);
 }
 } // namespace SoLoud

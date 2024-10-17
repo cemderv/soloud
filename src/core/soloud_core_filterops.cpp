@@ -43,7 +43,7 @@ void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
     unlockAudioMutex_internal();
 }
 
-std::optional<float> Engine::getFilterParameter(handle       aVoiceHandle,
+std::optional<float> Engine::getFilterParameter(handle aVoiceHandle,
                                                 size_t aFilterId,
                                                 size_t aAttributeId)
 {
@@ -79,10 +79,10 @@ std::optional<float> Engine::getFilterParameter(handle       aVoiceHandle,
     return ret;
 }
 
-void Engine::setFilterParameter(handle       aVoiceHandle,
+void Engine::setFilterParameter(handle aVoiceHandle,
                                 size_t aFilterId,
                                 size_t aAttributeId,
-                                float        aValue)
+                                float  aValue)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -131,12 +131,12 @@ void Engine::fadeFilterParameter(
     FOR_ALL_VOICES_POST
 }
 
-void Engine::oscillateFilterParameter(handle       aVoiceHandle,
+void Engine::oscillateFilterParameter(handle aVoiceHandle,
                                       size_t aFilterId,
                                       size_t aAttributeId,
-                                      float        aFrom,
-                                      float        aTo,
-                                      double       aTime)
+                                      float  aFrom,
+                                      float  aTo,
+                                      double aTime)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;

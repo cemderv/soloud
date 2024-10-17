@@ -36,9 +36,7 @@ BusInstance::BusInstance(Bus* aParent)
     mFlags |= AudioSourceInstanceFlags::Protected | AudioSourceInstanceFlags::InaudibleTick;
 }
 
-size_t BusInstance::getAudio(float*       aBuffer,
-                                   size_t aSamplesToRead,
-                                   size_t aBufferSize)
+size_t BusInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize)
 {
     int handle = mParent->mChannelHandle;
     if (handle == 0)
@@ -142,7 +140,7 @@ std::shared_ptr<AudioSourceInstance> Bus::createInstance()
         stop();
         mChannelHandle = 0;
     }
-    mInstance = std::make_shared< BusInstance>(this);
+    mInstance = std::make_shared<BusInstance>(this);
     return mInstance;
 }
 
@@ -333,7 +331,7 @@ float Bus::getApproximateVolume(size_t aChannel)
 
 size_t Bus::getActiveVoiceCount()
 {
-    int          i;
+    int    i;
     size_t count = 0;
     findBusHandle();
     mSoloud->lockAudioMutex_internal();

@@ -62,7 +62,7 @@ int Engine::getVoiceFromHandle_internal(handle aVoiceHandle) const
         return -1;
     }
 
-    int          ch  = (aVoiceHandle & 0xfff) - 1;
+    int    ch  = (aVoiceHandle & 0xfff) - 1;
     size_t idx = aVoiceHandle >> 12;
     if (mVoice[ch] && (mVoice[ch]->mPlayIndex & 0xfffff) == idx)
     {
@@ -304,7 +304,7 @@ bool Engine::getProtectVoice(handle aVoiceHandle)
 int Engine::findFreeVoice_internal()
 {
     size_t lowest_play_index_value = 0xffffffff;
-    int          lowest_play_index       = -1;
+    int    lowest_play_index       = -1;
 
     // (slowly) drag the highest active voice index down
     if (mHighestVoice > 0 && mVoice[mHighestVoice - 1] == nullptr)

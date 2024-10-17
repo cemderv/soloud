@@ -31,10 +31,7 @@ freely, subject to the following restrictions:
 #if !defined(WITH_OPENSLES)
 namespace SoLoud
 {
-result opensles_init(Soloud*      aSoloud,
-                     size_t aFlags,
-                     size_t aSamplerate,
-                     size_t aBuffer)
+result opensles_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -117,8 +114,8 @@ struct BackendData
     SLVolumeItf                   playerVol;
     SLAndroidSimpleBufferQueueItf playerBufferQueue;
 
-    size_t bufferSize;
-    size_t channels;
+    size_t       bufferSize;
+    size_t       channels;
     short*       outputBuffers[NUM_BUFFERS];
     int          buffersQueued;
     int          activeBuffer;
@@ -181,11 +178,8 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
     }
 }
 
-result opensles_init(Soloud*      aSoloud,
-                     size_t aFlags,
-                     size_t aSamplerate,
-                     size_t aBuffer,
-                     size_t aChannels)
+result opensles_init(
+    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     BackendData* data = new BackendData();
 

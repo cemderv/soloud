@@ -46,16 +46,16 @@ class FreeverbFilterInstance : public FilterInstance
         WIDTH
     };
 
-    FreeverbFilter*         mParent=nullptr;
+    FreeverbFilter*                         mParent = nullptr;
     std::unique_ptr<FreeverbImpl::Revmodel> mModel;
 
   public:
-    void filter(float*       aBuffer,
+    void filter(float* aBuffer,
                 size_t aSamples,
                 size_t aBufferSize,
                 size_t aChannels,
-                float        aSamplerate,
-                time_t       aTime) override;
+                float  aSamplerate,
+                time_t aTime) override;
 
     explicit FreeverbFilterInstance(FreeverbFilter* aParent);
 };

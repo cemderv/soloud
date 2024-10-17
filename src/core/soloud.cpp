@@ -62,10 +62,10 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Engine::Engine(Flags                       aFlags,
-                  std::optional<size_t> aSamplerate,
-                  std::optional<size_t> aBufferSize,
-                  size_t                aChannels)
+Engine::Engine(Flags                 aFlags,
+               std::optional<size_t> aSamplerate,
+               std::optional<size_t> aBufferSize,
+               size_t                aChannels)
 {
     assert(aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
@@ -180,7 +180,7 @@ void Engine::resume()
 
 void Engine::postinit_internal(size_t aSamplerate,
                                size_t aBufferSize,
-                               Flags        aFlags,
+                               Flags  aFlags,
                                size_t aChannels)
 {
     mGlobalVolume = 1;
@@ -325,12 +325,12 @@ float* Engine::calcFFT()
 #if defined(SOLOUD_SSE_INTRINSICS)
 void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
-                           size_t        aSamples,
+                           size_t              aSamples,
                            float               aVolume0,
                            float               aVolume1)
 {
-    float        vd = (aVolume1 - aVolume0) / aSamples;
-    float        v  = aVolume0;
+    float  vd = (aVolume1 - aVolume0) / aSamples;
+    float  v  = aVolume0;
     size_t i, j, c, d;
     size_t samplequads = (aSamples + 3) / 4; // rounded up
 
@@ -443,12 +443,12 @@ void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
 #else // fallback code
 void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
-                           size_t        aSamples,
+                           size_t              aSamples,
                            float               aVolume0,
                            float               aVolume1)
 {
-    float        vd = (aVolume1 - aVolume0) / aSamples;
-    float        v  = aVolume0;
+    float  vd = (aVolume1 - aVolume0) / aSamples;
+    float  v  = aVolume0;
     size_t i, j, c, d;
     size_t samplequads = (aSamples + 3) / 4; // rounded up
     // Clip
@@ -637,20 +637,20 @@ static void resample_point(
 
 
 void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
-                  float*               aBuffer,
-                  size_t         aSamplesToRead,
-                  size_t         aBufferSize,
-                  float*               aScratch,
-                  size_t         aChannels)
+                  float*                                aBuffer,
+                  size_t                                aSamplesToRead,
+                  size_t                                aBufferSize,
+                  float*                                aScratch,
+                  size_t                                aChannels)
 {
 #ifdef SOLOUD_SSE_INTRINSICS
     assert(((size_t)aBuffer & 0xf) == 0);
     assert(((size_t)aScratch & 0xf) == 0);
     assert(((size_t)aBufferSize & 0xf) == 0);
 #endif
-    float        pan[MAX_CHANNELS]; // current speaker volume
-    float        pand[MAX_CHANNELS]; // destination speaker volume
-    float        pani[MAX_CHANNELS]; // speaker volume increment per sample
+    float  pan[MAX_CHANNELS]; // current speaker volume
+    float  pand[MAX_CHANNELS]; // destination speaker volume
+    float  pani[MAX_CHANNELS]; // speaker volume increment per sample
     size_t j, k;
     for (k = 0; k < aChannels; k++)
     {
@@ -729,7 +729,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                     int c = 0;
                     // if ((aBufferSize & 3) == 0)
                     {
-                        size_t           samplequads = aSamplesToRead / 4; // rounded down
+                        size_t                 samplequads = aSamplesToRead / 4; // rounded down
                         TinyAlignedFloatBuffer pan0;
                         pan0.mData[0] = pan[0] + pani[0];
                         pan0.mData[1] = pan[0] + pani[0] * 2;
@@ -794,7 +794,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                     int c = 0;
                     // if ((aBufferSize & 3) == 0)
                     {
-                        size_t           samplequads = aSamplesToRead / 4; // rounded down
+                        size_t                 samplequads = aSamplesToRead / 4; // rounded down
                         TinyAlignedFloatBuffer pan0;
                         pan0.mData[0] = pan[0] + pani[0];
                         pan0.mData[1] = pan[0] + pani[0] * 2;
@@ -1192,14 +1192,14 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
         aVoice->mCurrentChannelVolume[k] = pand[k];
 }
 
-void Engine::mixBus_internal(float*       aBuffer,
-                             size_t aSamplesToRead,
-                             size_t aBufferSize,
-                             float*       aScratch,
-                             size_t aBus,
-                             float        aSamplerate,
-                             size_t aChannels,
-                             Resampler    aResampler)
+void Engine::mixBus_internal(float*    aBuffer,
+                             size_t    aSamplesToRead,
+                             size_t    aBufferSize,
+                             float*    aScratch,
+                             size_t    aBus,
+                             float     aSamplerate,
+                             size_t    aChannels,
+                             Resampler aResampler)
 {
     size_t i, j;
     // Clear accumulation buffer
@@ -1424,8 +1424,8 @@ void Engine::mixBus_internal(float*       aBuffer,
         {
             // Inaudible but needs ticking. Do minimal work (keep counters up to date and ask
             // audiosource for data)
-            float        step       = voice->mSamplerate / aSamplerate;
-            int          step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
+            float  step       = voice->mSamplerate / aSamplerate;
+            int    step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
             size_t outofs     = 0;
 
             if (voice->mDelaySamples)
@@ -1547,7 +1547,8 @@ void Engine::mapResampleBuffers_internal()
     {
         for (size_t j = 0; j < mMaxActiveVoices; j++)
         {
-            if (mResampleDataOwner[i] && mResampleDataOwner[i].get() == mVoice[mActiveVoice[j]].get())
+            if (mResampleDataOwner[i] &&
+                mResampleDataOwner[i].get() == mVoice[mActiveVoice[j]].get())
             {
                 live[i] |= 1; // Live channel
                 live[j] |= 2; // Live voice
@@ -1652,10 +1653,10 @@ void Engine::calcActiveVoices_internal()
     // audible.
 
     // Iterative partial quicksort:
-    int           left = 0, stack[24], pos = 0, right;
-    int           len  = candidates - mustlive;
+    int     left = 0, stack[24], pos = 0, right;
+    int     len  = candidates - mustlive;
     size_t* data = mActiveVoice.data() + mustlive;
-    int           k    = mActiveVoiceCount;
+    int     k    = mActiveVoiceCount;
     for (;;)
     {
         for (; left + 1 < len; len++)
@@ -1908,9 +1909,9 @@ void Engine::mixSigned16(short* aBuffer, size_t aSamples)
 
 void interlace_samples_float(const float* aSourceBuffer,
                              float*       aDestBuffer,
-                             size_t aSamples,
-                             size_t aChannels,
-                             size_t aStride)
+                             size_t       aSamples,
+                             size_t       aChannels,
+                             size_t       aStride)
 {
     // 111222 -> 121212
     size_t i, j, c;
@@ -1928,9 +1929,9 @@ void interlace_samples_float(const float* aSourceBuffer,
 
 void interlace_samples_s16(const float* aSourceBuffer,
                            short*       aDestBuffer,
-                           size_t aSamples,
-                           size_t aChannels,
-                           size_t aStride)
+                           size_t       aSamples,
+                           size_t       aChannels,
+                           size_t       aStride)
 {
     // 111222 -> 121212
     for (size_t j = 0; j < aChannels; j++)

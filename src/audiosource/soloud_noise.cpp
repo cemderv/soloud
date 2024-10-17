@@ -35,9 +35,7 @@ NoiseInstance::NoiseInstance(Noise* aParent)
     mPrg.srand(0xfade);
 }
 
-size_t NoiseInstance::getAudio(float*       aBuffer,
-                                     size_t aSamplesToRead,
-                                     size_t /*aBufferSize*/)
+size_t NoiseInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aBufferSize*/)
 {
     int   octavestep[10];
     float octavevalue[10];
@@ -121,7 +119,7 @@ Noise::~Noise()
 
 std::shared_ptr<AudioSourceInstance> Noise::createInstance()
 {
-    return std::make_shared< NoiseInstance>(this);
+    return std::make_shared<NoiseInstance>(this);
 }
 
 }; // namespace SoLoud

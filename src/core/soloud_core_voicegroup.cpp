@@ -120,7 +120,7 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 
     trimVoiceGroup_internal(aVoiceGroupHandle);
 
-    int          c = aVoiceGroupHandle & 0xfff;
+    int    c = aVoiceGroupHandle & 0xfff;
     size_t i;
 
     lockAudioMutex_internal();

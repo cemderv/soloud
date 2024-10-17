@@ -39,9 +39,7 @@ class QueueInstance : public AudioSourceInstance
   public:
     explicit QueueInstance(Queue* aParent);
 
-    size_t getAudio(float*       aBuffer,
-                          size_t aSamplesToRead,
-                          size_t aBufferSize) override;
+    size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
 
     bool hasEnded() override;
 };
@@ -68,11 +66,11 @@ class Queue : public AudioSource
 
     void findQueueHandle();
 
-    size_t                                       mReadIndex  = 0;
-    size_t                                       mWriteIndex = 0;
-    size_t                                       mCount      = 0;
+    size_t                                                             mReadIndex  = 0;
+    size_t                                                             mWriteIndex = 0;
+    size_t                                                             mCount      = 0;
     std::array<std::shared_ptr<AudioSourceInstance>, SOLOUD_QUEUE_MAX> mSource{};
-    std::shared_ptr<QueueInstance>                                     mInstance    ;
-    handle                                             mQueueHandle = 0;
+    std::shared_ptr<QueueInstance>                                     mInstance;
+    handle                                                             mQueueHandle = 0;
 };
 }; // namespace SoLoud

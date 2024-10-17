@@ -462,7 +462,7 @@ FreeverbFilterInstance::FreeverbFilterInstance(FreeverbFilter* aParent)
 
     mParent = aParent;
 
-    mModel = std::make_unique< FreeverbImpl::Revmodel>();
+    mModel = std::make_unique<FreeverbImpl::Revmodel>();
 
     mParam[FREEZE]   = aParent->mMode;
     mParam[ROOMSIZE] = aParent->mRoomSize;
@@ -471,12 +471,12 @@ FreeverbFilterInstance::FreeverbFilterInstance(FreeverbFilter* aParent)
     mParam[WET]      = 1;
 }
 
-void FreeverbFilterInstance::filter(float*       aBuffer,
+void FreeverbFilterInstance::filter(float* aBuffer,
                                     size_t aSamples,
                                     size_t aBufferSize,
                                     size_t aChannels,
-                                    float        aSamplerate,
-                                    time_t       aTime)
+                                    float  aSamplerate,
+                                    time_t aTime)
 {
     assert(aChannels == 2); // Only stereo supported at this time
     if (mParamChanged)
@@ -498,6 +498,6 @@ FreeverbFilter::FreeverbFilter()
 
 std::shared_ptr<FilterInstance> FreeverbFilter::createInstance()
 {
-    return std::make_shared< FreeverbFilterInstance>(this);
+    return std::make_shared<FreeverbFilterInstance>(this);
 }
 } // namespace SoLoud

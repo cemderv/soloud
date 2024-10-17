@@ -50,10 +50,10 @@ class EqFilterInstance : public FFTFilterInstance
     EqFilter* mParent;
 
   public:
-    void fftFilterChannel(float*       aFFTBuffer,
+    void fftFilterChannel(float* aFFTBuffer,
                           size_t aSamples,
-                          float        aSamplerate,
-                          time_t       aTime,
+                          float  aSamplerate,
+                          time_t aTime,
                           size_t aChannel,
                           size_t aChannels) override;
     explicit EqFilterInstance(EqFilter* aParent);

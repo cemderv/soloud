@@ -36,10 +36,8 @@ class NoiseInstance : public AudioSourceInstance
   public:
     explicit NoiseInstance(Noise* aParent);
 
-    size_t getAudio(float*       aBuffer,
-                          size_t aSamplesToRead,
-                          size_t aBufferSize) override;
-    bool         hasEnded() override;
+    size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
+    bool   hasEnded() override;
 
   public:
     float     mOctaveScale[10];

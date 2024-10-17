@@ -41,9 +41,7 @@ WavInstance::WavInstance(Wav* aParent)
     mOffset = 0;
 }
 
-size_t WavInstance::getAudio(float*       aBuffer,
-                                   size_t aSamplesToRead,
-                                   size_t aBufferSize)
+size_t WavInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize)
 {
     if (mParent->mData == nullptr)
         return 0;
@@ -213,7 +211,7 @@ void Wav::loadmp3(const MemoryFile& aReader)
 
     for (size_t i = 0; i < mSampleCount; i += 512)
     {
-        float        tmp[512 * MAX_CHANNELS];
+        float  tmp[512 * MAX_CHANNELS];
         size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drmp3_read_pcm_frames_f32(&decoder, blockSize, tmp);
 
@@ -254,7 +252,7 @@ void Wav::loadflac(const MemoryFile& aReader)
 
     for (size_t i = 0; i < mSampleCount; i += 512)
     {
-        float        tmp[512 * MAX_CHANNELS];
+        float  tmp[512 * MAX_CHANNELS];
         size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drflac_read_pcm_frames_f32(decoder, blockSize, tmp);
         for (size_t j = 0; j < blockSize; j++)
@@ -271,7 +269,7 @@ void Wav::loadflac(const MemoryFile& aReader)
 
 std::shared_ptr<AudioSourceInstance> Wav::createInstance()
 {
-    return std::make_shared< WavInstance>(this);
+    return std::make_shared<WavInstance>(this);
 }
 
 double Wav::getLength() const

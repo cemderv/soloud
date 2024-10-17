@@ -39,12 +39,12 @@ FlangerFilterInstance::FlangerFilterInstance(FlangerFilter* aParent)
     mParam[FlangerFilter::DELAY] = mParent->mDelay;
 }
 
-void FlangerFilterInstance::filter(float*       aBuffer,
+void FlangerFilterInstance::filter(float* aBuffer,
                                    size_t aSamples,
                                    size_t aBufferSize,
                                    size_t aChannels,
-                                   float        aSamplerate,
-                                   double       aTime)
+                                   float  aSamplerate,
+                                   double aTime)
 {
     updateParams(aTime);
 
@@ -62,8 +62,8 @@ void FlangerFilterInstance::filter(float*       aBuffer,
     }
 
     size_t i, j;
-    int          maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
-    double       inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
+    int    maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
+    double inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
     for (i = 0; i < aChannels; i++)
     {
         int mbofs = i * mBufferLength;
@@ -92,6 +92,6 @@ FlangerFilter::FlangerFilter()
 
 std::shared_ptr<FilterInstance> FlangerFilter::createInstance()
 {
-    return std::make_shared< FlangerFilterInstance>(this);
+    return std::make_shared<FlangerFilterInstance>(this);
 }
 } // namespace SoLoud

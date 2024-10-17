@@ -29,10 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result wasapi_init(Soloud*      aSoloud,
-                   size_t aFlags,
-                   size_t aSamplerate,
-                   size_t aBuffer)
+result wasapi_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -66,7 +63,7 @@ struct WASAPIData
     UINT32                      bufferFrames;
     int                         channels;
     REFERENCE_TIME              duration;
-    size_t                sampleRate;
+    size_t                      sampleRate;
     volatile bool               resetRequired;
     class MMNotificationClient* notificationClient;
 };
@@ -308,11 +305,8 @@ static void wasapiCleanup(Soloud* aSoloud)
     CoUninitialize();
 }
 
-result wasapi_init(Soloud*      aSoloud,
-                   size_t aFlags,
-                   size_t /*aSamplerate*/,
-                   size_t aBuffer,
-                   size_t /*aChannels*/)
+result wasapi_init(
+    Soloud* aSoloud, size_t aFlags, size_t /*aSamplerate*/, size_t aBuffer, size_t /*aChannels*/)
 {
     CoInitializeEx(0, COINIT_MULTITHREADED);
     WASAPIData* data = new WASAPIData;

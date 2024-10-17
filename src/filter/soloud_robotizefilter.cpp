@@ -36,16 +36,16 @@ RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
     mParam[WAVE] = (float)aParent->mWave;
 }
 
-void RobotizeFilterInstance::filterChannel(float*       aBuffer,
+void RobotizeFilterInstance::filterChannel(float* aBuffer,
                                            size_t aSamples,
-                                           float        aSamplerate,
-                                           time_t       aTime,
+                                           float  aSamplerate,
+                                           time_t aTime,
                                            size_t aChannel,
                                            size_t aChannels)
 {
     size_t i;
-    int          period = (int)(aSamplerate / mParam[FREQ]);
-    int          start  = (int)(aTime * aSamplerate) % period;
+    int    period = (int)(aSamplerate / mParam[FREQ]);
+    int    start  = (int)(aTime * aSamplerate) % period;
     for (i = 0; i < aSamples; i++)
     {
         float s    = aBuffer[i];
@@ -57,6 +57,6 @@ void RobotizeFilterInstance::filterChannel(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> RobotizeFilter::createInstance()
 {
-    return std::make_shared< RobotizeFilterInstance>(this);
+    return std::make_shared<RobotizeFilterInstance>(this);
 }
 } // namespace SoLoud

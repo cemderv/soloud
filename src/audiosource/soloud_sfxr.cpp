@@ -41,11 +41,9 @@ SfxrInstance::SfxrInstance(Sfxr* aParent)
 
 #define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
 
-size_t SfxrInstance::getAudio(float*       aBuffer,
-                                    size_t aSamplesToRead,
-                                    size_t /*aBufferSize*/)
+size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aBufferSize*/)
 {
-    float*       buffer = aBuffer;
+    float* buffer = aBuffer;
     size_t i;
     for (i = 0; i < aSamplesToRead; i++)
     {
@@ -548,7 +546,7 @@ Sfxr::~Sfxr()
 
 std::shared_ptr<AudioSourceInstance> Sfxr::createInstance()
 {
-    return std::make_shared< SfxrInstance>(this);
+    return std::make_shared<SfxrInstance>(this);
 }
 
 }; // namespace SoLoud

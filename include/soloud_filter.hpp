@@ -38,17 +38,17 @@ class FilterInstance
 
     virtual void updateParams(time_t aTime);
 
-    virtual void filter(float*       aBuffer,
+    virtual void filter(float* aBuffer,
                         size_t aSamples,
                         size_t aBufferSize,
                         size_t aChannels,
-                        float        aSamplerate,
-                        time_t       aTime);
+                        float  aSamplerate,
+                        time_t aTime);
 
-    virtual void filterChannel(float*       aBuffer,
+    virtual void filterChannel(float* aBuffer,
                                size_t aSamples,
-                               float        aSamplerate,
-                               time_t       aTime,
+                               float  aSamplerate,
+                               time_t aTime,
                                size_t aChannel,
                                size_t aChannels);
 
@@ -57,18 +57,18 @@ class FilterInstance
     virtual void setFilterParameter(size_t aAttributeId, float aValue);
 
     virtual void fadeFilterParameter(size_t aAttributeId,
-                                     float        aTo,
-                                     time_t       aTime,
-                                     time_t       aStartTime);
+                                     float  aTo,
+                                     time_t aTime,
+                                     time_t aStartTime);
 
     virtual void oscillateFilterParameter(
         size_t aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
 
   protected:
-    size_t mNumParams    = 0;
-    size_t mParamChanged = 0;
-    std::unique_ptr<float[]>       mParam       ;
-    std::unique_ptr<Fader[]>       mParamFader   ;
+    size_t                   mNumParams    = 0;
+    size_t                   mParamChanged = 0;
+    std::unique_ptr<float[]> mParam;
+    std::unique_ptr<Fader[]> mParamFader;
 };
 
 class Filter

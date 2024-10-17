@@ -40,9 +40,7 @@ class BusInstance final : public AudioSourceInstance
   public:
     explicit BusInstance(Bus* aParent);
 
-    size_t getAudio(float*       aBuffer,
-                          size_t aSamplesToRead,
-                          size_t aBufferSize) override;
+    size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
 
     bool hasEnded() override;
 
@@ -50,7 +48,7 @@ class BusInstance final : public AudioSourceInstance
 
   private:
     Bus*               mParent;
-    size_t       mScratchSize;
+    size_t             mScratchSize;
     AlignedFloatBuffer mScratch;
 
     // Approximate volume for channels.
@@ -118,8 +116,8 @@ class Bus final : public AudioSource
     void setResampler(Resampler aResampler);
 
     std::shared_ptr<BusInstance> mInstance;
-    size_t mChannelHandle;
-    Resampler    mResampler;
+    size_t                       mChannelHandle;
+    Resampler                    mResampler;
 
     // FFT output data
     float mFFTData[256];

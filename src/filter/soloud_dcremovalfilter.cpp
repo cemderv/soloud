@@ -36,12 +36,12 @@ DCRemovalFilterInstance::DCRemovalFilterInstance(DCRemovalFilter* aParent)
     initParams(1);
 }
 
-void DCRemovalFilterInstance::filter(float*       aBuffer,
+void DCRemovalFilterInstance::filter(float* aBuffer,
                                      size_t aSamples,
                                      size_t aBufferSize,
                                      size_t aChannels,
-                                     float        aSamplerate,
-                                     double       aTime)
+                                     float  aSamplerate,
+                                     double aTime)
 {
     updateParams(aTime);
 
@@ -53,7 +53,7 @@ void DCRemovalFilterInstance::filter(float*       aBuffer,
     }
 
     size_t i, j;
-    int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
+    int    prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
     for (i = 0; i < aSamples; i++)
     {
         for (j = 0; j < aChannels; j++)
@@ -77,6 +77,6 @@ void DCRemovalFilterInstance::filter(float*       aBuffer,
 
 std::shared_ptr<FilterInstance> DCRemovalFilter::createInstance()
 {
-    return std::make_shared< DCRemovalFilterInstance>(this);
+    return std::make_shared<DCRemovalFilterInstance>(this);
 }
 } // namespace SoLoud

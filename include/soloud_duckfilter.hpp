@@ -34,12 +34,12 @@ class Engine;
 class DuckFilterInstance : public FilterInstance
 {
   public:
-    void filter(float*       aBuffer,
+    void filter(float* aBuffer,
                 size_t aSamples,
                 size_t aBufferSize,
                 size_t aChannels,
-                float        aSamplerate,
-                time_t       aTime) override;
+                float  aSamplerate,
+                time_t aTime) override;
 
     explicit DuckFilterInstance(DuckFilter* aParent);
 
