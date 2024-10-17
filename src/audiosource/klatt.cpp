@@ -10,7 +10,7 @@
 
 class Interp
 {
-  public:
+public:
     float mSteady;
     float mFixed;
     char  mProportion;
@@ -45,7 +45,7 @@ enum Eparm_e
 
 class Element
 {
-  public:
+public:
     const char*   mName; // unused
     const char    mRK;
     const char    mDU;
@@ -165,12 +165,10 @@ enum ELEMENTS
 
 #define PHONEME_COUNT   53
 #define AMP_ADJ         14
-#define StressDur(e, s) (s, ((e->mDU + e->mUD) / 2))
-
 
 class PhonemeToElements
 {
-  public:
+public:
     int  mKey;
     char mData[8];
 };
@@ -179,59 +177,59 @@ class PhonemeToElements
    the search function will fail*/
 static PhonemeToElements phoneme_to_elements[PHONEME_COUNT] = {
     /* mKey, count, 0-7 elements */
-    /* tS */ 0x5374, 2, ELM_CH,  ELM_CI, 0,      0,      0, 0, 0,
-    /* dZ */ 0x5a64, 4, ELM_J,   ELM_JY, ELM_QQ, ELM_JY, 0, 0, 0,
-    /* rr */ 0x7272, 3, ELM_R,   ELM_QQ, ELM_R,  0,      0, 0, 0,
-    /* eI */ 0x4965, 2, ELM_AI,  ELM_I,  0,      0,      0, 0, 0,
-    /* aI */ 0x4961, 2, ELM_IE,  ELM_I,  0,      0,      0, 0, 0,
-    /* oI */ 0x496f, 2, ELM_OI,  ELM_I,  0,      0,      0, 0, 0,
-    /* aU */ 0x5561, 2, ELM_OU,  ELM_OV, 0,      0,      0, 0, 0,
-    /* @U */ 0x5540, 2, ELM_OA,  ELM_OV, 0,      0,      0, 0, 0,
-    /* I@ */ 0x4049, 2, ELM_IA,  ELM_IB, 0,      0,      0, 0, 0,
-    /* e@ */ 0x4065, 2, ELM_AIR, ELM_IB, 0,      0,      0, 0, 0,
-    /* U@ */ 0x4055, 2, ELM_OOR, ELM_IB, 0,      0,      0, 0, 0,
-    /* O@ */ 0x404f, 2, ELM_OR,  ELM_IB, 0,      0,      0, 0, 0,
-    /* oU */ 0x556f, 2, ELM_OI,  ELM_OV, 0,      0,      0, 0, 0,
-    /*    */ 0x0020, 1, ELM_Q,   0,      0,      0,      0, 0, 0,
-    /* p  */ 0x0070, 3, ELM_P,   ELM_PY, ELM_PZ, 0,      0, 0, 0,
-    /* t  */ 0x0074, 3, ELM_T,   ELM_TY, ELM_TZ, 0,      0, 0, 0,
-    /* k  */ 0x006b, 3, ELM_K,   ELM_KY, ELM_KZ, 0,      0, 0, 0,
-    /* b  */ 0x0062, 3, ELM_B,   ELM_BY, ELM_BZ, 0,      0, 0, 0,
-    /* d  */ 0x0064, 3, ELM_D,   ELM_DY, ELM_DZ, 0,      0, 0, 0,
-    /* g  */ 0x0067, 3, ELM_G,   ELM_GY, ELM_GZ, 0,      0, 0, 0,
-    /* m  */ 0x006d, 1, ELM_M,   0,      0,      0,      0, 0, 0,
-    /* n  */ 0x006e, 1, ELM_N,   0,      0,      0,      0, 0, 0,
-    /* N  */ 0x004e, 1, ELM_NG,  0,      0,      0,      0, 0, 0,
-    /* f  */ 0x0066, 1, ELM_F,   0,      0,      0,      0, 0, 0,
-    /* T  */ 0x0054, 1, ELM_TH,  0,      0,      0,      0, 0, 0,
-    /* s  */ 0x0073, 1, ELM_S,   0,      0,      0,      0, 0, 0,
-    /* S  */ 0x0053, 1, ELM_SH,  0,      0,      0,      0, 0, 0,
-    /* h  */ 0x0068, 1, ELM_H,   0,      0,      0,      0, 0, 0,
-    /* v  */ 0x0076, 3, ELM_V,   ELM_QQ, ELM_V,  0,      0, 0, 0,
-    /* D  */ 0x0044, 3, ELM_DH,  ELM_QQ, ELM_DI, 0,      0, 0, 0,
-    /* z  */ 0x007a, 3, ELM_Z,   ELM_QQ, ELM_ZZ, 0,      0, 0, 0,
-    /* Z  */ 0x005a, 3, ELM_ZH,  ELM_QQ, ELM_ZH, 0,      0, 0, 0,
-    /* l  */ 0x006c, 1, ELM_L,   0,      0,      0,      0, 0, 0,
-    /* r  */ 0x0072, 1, ELM_R,   0,      0,      0,      0, 0, 0,
-    /* R  */ 0x0052, 1, ELM_RX,  0,      0,      0,      0, 0, 0,
-    /* w  */ 0x0077, 1, ELM_W,   0,      0,      0,      0, 0, 0,
-    /* x  */ 0x0078, 1, ELM_X,   0,      0,      0,      0, 0, 0,
-    /* %  */ 0x0025, 1, ELM_QQ,  0,      0,      0,      0, 0, 0,
-    /* j  */ 0x006a, 1, ELM_Y,   0,      0,      0,      0, 0, 0,
-    /* I  */ 0x0049, 1, ELM_I,   0,      0,      0,      0, 0, 0,
-    /* e  */ 0x0065, 1, ELM_E,   0,      0,      0,      0, 0, 0,
-    /* &  */ 0x0026, 1, ELM_AA,  0,      0,      0,      0, 0, 0,
-    /* V  */ 0x0056, 1, ELM_U,   0,      0,      0,      0, 0, 0,
-    /* 0  */ 0x0030, 1, ELM_O,   0,      0,      0,      0, 0, 0,
-    /* U  */ 0x0055, 1, ELM_OO,  0,      0,      0,      0, 0, 0,
-    /* @  */ 0x0040, 1, ELM_A,   0,      0,      0,      0, 0, 0,
-    /* i  */ 0x0069, 1, ELM_EE,  0,      0,      0,      0, 0, 0,
-    /* 3  */ 0x0033, 1, ELM_ER,  0,      0,      0,      0, 0, 0,
-    /* A  */ 0x0041, 1, ELM_AR,  0,      0,      0,      0, 0, 0,
-    /* O  */ 0x004f, 1, ELM_AW,  0,      0,      0,      0, 0, 0,
-    /* u  */ 0x0075, 1, ELM_UU,  0,      0,      0,      0, 0, 0,
-    /* o  */ 0x006f, 1, ELM_OI,  0,      0,      0,      0, 0, 0,
-    /* .  */ 0x002e, 1, ELM_END, 0,      0,      0,      0, 0, 0,
+    /* tS */ 0x5374, 2, ELM_CH, ELM_CI, 0, 0, 0, 0, 0,
+             /* dZ */ 0x5a64, 4, ELM_J, ELM_JY, ELM_QQ, ELM_JY, 0, 0, 0,
+             /* rr */ 0x7272, 3, ELM_R, ELM_QQ, ELM_R, 0, 0, 0, 0,
+             /* eI */ 0x4965, 2, ELM_AI, ELM_I, 0, 0, 0, 0, 0,
+             /* aI */ 0x4961, 2, ELM_IE, ELM_I, 0, 0, 0, 0, 0,
+             /* oI */ 0x496f, 2, ELM_OI, ELM_I, 0, 0, 0, 0, 0,
+             /* aU */ 0x5561, 2, ELM_OU, ELM_OV, 0, 0, 0, 0, 0,
+             /* @U */ 0x5540, 2, ELM_OA, ELM_OV, 0, 0, 0, 0, 0,
+             /* I@ */ 0x4049, 2, ELM_IA, ELM_IB, 0, 0, 0, 0, 0,
+             /* e@ */ 0x4065, 2, ELM_AIR, ELM_IB, 0, 0, 0, 0, 0,
+             /* U@ */ 0x4055, 2, ELM_OOR, ELM_IB, 0, 0, 0, 0, 0,
+             /* O@ */ 0x404f, 2, ELM_OR, ELM_IB, 0, 0, 0, 0, 0,
+             /* oU */ 0x556f, 2, ELM_OI, ELM_OV, 0, 0, 0, 0, 0,
+             /*    */ 0x0020, 1, ELM_Q, 0, 0, 0, 0, 0, 0,
+             /* p  */ 0x0070, 3, ELM_P, ELM_PY, ELM_PZ, 0, 0, 0, 0,
+             /* t  */ 0x0074, 3, ELM_T, ELM_TY, ELM_TZ, 0, 0, 0, 0,
+             /* k  */ 0x006b, 3, ELM_K, ELM_KY, ELM_KZ, 0, 0, 0, 0,
+             /* b  */ 0x0062, 3, ELM_B, ELM_BY, ELM_BZ, 0, 0, 0, 0,
+             /* d  */ 0x0064, 3, ELM_D, ELM_DY, ELM_DZ, 0, 0, 0, 0,
+             /* g  */ 0x0067, 3, ELM_G, ELM_GY, ELM_GZ, 0, 0, 0, 0,
+             /* m  */ 0x006d, 1, ELM_M, 0, 0, 0, 0, 0, 0,
+             /* n  */ 0x006e, 1, ELM_N, 0, 0, 0, 0, 0, 0,
+             /* N  */ 0x004e, 1, ELM_NG, 0, 0, 0, 0, 0, 0,
+             /* f  */ 0x0066, 1, ELM_F, 0, 0, 0, 0, 0, 0,
+             /* T  */ 0x0054, 1, ELM_TH, 0, 0, 0, 0, 0, 0,
+             /* s  */ 0x0073, 1, ELM_S, 0, 0, 0, 0, 0, 0,
+             /* S  */ 0x0053, 1, ELM_SH, 0, 0, 0, 0, 0, 0,
+             /* h  */ 0x0068, 1, ELM_H, 0, 0, 0, 0, 0, 0,
+             /* v  */ 0x0076, 3, ELM_V, ELM_QQ, ELM_V, 0, 0, 0, 0,
+             /* D  */ 0x0044, 3, ELM_DH, ELM_QQ, ELM_DI, 0, 0, 0, 0,
+             /* z  */ 0x007a, 3, ELM_Z, ELM_QQ, ELM_ZZ, 0, 0, 0, 0,
+             /* Z  */ 0x005a, 3, ELM_ZH, ELM_QQ, ELM_ZH, 0, 0, 0, 0,
+             /* l  */ 0x006c, 1, ELM_L, 0, 0, 0, 0, 0, 0,
+             /* r  */ 0x0072, 1, ELM_R, 0, 0, 0, 0, 0, 0,
+             /* R  */ 0x0052, 1, ELM_RX, 0, 0, 0, 0, 0, 0,
+             /* w  */ 0x0077, 1, ELM_W, 0, 0, 0, 0, 0, 0,
+             /* x  */ 0x0078, 1, ELM_X, 0, 0, 0, 0, 0, 0,
+             /* %  */ 0x0025, 1, ELM_QQ, 0, 0, 0, 0, 0, 0,
+             /* j  */ 0x006a, 1, ELM_Y, 0, 0, 0, 0, 0, 0,
+             /* I  */ 0x0049, 1, ELM_I, 0, 0, 0, 0, 0, 0,
+             /* e  */ 0x0065, 1, ELM_E, 0, 0, 0, 0, 0, 0,
+             /* &  */ 0x0026, 1, ELM_AA, 0, 0, 0, 0, 0, 0,
+             /* V  */ 0x0056, 1, ELM_U, 0, 0, 0, 0, 0, 0,
+             /* 0  */ 0x0030, 1, ELM_O, 0, 0, 0, 0, 0, 0,
+             /* U  */ 0x0055, 1, ELM_OO, 0, 0, 0, 0, 0, 0,
+             /* @  */ 0x0040, 1, ELM_A, 0, 0, 0, 0, 0, 0,
+             /* i  */ 0x0069, 1, ELM_EE, 0, 0, 0, 0, 0, 0,
+             /* 3  */ 0x0033, 1, ELM_ER, 0, 0, 0, 0, 0, 0,
+             /* A  */ 0x0041, 1, ELM_AR, 0, 0, 0, 0, 0, 0,
+             /* O  */ 0x004f, 1, ELM_AW, 0, 0, 0, 0, 0, 0,
+             /* u  */ 0x0075, 1, ELM_UU, 0, 0, 0, 0, 0, 0,
+             /* o  */ 0x006f, 1, ELM_OI, 0, 0, 0, 0, 0, 0,
+             /* .  */ 0x002e, 1, ELM_END, 0, 0, 0, 0, 0, 0,
 };
 
 static Element gElement[] = {
@@ -274,14 +272,14 @@ static float DBtoLIN(int dB)
      */
 
     static const float amptable[88] = {
-        0.0,     0.0,     0.0,     0.0,     0.0,     0.0,     0.0,     0.0,     0.0,     0.0,
-        0.0,     0.0,     0.0,     6.0,     7.0,     8.0,     9.0,     10.0,    11.0,    13.0,
-        14.0,    16.0,    18.0,    20.0,    22.0,    25.0,    28.0,    32.0,    35.0,    40.0,
-        45.0,    51.0,    57.0,    64.0,    71.0,    80.0,    90.0,    101.0,   114.0,   128.0,
-        142.0,   159.0,   179.0,   202.0,   227.0,   256.0,   284.0,   318.0,   359.0,   405.0,
-        455.0,   512.0,   568.0,   638.0,   719.0,   811.0,   911.0,   1024.0,  1137.0,  1276.0,
-        1438.0,  1622.0,  1823.0,  2048.0,  2273.0,  2552.0,  2875.0,  3244.0,  3645.0,  4096.0,
-        4547.0,  5104.0,  5751.0,  6488.0,  7291.0,  8192.0,  9093.0,  10207.0, 11502.0, 12976.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 13.0,
+        14.0, 16.0, 18.0, 20.0, 22.0, 25.0, 28.0, 32.0, 35.0, 40.0,
+        45.0, 51.0, 57.0, 64.0, 71.0, 80.0, 90.0, 101.0, 114.0, 128.0,
+        142.0, 159.0, 179.0, 202.0, 227.0, 256.0, 284.0, 318.0, 359.0, 405.0,
+        455.0, 512.0, 568.0, 638.0, 719.0, 811.0, 911.0, 1024.0, 1137.0, 1276.0,
+        1438.0, 1622.0, 1823.0, 2048.0, 2273.0, 2552.0, 2875.0, 3244.0, 3645.0, 4096.0,
+        4547.0, 5104.0, 5751.0, 6488.0, 7291.0, 8192.0, 9093.0, 10207.0, 11502.0, 12976.0,
         14582.0, 16384.0, 18350.0, 20644.0, 23429.0, 26214.0, 29491.0, 32767.0};
 
     // Check limits or argument (can be removed in final product)
@@ -300,82 +298,84 @@ static float DBtoLIN(int dB)
 
 klatt_frame::klatt_frame()
     : mF0FundamentalFreq(1330)
-    , mVoicingAmpdb(60)
-    , mFormant1Freq(500)
-    , mFormant1Bandwidth(60)
-    , mFormant2Freq(1500)
-    , mFormant2Bandwidth(90)
-    , mFormant3Freq(2800)
-    , mFormant3Bandwidth(150)
-    , mFormant4Freq(3250)
-    , mFormant4Bandwidth(200)
-    , mFormant5Freq(3700)
-    , mFormant5Bandwidth(200)
-    , mFormant6Freq(4990)
-    , mFormant6Bandwidth(500)
-    , mNasalZeroFreq(270)
-    , mNasalZeroBandwidth(100)
-    , mNasalPoleFreq(270)
-    , mNasalPoleBandwidth(100)
-    , mAspirationAmpdb(0)
-    , mNoSamplesInOpenPeriod(30)
-    , mVoicingBreathiness(0)
-    , mVoicingSpectralTiltdb(10)
-    , mFricationAmpdb(0)
-    , mSkewnessOfAlternatePeriods(0)
-    , mFormant1Ampdb(0)
-    , mFormant1ParallelBandwidth(80)
-    , mFormant2Ampdb(0)
-    , mFormant2ParallelBandwidth(200)
-    , mFormant3Ampdb(0)
-    , mFormant3ParallelBandwidth(350)
-    , mFormant4Ampdb(0)
-    , mFormant4ParallelBandwidth(500)
-    , mFormant5Ampdb(0)
-    , mFormant5ParallelBandwidth(600)
-    , mFormant6Ampdb(0)
-    , mFormant6ParallelBandwidth(800)
-    , mParallelNasalPoleAmpdb(0)
-    , mBypassFricationAmpdb(0)
-    , mPalallelVoicingAmpdb(0)
-    , mOverallGaindb(62) {};
+      , mVoicingAmpdb(60)
+      , mFormant1Freq(500)
+      , mFormant1Bandwidth(60)
+      , mFormant2Freq(1500)
+      , mFormant2Bandwidth(90)
+      , mFormant3Freq(2800)
+      , mFormant3Bandwidth(150)
+      , mFormant4Freq(3250)
+      , mFormant4Bandwidth(200)
+      , mFormant5Freq(3700)
+      , mFormant5Bandwidth(200)
+      , mFormant6Freq(4990)
+      , mFormant6Bandwidth(500)
+      , mNasalZeroFreq(270)
+      , mNasalZeroBandwidth(100)
+      , mNasalPoleFreq(270)
+      , mNasalPoleBandwidth(100)
+      , mAspirationAmpdb(0)
+      , mNoSamplesInOpenPeriod(30)
+      , mVoicingBreathiness(0)
+      , mVoicingSpectralTiltdb(10)
+      , mFricationAmpdb(0)
+      , mSkewnessOfAlternatePeriods(0)
+      , mFormant1Ampdb(0)
+      , mFormant1ParallelBandwidth(80)
+      , mFormant2Ampdb(0)
+      , mFormant2ParallelBandwidth(200)
+      , mFormant3Ampdb(0)
+      , mFormant3ParallelBandwidth(350)
+      , mFormant4Ampdb(0)
+      , mFormant4ParallelBandwidth(500)
+      , mFormant5Ampdb(0)
+      , mFormant5ParallelBandwidth(600)
+      , mFormant6Ampdb(0)
+      , mFormant6ParallelBandwidth(800)
+      , mParallelNasalPoleAmpdb(0)
+      , mBypassFricationAmpdb(0)
+      , mPalallelVoicingAmpdb(0)
+      , mOverallGaindb(62)
+{
+};
 
 
 klatt::klatt()
     : mBaseF0(1330)
-    , mBaseSpeed(10.0f)
-    , mBaseDeclination(0.5f)
-    , mBaseWaveform(KW_SAW)
-    , mF0Flutter(0)
-    , mSampleRate(0)
-    , mNspFr(0)
-    , mF0FundamentalFreq(0)
-    , mVoicingAmpdb(0)
-    , mSkewnessOfAlternatePeriods(0)
-    , mTimeCount(0)
-    , mNPer(0)
-    , mT0(0)
-    , mNOpen(0)
-    , mNMod(0)
-    , mAmpVoice(0)
-    , mAmpBypas(0)
-    , mAmpAspir(0)
-    , mAmpFrica(0)
-    , mAmpBreth(0)
-    , mSkew(0)
-    , mVLast(0)
-    , mNLast(0)
-    , mGlotLast(0)
-    , mDecay(0)
-    , mOneMd(0)
-    , mSeed(5)
-    , mElementCount(0)
-    , mElement(0)
-    , mElementIndex(0)
-    , mLastElement(0)
-    , mTStress(0)
-    , mNTStress(0)
-    , mTop(0)
+      , mBaseSpeed(10.0f)
+      , mBaseDeclination(0.5f)
+      , mBaseWaveform(KW_SAW)
+      , mF0Flutter(0)
+      , mSampleRate(0)
+      , mNspFr(0)
+      , mF0FundamentalFreq(0)
+      , mVoicingAmpdb(0)
+      , mSkewnessOfAlternatePeriods(0)
+      , mTimeCount(0)
+      , mNPer(0)
+      , mT0(0)
+      , mNOpen(0)
+      , mNMod(0)
+      , mAmpVoice(0)
+      , mAmpBypas(0)
+      , mAmpAspir(0)
+      , mAmpFrica(0)
+      , mAmpBreth(0)
+      , mSkew(0)
+      , mVLast(0)
+      , mNLast(0)
+      , mGlotLast(0)
+      , mDecay(0)
+      , mOneMd(0)
+      , mSeed(5)
+      , mElementCount(0)
+      , mElement(0)
+      , mElementIndex(0)
+      , mLastElement(0)
+      , mTStress(0)
+      , mNTStress(0)
+      , mTop(0)
 {
 }
 
@@ -841,7 +841,7 @@ int klatt::phone_to_elm(char* aPhoneme, int aCount, darray* aElement)
                 if (!(p->mFeat & ELM_FEATURE_VWL))
                     stress = 0;
 
-                int stressdur = StressDur(p, stress);
+                int stressdur = (p->mDU + p->mUD) / 2;
 
                 t += stressdur;
 
@@ -857,11 +857,14 @@ int klatt::phone_to_elm(char* aPhoneme, int aCount, darray* aElement)
             switch (ch)
             {
 
-                case '\'': /* Primary stress */ stress = 3; break;
+                case '\'': /* Primary stress */ stress = 3;
+                    break;
 
-                case ',': /* Secondary stress */ stress = 2; break;
+                case ',': /* Secondary stress */ stress = 2;
+                    break;
 
-                case '+': /* Tertiary stress */ stress = 1; break;
+                case '+': /* Tertiary stress */ stress = 1;
+                    break;
 
                 case '-': /* hyphen in input */ break;
 
@@ -894,7 +897,7 @@ static void set_trans(Slope* t, Element* a, Element* b, int ext, int /* e */)
         {
             t[i].mValue = a->mInterpolator[i].mFixed +
                           (a->mInterpolator[i].mProportion * b->mInterpolator[i].mSteady) *
-                              0.01f; // mProportion is in scale 0..100, so *0.01.
+                          0.01f; // mProportion is in scale 0..100, so *0.01.
         }
         else
         {
@@ -920,7 +923,11 @@ static float lerp(float a, float b, int t, int d)
 }
 
 static float interpolate(
-    Slope* aStartSlope, Slope* aEndSlope, float aMidValue, int aTime, int aDuration)
+    Slope* aStartSlope,
+    Slope* aEndSlope,
+    float  aMidValue,
+    int    aTime,
+    int    aDuration)
 {
     int steadyTime = aDuration - (aStartSlope->mTime + aEndSlope->mTime);
 
@@ -1063,9 +1070,7 @@ int klatt::synth(int /* aSampleCount */, short* aSamplePointer)
                             d += du;
                             e  = (j < mElementCount) ? &gElement[mElement[j++]] : &gElement[0];
                             du = mElement[j++];
-                        }
-
-                        while ((e->mFeat & ELM_FEATURE_VWL) && mElement[j++] == s);
+                        } while ((e->mFeat & ELM_FEATURE_VWL) && mElement[j++] == s);
 
                         mNTStress += d / 2;
 
@@ -1090,18 +1095,18 @@ int klatt::synth(int /* aSampleCount */, short* aSamplePointer)
 
             mFrame.mF0FundamentalFreq =
                 (int)(base + (mTop - base) *
-                                 interpolate(&mStressS, &mStressE, (float)0, mTStress, mNTStress));
-            mFrame.mVoicingAmpdb = mFrame.mPalallelVoicingAmpdb = (int)tp[ELM_AV];
-            mFrame.mFricationAmpdb                              = (int)tp[ELM_AF];
-            mFrame.mNasalZeroFreq                               = (int)tp[ELM_FN];
-            mFrame.mAspirationAmpdb                             = (int)tp[ELM_ASP];
-            mFrame.mVoicingBreathiness                          = (int)tp[ELM_AVC];
+                      interpolate(&mStressS, &mStressE, (float)0, mTStress, mNTStress));
+            mFrame.mVoicingAmpdb              = mFrame.mPalallelVoicingAmpdb = (int)tp[ELM_AV];
+            mFrame.mFricationAmpdb            = (int)tp[ELM_AF];
+            mFrame.mNasalZeroFreq             = (int)tp[ELM_FN];
+            mFrame.mAspirationAmpdb           = (int)tp[ELM_ASP];
+            mFrame.mVoicingBreathiness        = (int)tp[ELM_AVC];
             mFrame.mFormant1ParallelBandwidth = mFrame.mFormant1Bandwidth = (int)tp[ELM_B1];
             mFrame.mFormant2ParallelBandwidth = mFrame.mFormant2Bandwidth = (int)tp[ELM_B2];
             mFrame.mFormant3ParallelBandwidth = mFrame.mFormant3Bandwidth = (int)tp[ELM_B3];
-            mFrame.mFormant1Freq                                          = (int)tp[ELM_F1];
-            mFrame.mFormant2Freq                                          = (int)tp[ELM_F2];
-            mFrame.mFormant3Freq                                          = (int)tp[ELM_F3];
+            mFrame.mFormant1Freq              = (int)tp[ELM_F1];
+            mFrame.mFormant2Freq              = (int)tp[ELM_F2];
+            mFrame.mFormant3Freq              = (int)tp[ELM_F3];
 
             // AMP_ADJ + is a kludge to get amplitudes up to klatt-compatible levels
 

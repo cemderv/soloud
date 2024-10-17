@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "../src/audiosource/speech/darray.h"
-#include "../src/audiosource/speech/klatt.h"
+#include "../src/audiosource/darray.h"
+#include "../src/audiosource/klatt.h"
 #include "soloud.hpp"
 
 namespace SoLoud

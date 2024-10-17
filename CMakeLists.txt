@@ -4,14 +4,14 @@ project(SoLoud LANGUAGES CXX)
 
 file(GLOB
   HeaderFiles
-    "include/*.hpp"
+  "include/*.hpp"
 )
 
 file(GLOB
   SourceFiles
-    "src/audiosource/**/*.*"
-    "src/core/*.*"
-    "src/filter/*.*"
+  "src/audiosource/*.*"
+  "src/core/*.*"
+  "src/filter/*.*"
 )
 
 add_library(SoLoud STATIC ${HeaderFiles} ${SourceFiles})
@@ -35,13 +35,13 @@ if (WIN32)
   target_precompile_headers(SoLoud PRIVATE
     <Windows.h>
   )
-endif()
+endif ()
 
 set(SoLoud_BACKEND_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/backend/")
 
 if (MSVC)
   target_compile_options(SoLoud PRIVATE /wd4700)
-endif()
+endif ()
 
 if (NOT MSVC)
   set_source_files_properties(
@@ -49,11 +49,11 @@ if (NOT MSVC)
     PROPERTIES
     COMPILE_FLAGS "-Wno-unused-value"
   )
-endif()
+endif ()
 
 if (EMSCRIPTEN)
   target_compile_definitions(SoLoud PRIVATE -DWITH_SDL2_STATIC)
-  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/sdl2_static/soloud_sdl2_static.cpp)
+  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/soloud_sdl2_static.cpp)
 
   set(LinkFlags "SHELL:-s USE_SDL=2")
   target_compile_options(SoLoud PRIVATE ${LinkFlags})
@@ -61,13 +61,13 @@ if (EMSCRIPTEN)
   target_link_libraries(SoLoud PRIVATE SDL2)
 elseif (WIN32)
   target_compile_definitions(SoLoud PRIVATE -DWITH_WINMM)
-  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/winmm/soloud_winmm.cpp)
+  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/soloud_winmm.cpp)
 elseif (APPLE)
   find_library(COREAUDIO_FRAMEWORK CoreAudio REQUIRED)
   find_library(AUDIOTOOLBOX_FRAMEWORK AudioToolbox REQUIRED)
 
   target_compile_definitions(SoLoud PRIVATE -DWITH_COREAUDIO)
-  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/coreaudio/soloud_coreaudio.cpp)
+  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/soloud_coreaudio.cpp)
 
   target_link_libraries(SoLoud PUBLIC
     ${COREAUDIO_FRAMEWORK}
@@ -75,13 +75,13 @@ elseif (APPLE)
   )
 elseif (ANDROID)
   target_compile_definitions(SoLoud PRIVATE -DWITH_OPENSLES)
-  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/opensles/soloud_opensles.cpp)
+  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/soloud_opensles.cpp)
 
-  find_library (OPENSLES_LIBRARY OpenSLES)
+  find_library(OPENSLES_LIBRARY OpenSLES)
   target_link_libraries(SoLoud PUBLIC ${OPENSLES_LIBRARY})
 elseif (UNIX)
   target_compile_definitions(SoLoud PRIVATE -DWITH_ALSA)
-  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/alsa/soloud_alsa.cpp)
+  target_sources(SoLoud PRIVATE ${SoLoud_BACKEND_DIR}/soloud_alsa.cpp)
 
   find_library(ALSA_LIBRARY asound REQUIRED)
 

@@ -22,10 +22,9 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include "soloud_speech.hpp"
-#include "../src/audiosource/speech/tts.h"
+#include "../src/audiosource/tts.h"
 #include "soloud.hpp"
 #include "soloud_error.hpp"
-#include <cstring>
 
 namespace SoLoud
 {
