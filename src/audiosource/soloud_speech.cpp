@@ -28,11 +28,12 @@ namespace SoLoud
 {
 SpeechInstance::SpeechInstance(Speech* aParent)
     : mParent(aParent)
-    , mSynth(mParent->mBaseFrequency,
-             mParent->mBaseSpeed,
-             mParent->mBaseDeclination,
-             mParent->mBaseWaveform)
 {
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
+
     mSample = std::make_unique<short[]>(mSynth.mNspFr * 100);
 
     mSynth.initsynth(mParent->mElement.getSize(),
@@ -52,11 +53,10 @@ static void writesamples(short* aSrc, float* aDst, int aCount)
 
 size_t SpeechInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aBufferSize*/)
 {
-    // TODO: check this, was .init() before (mLastElement etc)
-    mSynth = klatt{mParent->mBaseFrequency,
-                   mParent->mBaseSpeed,
-                   mParent->mBaseDeclination,
-                   mParent->mBaseWaveform};
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
 
     size_t samples_out = 0;
     if (mSampleCount > mOffset)
@@ -92,11 +92,10 @@ size_t SpeechInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*
 
 bool SpeechInstance::rewind()
 {
-    // TODO: check this, was .init() before (mLastElement etc)
-    mSynth = klatt{mParent->mBaseFrequency,
-                   mParent->mBaseSpeed,
-                   mParent->mBaseDeclination,
-                   mParent->mBaseWaveform};
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
 
     mSynth.initsynth(mParent->mElement.getSize(),
                      reinterpret_cast<unsigned char*>(mParent->mElement.getData()));

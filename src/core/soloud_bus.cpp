@@ -122,15 +122,7 @@ BusInstance::~BusInstance() noexcept
 
 Bus::Bus()
 {
-    mChannelHandle = 0;
-    mInstance      = 0;
-    mChannels      = 2;
-    mResampler     = default_resampler;
-    for (int i = 0; i < 256; i++)
-    {
-        mFFTData[i]  = 0;
-        mWaveData[i] = 0;
-    }
+    mChannels = 2;
 }
 
 std::shared_ptr<AudioSourceInstance> Bus::createInstance()
@@ -299,7 +291,7 @@ float* Bus::calcFFT()
         }
     }
 
-    return mFFTData;
+    return mFFTData.data();
 }
 
 float* Bus::getWave()
@@ -312,7 +304,7 @@ float* Bus::getWave()
             mWaveData[i] = mInstance->mVisualizationWaveData[i];
         mSoloud->unlockAudioMutex_internal();
     }
-    return mWaveData;
+    return mWaveData.data();
 }
 
 float Bus::getApproximateVolume(size_t aChannel)

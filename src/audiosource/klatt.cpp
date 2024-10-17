@@ -1090,7 +1090,7 @@ int klatt::synth(int /* aSampleCount */, short* aSamplePointer)
 }
 
 
-klatt::klatt(int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
+void klatt::init(int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
 {
     mBaseF0          = aBaseFrequency;
     mBaseSpeed       = aBaseSpeed;

@@ -88,7 +88,7 @@ class klatt
         mCritDampedGlotLowPassFilter, mDownSampLowPassFilter, mOutputLowPassFilter;
 
   public:
-    explicit klatt(int   aBaseFrequency   = 1330,
+    void init(int   aBaseFrequency   = 1330,
                    float aBaseSpeed       = 10.0f,
                    float aBaseDeclination = 0.5f,
                    int   aBaseWaveform    = KW_SAW);

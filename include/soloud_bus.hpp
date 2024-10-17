@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "soloud_audiosource.hpp"
 #include "soloud_misc.hpp"
+#include <array>
 
 namespace SoLoud
 {
@@ -60,6 +61,8 @@ class BusInstance final : public AudioSourceInstance
 
 class Bus final : public AudioSource
 {
+    friend BusInstance;
+
   public:
     Bus();
 
@@ -115,17 +118,18 @@ class Bus final : public AudioSource
     // Set the resampler for this bus
     void setResampler(Resampler aResampler);
 
-    std::shared_ptr<BusInstance> mInstance;
-    size_t                       mChannelHandle;
-    Resampler                    mResampler;
-
-    // FFT output data
-    float mFFTData[256];
-
-    // Snapshot of wave data for visualization
-    float mWaveData[256];
-
+  private:
     // Internal: find the bus' channel
     void findBusHandle();
+
+    std::shared_ptr<BusInstance> mInstance;
+    size_t                       mChannelHandle = 0;
+    Resampler                    mResampler     = default_resampler;
+
+    // FFT output data
+    std::array<float, 256> mFFTData{};
+
+    // Snapshot of wave data for visualization
+    std::array<float, 256> mWaveData{};
 };
 }; // namespace SoLoud

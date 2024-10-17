@@ -1,15 +1,17 @@
 #include <soloud_engine.hpp>
 #include <soloud_wav.hpp>
+#include <soloud_bus.hpp>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <soloud_speech.hpp>
 
 using namespace std::chrono_literals;
 
 int main()
 {
-    auto file_stream = std::ifstream{"/Users/cem/Desktop/sounds/music.mp3", std::ios::ate | std::ios::binary};
+    auto file_stream = std::ifstream{"/Users/cem/Desktop/sounds/player_fall.wav", std::ios::ate | std::ios::binary};
     auto file_size = file_stream.tellg();
     file_stream.seekg(0, std::ios::beg);
     auto file_data = std::make_unique<uint8_t[]>(file_size);
@@ -18,9 +20,14 @@ int main()
     auto file_data_span = std::span<const std::byte>(reinterpret_cast<const std::byte*>(file_data.get()), size_t(file_size));
 
     auto engine = SoLoud::Engine{};
-    auto wav = SoLoud::Wav{file_data_span};
 
-    engine.play(wav);
+    auto wav = SoLoud::Wav{file_data_span};
+    wav.setLooping(true);
+
+    auto speech = SoLoud::Speech{};
+    speech.setText("This is a test");
+
+    engine.play(speech);
 
     while(engine.getActiveVoiceCount()>0)
     {

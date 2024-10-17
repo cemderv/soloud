@@ -23,9 +23,9 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.hpp"
-#include "soloud_thread.hpp"
-#include "soloud_misc.hpp"
 #include "soloud_engine.hpp"
+#include "soloud_misc.hpp"
+#include "soloud_thread.hpp"
 
 #if !defined(WITH_WINMM)
 
