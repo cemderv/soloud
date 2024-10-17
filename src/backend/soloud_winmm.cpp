@@ -191,7 +191,7 @@ result winmm_init(Soloud*      aSoloud,
         winMMCleanup(aSoloud);
         return UNKNOWN_ERROR;
     }
-    data->buffer = AlignedFloatArray{size_t(data->samples * format.nChannels)};
+    data->buffer = AlignedFloatBuffer{size_t(data->samples * format.nChannels)};
     for (int i = 0; i < BUFFER_COUNT; ++i)
     {
         data->sampleBuffer[i] = new short[data->samples * format.nChannels];
