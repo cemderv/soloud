@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 #if !defined(WITH_OPENSLES)
 namespace SoLoud
 {
-result opensles_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result opensles_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -124,14 +124,14 @@ struct BackendData
     SLDataLocator_AndroidSimpleBufferQueue inLocator;
 };
 
-void soloud_opensles_deinit(Soloud* aSoloud)
+void soloud_opensles_deinit(Engine* aSoloud)
 {
     BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
     delete data;
     aSoloud->mBackendData = nullptr;
 }
 
-static void opensles_iterate(Soloud* aSoloud)
+static void opensles_iterate(Engine* aSoloud)
 {
     BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
 
@@ -154,7 +154,7 @@ static void opensles_iterate(Soloud* aSoloud)
 
 static void opensles_thread(void* aParam)
 {
-    Soloud*      soloud = static_cast<Soloud*>(aParam);
+    Engine*      soloud = static_cast<Engine*>(aParam);
     BackendData* data   = static_cast<BackendData*>(soloud->mBackendData);
     while (data->threadrun == 0)
     {
@@ -170,7 +170,7 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
                                                      void*     context,
                                                      SLuint32  event)
 {
-    Soloud*      soloud = static_cast<Soloud*>(context);
+    Engine*      soloud = static_cast<Engine*>(context);
     BackendData* data   = static_cast<BackendData*>(soloud->mBackendData);
     if (event & SL_PLAYEVENT_HEADATEND && data->buffersQueued > 0)
     {
@@ -179,7 +179,7 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
 }
 
 result opensles_init(
-    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     BackendData* data = new BackendData();
 

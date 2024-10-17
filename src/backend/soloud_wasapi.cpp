@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result wasapi_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result wasapi_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -59,7 +59,7 @@ struct WASAPIData
     HANDLE                      bufferEndEvent;
     HANDLE                      audioProcessingDoneEvent;
     Thread::ThreadHandle        thread;
-    Soloud*                     soloud;
+    Engine*                     soloud;
     UINT32                      bufferFrames;
     int                         channels;
     REFERENCE_TIME              duration;
@@ -271,7 +271,7 @@ static void wasapiThread(LPVOID aParam)
     }
 }
 
-static void wasapiCleanup(Soloud* aSoloud)
+static void wasapiCleanup(Engine* aSoloud)
 {
     if (0 == aSoloud->mBackendData)
     {
@@ -306,7 +306,7 @@ static void wasapiCleanup(Soloud* aSoloud)
 }
 
 result wasapi_init(
-    Soloud* aSoloud, size_t aFlags, size_t /*aSamplerate*/, size_t aBuffer, size_t /*aChannels*/)
+    Engine* aSoloud, size_t aFlags, size_t /*aSamplerate*/, size_t aBuffer, size_t /*aChannels*/)
 {
     CoInitializeEx(0, COINIT_MULTITHREADED);
     WASAPIData* data = new WASAPIData;

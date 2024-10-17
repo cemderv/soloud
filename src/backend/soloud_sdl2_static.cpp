@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result sdl2static_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result sdl2static_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -48,7 +48,7 @@ static SDL_AudioDeviceID gAudioDeviceID;
 void soloud_sdl2static_audiomixer(void* userdata, Uint8* stream, int len)
 {
     short*  buf    = (short*)stream;
-    Soloud* soloud = (Soloud*)userdata;
+    Engine* soloud = (Engine*)userdata;
     if (gActiveAudioSpec.format == AUDIO_F32)
     {
         int samples = len / (gActiveAudioSpec.channels * sizeof(float));
@@ -61,13 +61,13 @@ void soloud_sdl2static_audiomixer(void* userdata, Uint8* stream, int len)
     }
 }
 
-static void soloud_sdl2static_deinit(Soloud* aSoloud)
+static void soloud_sdl2static_deinit(Engine* aSoloud)
 {
     SDL_CloseAudioDevice(gAudioDeviceID);
 }
 
 result sdl2static_init(
-    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (!SDL_WasInit(SDL_INIT_AUDIO))
     {

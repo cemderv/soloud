@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result xaudio2_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result xaudio2_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -60,7 +60,7 @@ struct XAudio2Data
     HANDLE                  audioProcessingDoneEvent;
     class VoiceCallback*    voiceCb;
     Thread::ThreadHandle    thread;
-    Soloud*                 soloud;
+    Engine*                 soloud;
     int                     samples;
     UINT32                  bufferLengthBytes;
 };
@@ -149,7 +149,7 @@ static void xaudio2Thread(LPVOID aParam)
     }
 }
 
-static void xaudio2Cleanup(Soloud* aSoloud)
+static void xaudio2Cleanup(Engine* aSoloud)
 {
     if (0 == aSoloud->mBackendData)
     {
@@ -200,7 +200,7 @@ static void xaudio2Cleanup(Soloud* aSoloud)
 }
 
 result xaudio2_init(
-    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
     {

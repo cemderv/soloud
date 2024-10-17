@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result alsa_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result alsa_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -51,7 +51,7 @@ struct ALSAData
     float*               buffer;
     short*               sampleBuffer;
     snd_pcm_t*           alsaDeviceHandle;
-    Soloud*              soloud;
+    Engine*              soloud;
     int                  samples;
     int                  channels;
     bool                 audioProcessingDone;
@@ -76,7 +76,7 @@ static void alsaThread(void* aParam)
     }
 }
 
-static void alsaCleanup(Soloud* aSoloud)
+static void alsaCleanup(Engine* aSoloud)
 {
     if (0 == aSoloud->mBackendData)
     {
@@ -104,7 +104,7 @@ static void alsaCleanup(Soloud* aSoloud)
 }
 
 result alsa_init(
-    Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));

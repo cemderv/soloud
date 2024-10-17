@@ -31,9 +31,8 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result winmm_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+void winmm_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
-    return NOT_IMPLEMENTED;
 }
 }; // namespace SoLoud
 
@@ -58,7 +57,7 @@ struct SoLoudWinMMData
     HWAVEOUT             waveOut;
     HANDLE               bufferEndEvent;
     HANDLE               audioProcessingDoneEvent;
-    Soloud*              soloud;
+    Engine*              soloud;
     int                  samples;
     Thread::ThreadHandle threadHandle;
     SoLoudWinMMData()
@@ -102,7 +101,7 @@ static void winMMThread(LPVOID aParam)
     }
 }
 
-static void winMMCleanup(Soloud* aSoloud)
+static void winMMCleanup(Engine* aSoloud)
 {
     if (0 == aSoloud->mBackendData)
     {

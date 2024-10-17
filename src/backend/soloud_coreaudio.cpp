@@ -32,7 +32,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result coreaudio_init(Soloud* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
+result coreaudio_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
