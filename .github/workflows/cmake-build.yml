@@ -41,9 +41,9 @@ jobs:
     - name: Install prerequisites
       if: ${{ !contains(matrix.os, 'windows') }}
       run: |
-        apt-get update -y
-        apt-get upgrade -y
-        apt-get install -y libasound2-dev
+        sudo apt-get update -y
+        sudo apt-get upgrade -y
+        sudo apt-get install -y libasound2-dev
 
     - name: Set reusable strings
       id: strings
