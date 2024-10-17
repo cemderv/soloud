@@ -194,6 +194,5 @@ void winmm_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffe
         winMMCleanup(aSoloud);
         throw std::runtime_error{"Failed to initialize winMM"};
     }
-    aSoloud->mBackendString = "WinMM";
 }
 }; // namespace SoLoud
