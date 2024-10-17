@@ -1,5 +1,4 @@
-#if !defined(DARRAY_H)
-#define DARRAY_H
+#pragma once
 
 class darray
 {
@@ -10,6 +9,10 @@ protected:
 	int mAllocChunk;
 public:
 	darray();
+  darray(const darray& other)=delete;
+  darray& operator=(const darray& other)=delete;
+  darray(darray&& other)noexcept=delete;
+  darray& operator=(darray&& other) noexcept=delete;
 	~darray();
 	void clear();
 	char *getDataInPos(int aPosition);
@@ -18,5 +21,5 @@ public:
 	char *getData() { return mData; } 
 };
 
-#endif
+
 
