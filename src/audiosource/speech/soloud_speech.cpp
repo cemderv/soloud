@@ -21,88 +21,117 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include <cstring>
-#include "soloud_error.hpp"
-#include "soloud.hpp"
 #include "soloud_speech.hpp"
 #include "../src/audiosource/speech/tts.h"
+#include "soloud.hpp"
+#include "soloud_error.hpp"
+#include <cstring>
 
-namespace SoLoud {
-  SpeechInstance::SpeechInstance(Speech* aParent) {
+namespace SoLoud
+{
+SpeechInstance::SpeechInstance(Speech* aParent)
+{
     mParent = aParent;
-    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
     mSample = new short[mSynth.mNspFr * 100];
     mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
     mOffset      = 10;
     mSampleCount = 10;
-  }
+}
 
-  SpeechInstance::~SpeechInstance() {
+SpeechInstance::~SpeechInstance()
+{
     delete[] mSample;
-  }
+}
 
-  static void writesamples(short* aSrc, float* aDst, int aCount) {
+static void writesamples(short* aSrc, float* aDst, int aCount)
+{
     int i;
-    for (i = 0; i < aCount; i++) {
-      aDst[i] = aSrc[i] * (1 / (float)0x8000);
+    for (i = 0; i < aCount; i++)
+    {
+        aDst[i] = aSrc[i] * (1 / (float)0x8000);
     }
-  }
+}
 
-  unsigned int SpeechInstance::getAudio(float* aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/) {
-    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+unsigned int SpeechInstance::getAudio(float*       aBuffer,
+                                      unsigned int aSamplesToRead,
+                                      unsigned int /*aBufferSize*/)
+{
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
     unsigned int samples_out = 0;
-    if (mSampleCount > mOffset) {
-      unsigned int copycount = mSampleCount - mOffset;
-      if (copycount > aSamplesToRead) {
-        copycount = aSamplesToRead;
-      }
-      writesamples(mSample + mOffset, aBuffer, copycount);
-      mOffset += copycount;
-      samples_out += copycount;
-    }
-
-    while (mSampleCount >= 0 && samples_out < aSamplesToRead) {
-      mOffset      = 0;
-      mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
-      if (mSampleCount > 0) {
-        unsigned int copycount = mSampleCount;
-        if (copycount > aSamplesToRead - samples_out) {
-          copycount = aSamplesToRead - samples_out;
+    if (mSampleCount > mOffset)
+    {
+        unsigned int copycount = mSampleCount - mOffset;
+        if (copycount > aSamplesToRead)
+        {
+            copycount = aSamplesToRead;
         }
-        writesamples(mSample, aBuffer + samples_out, copycount);
+        writesamples(mSample + mOffset, aBuffer, copycount);
         mOffset += copycount;
         samples_out += copycount;
-      }
+    }
+
+    while (mSampleCount >= 0 && samples_out < aSamplesToRead)
+    {
+        mOffset      = 0;
+        mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
+        if (mSampleCount > 0)
+        {
+            unsigned int copycount = mSampleCount;
+            if (copycount > aSamplesToRead - samples_out)
+            {
+                copycount = aSamplesToRead - samples_out;
+            }
+            writesamples(mSample, aBuffer + samples_out, copycount);
+            mOffset += copycount;
+            samples_out += copycount;
+        }
     }
     return samples_out;
-  }
+}
 
-  result SpeechInstance::rewind() {
-    mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
+result SpeechInstance::rewind()
+{
+    mSynth.init(mParent->mBaseFrequency,
+                mParent->mBaseSpeed,
+                mParent->mBaseDeclination,
+                mParent->mBaseWaveform);
     mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
     mOffset         = 10;
     mSampleCount    = 10;
     mStreamPosition = 0.0f;
     return 0;
-  }
+}
 
-  bool SpeechInstance::hasEnded() {
+bool SpeechInstance::hasEnded()
+{
     if (mSampleCount < 0)
-      return 1;
+        return 1;
     return 0;
-  }
+}
 
-  result Speech::setParams(unsigned int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform) {
+result Speech::setParams(unsigned int aBaseFrequency,
+                         float        aBaseSpeed,
+                         float        aBaseDeclination,
+                         int          aBaseWaveform)
+{
     mBaseFrequency   = aBaseFrequency;
     mBaseSpeed       = aBaseSpeed;
     mBaseDeclination = aBaseDeclination;
     mBaseWaveform    = aBaseWaveform;
     return 0;
-  }
+}
 
-  result Speech::setText(const char* aText) {
+result Speech::setText(const char* aText)
+{
     if (aText == NULL)
-      return INVALID_PARAMETER;
+        return INVALID_PARAMETER;
 
     stop();
     mElement.clear();
@@ -110,22 +139,25 @@ namespace SoLoud {
     xlate_string(aText, &phone);
     mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
     return 0;
-  }
+}
 
-  Speech::Speech() {
+Speech::Speech()
+{
     mBaseSamplerate  = 11025;
     mFrames          = 0;
     mBaseFrequency   = 1330;
     mBaseSpeed       = 10;
     mBaseDeclination = 0.5f;
     mBaseWaveform    = KW_SQUARE;
-  }
+}
 
-  Speech::~Speech() {
+Speech::~Speech()
+{
     stop();
-  }
+}
 
-  AudioSourceInstance* Speech::createInstance() {
+AudioSourceInstance* Speech::createInstance()
+{
     return new SpeechInstance(this);
-  }
-};
+}
+}; // namespace SoLoud

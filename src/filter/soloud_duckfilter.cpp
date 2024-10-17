@@ -22,13 +22,15 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+#include "soloud_duckfilter.hpp"
 #include "soloud.hpp"
 #include "soloud_bus.hpp"
-#include "soloud_duckfilter.hpp"
 #include "soloud_error.hpp"
 
-namespace SoLoud {
-  DuckFilterInstance::DuckFilterInstance(DuckFilter* aParent) {
+namespace SoLoud
+{
+DuckFilterInstance::DuckFilterInstance(DuckFilter* aParent)
+{
     initParams(4);
     mParam[DuckFilter::ONRAMP]  = aParent->mOnRamp;
     mParam[DuckFilter::OFFRAMP] = aParent->mOffRamp;
@@ -36,66 +38,79 @@ namespace SoLoud {
     mListenTo                   = aParent->mListenTo;
     mSoloud                     = aParent->mSoloud;
     mCurrentLevel               = 1;
-  }
+}
 
-  void DuckFilterInstance::filter(float*       aBuffer,
-                                  unsigned int aSamples,
-                                  unsigned int aBufferSize,
-                                  unsigned int aChannels,
-                                  float        aSamplerate,
-                                  double       aTime) {
+void DuckFilterInstance::filter(float*       aBuffer,
+                                unsigned int aSamples,
+                                unsigned int aBufferSize,
+                                unsigned int aChannels,
+                                float        aSamplerate,
+                                double       aTime)
+{
     updateParams(aTime);
     float onramp_step = 1;
     if (mParam[DuckFilter::ONRAMP] > 0.01)
-      onramp_step = (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::ONRAMP] * aSamplerate);
+        onramp_step =
+            (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::ONRAMP] * aSamplerate);
     float offramp_step = 1;
     if (mParam[DuckFilter::OFFRAMP] > 0.01)
-      offramp_step = (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::OFFRAMP] * aSamplerate);
+        offramp_step =
+            (1.0f - mParam[DuckFilter::LEVEL]) / (mParam[DuckFilter::OFFRAMP] * aSamplerate);
 
     int soundOn = 0;
-    if (mSoloud) {
-      int voiceno = mSoloud->getVoiceFromHandle_internal(mListenTo);
-      if (voiceno != -1) {
-        BusInstance* bi = (BusInstance*)mSoloud->mVoice[voiceno];
-        float        v  = 0;
-        for (unsigned int i = 0; i < bi->mChannels; i++)
-          v += bi->mVisualizationChannelVolume[i];
-        if (v > 0.01f)
-          soundOn = 1;
-      }
+    if (mSoloud)
+    {
+        int voiceno = mSoloud->getVoiceFromHandle_internal(mListenTo);
+        if (voiceno != -1)
+        {
+            BusInstance* bi = (BusInstance*)mSoloud->mVoice[voiceno];
+            float        v  = 0;
+            for (unsigned int i = 0; i < bi->mChannels; i++)
+                v += bi->mVisualizationChannelVolume[i];
+            if (v > 0.01f)
+                soundOn = 1;
+        }
     }
     float level = mCurrentLevel;
-    for (unsigned int j = 0; j < aChannels; j++) {
-      level      = mCurrentLevel;
-      int bchofs = j * aBufferSize;
-      for (unsigned int i = 0; i < aSamples; i++) {
-        if (soundOn && level > mParam[DuckFilter::LEVEL])
-          level -= onramp_step;
-        if (!soundOn && level < 1)
-          level += offramp_step;
-        if (level < mParam[DuckFilter::LEVEL])
-          level = mParam[DuckFilter::LEVEL];
-        if (level > 1)
-          level = 1;
-        aBuffer[i + bchofs] += (-aBuffer[i + bchofs] + aBuffer[i + bchofs] * level) * mParam[DuckFilter::WET];
-      }
+    for (unsigned int j = 0; j < aChannels; j++)
+    {
+        level      = mCurrentLevel;
+        int bchofs = j * aBufferSize;
+        for (unsigned int i = 0; i < aSamples; i++)
+        {
+            if (soundOn && level > mParam[DuckFilter::LEVEL])
+                level -= onramp_step;
+            if (!soundOn && level < 1)
+                level += offramp_step;
+            if (level < mParam[DuckFilter::LEVEL])
+                level = mParam[DuckFilter::LEVEL];
+            if (level > 1)
+                level = 1;
+            aBuffer[i + bchofs] +=
+                (-aBuffer[i + bchofs] + aBuffer[i + bchofs] * level) * mParam[DuckFilter::WET];
+        }
     }
     mCurrentLevel = level;
-  }
+}
 
-  DuckFilterInstance::~DuckFilterInstance() {
-  }
+DuckFilterInstance::~DuckFilterInstance()
+{
+}
 
-  DuckFilter::DuckFilter() {
+DuckFilter::DuckFilter()
+{
     mSoloud  = 0;
     mOnRamp  = 0.1f;
     mOffRamp = 0.5f;
     mLevel   = 0.5f;
-  }
+}
 
-  result DuckFilter::setParams(Soloud* aSoloud, handle aListenTo, float aOnRamp, float aOffRamp, float aLevel) {
-    if (aOnRamp < 0.0f || aOffRamp < 0.0f || aLevel < 0.0f || aSoloud == 0 || !aSoloud->isValidVoiceHandle(aListenTo))
-      return INVALID_PARAMETER;
+result DuckFilter::setParams(
+    Soloud* aSoloud, handle aListenTo, float aOnRamp, float aOffRamp, float aLevel)
+{
+    if (aOnRamp < 0.0f || aOffRamp < 0.0f || aLevel < 0.0f || aSoloud == 0 ||
+        !aSoloud->isValidVoiceHandle(aListenTo))
+        return INVALID_PARAMETER;
 
     mListenTo = aListenTo;
     mOnRamp   = aOnRamp;
@@ -104,37 +119,38 @@ namespace SoLoud {
     mSoloud   = aSoloud;
 
     return 0;
-  }
-
-  int DuckFilter::getParamCount() {
-    return 4;
-  }
-
-  const char* DuckFilter::getParamName(unsigned int aParamIndex) {
-    if (aParamIndex > 3)
-      return 0;
-    const char* names[4] = {
-        "Wet",
-        "OnRamp",
-        "OffRamp",
-        "Level"
-    };
-    return names[aParamIndex];
-  }
-
-  unsigned int DuckFilter::getParamType(unsigned int aParamIndex) {
-    return FLOAT_PARAM;
-  }
-
-  float DuckFilter::getParamMax(unsigned int aParamIndex) {
-    return 1;
-  }
-
-  float DuckFilter::getParamMin(unsigned int aParamIndex) {
-    return 0;
-  }
-
-  FilterInstance* DuckFilter::createInstance() {
-    return new DuckFilterInstance(this);
-  }
 }
+
+int DuckFilter::getParamCount()
+{
+    return 4;
+}
+
+const char* DuckFilter::getParamName(unsigned int aParamIndex)
+{
+    if (aParamIndex > 3)
+        return 0;
+    const char* names[4] = {"Wet", "OnRamp", "OffRamp", "Level"};
+    return names[aParamIndex];
+}
+
+unsigned int DuckFilter::getParamType(unsigned int aParamIndex)
+{
+    return FLOAT_PARAM;
+}
+
+float DuckFilter::getParamMax(unsigned int aParamIndex)
+{
+    return 1;
+}
+
+float DuckFilter::getParamMin(unsigned int aParamIndex)
+{
+    return 0;
+}
+
+FilterInstance* DuckFilter::createInstance()
+{
+    return new DuckFilterInstance(this);
+}
+} // namespace SoLoud

@@ -22,14 +22,16 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <cmath>
-#include "soloud_error.hpp"
-#include "soloud.hpp"
 #include "soloud_lofifilter.hpp"
+#include "soloud.hpp"
+#include "soloud_error.hpp"
+#include <cmath>
 
-namespace SoLoud {
+namespace SoLoud
+{
 
-  LofiFilterInstance::LofiFilterInstance(LofiFilter* aParent) {
+LofiFilterInstance::LofiFilterInstance(LofiFilter* aParent)
+{
     mParent = aParent;
     initParams(3);
     mParam[SAMPLERATE]             = aParent->mSampleRate;
@@ -38,86 +40,97 @@ namespace SoLoud {
     mChannelData[0].mSamplesToSkip = 0;
     mChannelData[1].mSample        = 0;
     mChannelData[1].mSamplesToSkip = 0;
-  }
+}
 
-  void LofiFilterInstance::filterChannel(float*       aBuffer,
-                                         unsigned int aSamples,
-                                         float        aSamplerate,
-                                         double       aTime,
-                                         unsigned int aChannel,
-                                         unsigned int /*aChannels*/) {
+void LofiFilterInstance::filterChannel(float*       aBuffer,
+                                       unsigned int aSamples,
+                                       float        aSamplerate,
+                                       double       aTime,
+                                       unsigned int aChannel,
+                                       unsigned int /*aChannels*/)
+{
     updateParams(aTime);
 
     unsigned int i;
-    for (i = 0; i < aSamples; i++) {
-      if (mChannelData[aChannel].mSamplesToSkip <= 0) {
-        mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mParam[SAMPLERATE]) - 1;
-        float q                        = (float)pow(2, mParam[BITDEPTH]);
-        mChannelData[aChannel].mSample = (float)floor(q * aBuffer[i]) / q;
-      }
-      else {
-        mChannelData[aChannel].mSamplesToSkip--;
-      }
-      aBuffer[i] += (mChannelData[aChannel].mSample - aBuffer[i]) * mParam[WET];
+    for (i = 0; i < aSamples; i++)
+    {
+        if (mChannelData[aChannel].mSamplesToSkip <= 0)
+        {
+            mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mParam[SAMPLERATE]) - 1;
+            float q                        = (float)pow(2, mParam[BITDEPTH]);
+            mChannelData[aChannel].mSample = (float)floor(q * aBuffer[i]) / q;
+        }
+        else
+        {
+            mChannelData[aChannel].mSamplesToSkip--;
+        }
+        aBuffer[i] += (mChannelData[aChannel].mSample - aBuffer[i]) * mParam[WET];
     }
+}
 
-  }
+LofiFilterInstance::~LofiFilterInstance()
+{
+}
 
-  LofiFilterInstance::~LofiFilterInstance() {
-  }
-
-  LofiFilter::LofiFilter() {
+LofiFilter::LofiFilter()
+{
     setParams(4000, 3);
-  }
+}
 
-  result LofiFilter::setParams(float aSampleRate, float aBitdepth) {
+result LofiFilter::setParams(float aSampleRate, float aBitdepth)
+{
     if (aSampleRate <= 0 || aBitdepth <= 0)
-      return INVALID_PARAMETER;
+        return INVALID_PARAMETER;
 
     mSampleRate = aSampleRate;
     mBitdepth   = aBitdepth;
     return 0;
-  }
+}
 
-  LofiFilter::~LofiFilter() {
-  }
+LofiFilter::~LofiFilter()
+{
+}
 
-  int LofiFilter::getParamCount() {
+int LofiFilter::getParamCount()
+{
     return 3;
-  }
+}
 
-  const char* LofiFilter::getParamName(unsigned int aParamIndex) {
+const char* LofiFilter::getParamName(unsigned int aParamIndex)
+{
     if (aParamIndex > 2)
-      return 0;
-    const char* names[3] = {
-        "Wet",
-        "Samplerate",
-        "Bitdepth"
-    };
+        return 0;
+    const char* names[3] = {"Wet", "Samplerate", "Bitdepth"};
     return names[aParamIndex];
-  }
+}
 
-  unsigned int LofiFilter::getParamType(unsigned int aParamIndex) {
+unsigned int LofiFilter::getParamType(unsigned int aParamIndex)
+{
     return FLOAT_PARAM;
-  }
+}
 
-  float LofiFilter::getParamMax(unsigned int aParamIndex) {
-    switch (aParamIndex) {
-      case SAMPLERATE: return 22000;
-      case BITDEPTH: return 16;
+float LofiFilter::getParamMax(unsigned int aParamIndex)
+{
+    switch (aParamIndex)
+    {
+        case SAMPLERATE: return 22000;
+        case BITDEPTH: return 16;
     }
     return 1;
-  }
+}
 
-  float LofiFilter::getParamMin(unsigned int aParamIndex) {
-    switch (aParamIndex) {
-      case SAMPLERATE: return 100;
-      case BITDEPTH: return 0.5;
+float LofiFilter::getParamMin(unsigned int aParamIndex)
+{
+    switch (aParamIndex)
+    {
+        case SAMPLERATE: return 100;
+        case BITDEPTH: return 0.5;
     }
     return 0;
-  }
-
-  LofiFilterInstance* LofiFilter::createInstance() {
-    return new LofiFilterInstance(this);
-  }
 }
+
+LofiFilterInstance* LofiFilter::createInstance()
+{
+    return new LofiFilterInstance(this);
+}
+} // namespace SoLoud

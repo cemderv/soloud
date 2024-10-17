@@ -40,12 +40,12 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
-#if defined(_WIN32)||defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 #define WINDOWS_VERSION
 #endif
 
 #if !defined(DISABLE_SIMD)
-#if defined(__x86_64__) || defined( _M_X64 ) || defined( __i386 ) || defined( _M_IX86 )
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
 #define SOLOUD_SSE_INTRINSICS
 #endif
 #endif
@@ -77,19 +77,22 @@ freely, subject to the following restrictions:
 
 // Typedefs have to be made before the includes, as the
 // includes depend on them.
-namespace SoLoud {
-  class Soloud;
-  typedef void (*      mutexCallFunction)(void* aMutexPtr);
-  typedef void (*      soloudCallFunction)(Soloud* aSoloud);
-  typedef unsigned int result;
-  typedef result (*    soloudResultFunction)(Soloud* aSoloud);
-  typedef unsigned int handle;
-  typedef double       time;
-};
+namespace SoLoud
+{
+class Soloud;
+typedef void (*mutexCallFunction)(void* aMutexPtr);
+typedef void (*soloudCallFunction)(Soloud* aSoloud);
+typedef unsigned int result;
+typedef result (*soloudResultFunction)(Soloud* aSoloud);
+typedef unsigned int handle;
+typedef double       time;
+}; // namespace SoLoud
 
-namespace SoLoud {
-  // Class that handles aligned allocations to support vectorized operations
-  class AlignedFloatBuffer {
+namespace SoLoud
+{
+// Class that handles aligned allocations to support vectorized operations
+class AlignedFloatBuffer
+{
   public:
     float*         mData; // aligned pointer
     unsigned char* mBasePtr; // raw allocated pointer (for delete)
@@ -103,27 +106,30 @@ namespace SoLoud {
     void clear();
     // dtor
     ~AlignedFloatBuffer();
-  };
+};
 
-  // Lightweight class that handles small aligned buffer to support vectorized operations
-  class TinyAlignedFloatBuffer {
+// Lightweight class that handles small aligned buffer to support vectorized operations
+class TinyAlignedFloatBuffer
+{
   public:
     float*        mData; // aligned pointer
     unsigned char mActualData[sizeof(float) * 16 + 16];
 
     // ctor
     TinyAlignedFloatBuffer();
-  };
 };
+}; // namespace SoLoud
 
-#include "soloud_filter.hpp"
-#include "soloud_fader.hpp"
 #include "soloud_audiosource.hpp"
+#include "soloud_fader.hpp"
+#include "soloud_filter.hpp"
 
-namespace SoLoud {
+namespace SoLoud
+{
 
-  // Soloud core class.
-  class Soloud {
+// Soloud core class.
+class Soloud
+{
   public:
     // Back-end data; content is up to the back-end implementation.
     void* mBackendData;
@@ -134,7 +140,8 @@ namespace SoLoud {
     // Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
     soloudCallFunction mBackendCleanupFunc;
 
-    // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as instance.
+    // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as
+    // instance.
     soloudResultFunction mBackendPauseFunc;
     soloudResultFunction mBackendResumeFunc;
 
@@ -143,51 +150,55 @@ namespace SoLoud {
     // DTor
     ~Soloud();
 
-    enum BACKENDS {
-      AUTO = 0,
-      SDL1,
-      SDL2,
-      PORTAUDIO,
-      WINMM,
-      XAUDIO2,
-      WASAPI,
-      ALSA,
-      JACK,
-      OSS,
-      OPENAL,
-      COREAUDIO,
-      OPENSLES,
-      VITA_HOMEBREW,
-      MINIAUDIO,
-      NOSOUND,
-      NULLDRIVER,
-      BACKEND_MAX,
+    enum BACKENDS
+    {
+        AUTO = 0,
+        SDL1,
+        SDL2,
+        PORTAUDIO,
+        WINMM,
+        XAUDIO2,
+        WASAPI,
+        ALSA,
+        JACK,
+        OSS,
+        OPENAL,
+        COREAUDIO,
+        OPENSLES,
+        VITA_HOMEBREW,
+        MINIAUDIO,
+        NOSOUND,
+        NULLDRIVER,
+        BACKEND_MAX,
     };
 
-    enum FLAGS {
-      // Use round-off clipper
-      CLIP_ROUNDOFF = 1,
-      ENABLE_VISUALIZATION = 2,
-      LEFT_HANDED_3D = 4,
-      NO_FPU_REGISTER_CHANGE = 8
+    enum FLAGS
+    {
+        // Use round-off clipper
+        CLIP_ROUNDOFF          = 1,
+        ENABLE_VISUALIZATION   = 2,
+        LEFT_HANDED_3D         = 4,
+        NO_FPU_REGISTER_CHANGE = 8
     };
 
-    enum WAVEFORM {
-      WAVE_SQUARE = 0,
-      WAVE_SAW,
-      WAVE_SIN,
-      WAVE_TRIANGLE,
-      WAVE_BOUNCE,
-      WAVE_JAWS,
-      WAVE_HUMPS,
-      WAVE_FSQUARE,
-      WAVE_FSAW
+    enum WAVEFORM
+    {
+        WAVE_SQUARE = 0,
+        WAVE_SAW,
+        WAVE_SIN,
+        WAVE_TRIANGLE,
+        WAVE_BOUNCE,
+        WAVE_JAWS,
+        WAVE_HUMPS,
+        WAVE_FSQUARE,
+        WAVE_FSAW
     };
 
-    enum RESAMPLER {
-      RESAMPLER_POINT,
-      RESAMPLER_LINEAR,
-      RESAMPLER_CATMULLROM
+    enum RESAMPLER
+    {
+        RESAMPLER_POINT,
+        RESAMPLER_LINEAR,
+        RESAMPLER_CATMULLROM
     };
 
     // Initialize SoLoud. Must be called before SoLoud can be used.
@@ -225,9 +236,15 @@ namespace SoLoud {
     // Get speaker position in 3d space
     result getSpeakerPosition(unsigned int aChannel, float& aX, float& aY, float& aZ);
 
-    // Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters. Negative volume means to use default.
-    handle play(AudioSource& aSound, float aVolume = -1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
-    // Start playing a sound delayed in relation to other sounds called via this function. Negative volume means to use default.
+    // Start playing a sound. Returns voice handle, which can be ignored or used to alter the
+    // playing sound's parameters. Negative volume means to use default.
+    handle play(AudioSource& aSound,
+                float        aVolume = -1.0f,
+                float        aPan    = 0.0f,
+                bool         aPaused = 0,
+                unsigned int aBus    = 0);
+    // Start playing a sound delayed in relation to other sounds called via this function. Negative
+    // volume means to use default.
     handle playClocked(time         aSoundTime,
                        AudioSource& aSound,
                        float        aVolume = -1.0f,
@@ -244,7 +261,8 @@ namespace SoLoud {
                   float        aVolume = 1.0f,
                   bool         aPaused = 0,
                   unsigned int aBus    = 0);
-    // Start playing a 3d audio source, delayed in relation to other sounds called via this function.
+    // Start playing a 3d audio source, delayed in relation to other sounds called via this
+    // function.
     handle play3dClocked(time         aSoundTime,
                          AudioSource& aSound,
                          float        aPosX,
@@ -256,9 +274,13 @@ namespace SoLoud {
                          float        aVolume = 1.0f,
                          unsigned int aBus    = 0);
     // Start playing a sound without any panning. It will be played at full volume.
-    handle playBackground(AudioSource& aSound, float aVolume = -1.0f, bool aPaused = 0, unsigned int aBus = 0);
+    handle playBackground(AudioSource& aSound,
+                          float        aVolume = -1.0f,
+                          bool         aPaused = 0,
+                          unsigned int aBus    = 0);
 
-    // Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
+    // Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative
+    // play speed affects time.
     result seek(handle aVoiceHandle, time aSeconds);
     // Stop the sound.
     void stop(handle aVoiceHandle);
@@ -270,9 +292,14 @@ namespace SoLoud {
     int countAudioSource(AudioSource& aSound);
 
     // Set a live filter parameter. Use 0 for the global filters.
-    void setFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aValue);
+    void setFilterParameter(handle       aVoiceHandle,
+                            unsigned int aFilterId,
+                            unsigned int aAttributeId,
+                            float        aValue);
     // Get a live filter parameter. Use 0 for the global filters.
-    float getFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId);
+    float getFilterParameter(handle       aVoiceHandle,
+                             unsigned int aFilterId,
+                             unsigned int aAttributeId);
     // Fade a live filter parameter. Use 0 for the global filters.
     void fadeFilterParameter(handle       aVoiceHandle,
                              unsigned int aFilterId,
@@ -360,7 +387,8 @@ namespace SoLoud {
     void setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume);
     // Set overall volume
     void setVolume(handle aVoiceHandle, float aVolume);
-    // Set delay, in samples, before starting to play samples. Calling this on a live sound will cause glitches.
+    // Set delay, in samples, before starting to play samples. Calling this on a live sound will
+    // cause glitches.
     void setDelaySamples(handle aVoiceHandle, unsigned int aSamples);
 
     // Set up volume fader
@@ -391,16 +419,19 @@ namespace SoLoud {
     // Enable or disable visualization data gathering
     void setVisualizationEnable(bool aEnable);
 
-    // Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled before use.
+    // Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled
+    // before use.
     float* calcFFT();
 
     // Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
     float* getWave();
 
-    // Get approximate output volume for a channel for visualization. Visualization has to be enabled before use.
+    // Get approximate output volume for a channel for visualization. Visualization has to be
+    // enabled before use.
     float getApproximateVolume(unsigned int aChannel);
 
-    // Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
+    // Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update
+    // loop count)
     unsigned int getLoopCount(handle aVoiceHandle);
 
     // Get audiosource-specific information from a voice.
@@ -457,11 +488,16 @@ namespace SoLoud {
     // Set 3d audio source position
     void set3dSourcePosition(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ);
     // Set 3d audio source velocity
-    void set3dSourceVelocity(handle aVoiceHandle, float aVelocityX, float aVelocityY, float aVelocityZ);
+    void set3dSourceVelocity(handle aVoiceHandle,
+                             float  aVelocityX,
+                             float  aVelocityY,
+                             float  aVelocityZ);
     // Set 3d audio source min/max distance (distance < min means max volume)
     void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
     // Set 3d audio source attenuation parameters
-    void set3dSourceAttenuation(handle aVoiceHandle, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+    void set3dSourceAttenuation(handle       aVoiceHandle,
+                                unsigned int aAttenuationModel,
+                                float        aAttenuationRolloffFactor);
     // Set 3d audio source doppler factor to reduce or enhance doppler effect. Default = 1.0
     void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
 
@@ -469,7 +505,8 @@ namespace SoLoud {
 
     // Returns mixed float samples in buffer. Called by the back-end, or user with null driver.
     void mix(float* aBuffer, unsigned int aSamples);
-    // Returns mixed 16-bit signed integer samples in buffer. Called by the back-end, or user with null driver.
+    // Returns mixed 16-bit signed integer samples in buffer. Called by the back-end, or user with
+    // null driver.
     void mixSigned16(short* aBuffer, unsigned int aSamples);
 
   public:
@@ -607,7 +644,8 @@ namespace SoLoud {
     // 3d position of speakers
     float m3dSpeakerPosition[3 * MAX_CHANNELS];
 
-    // Data related to 3d processing, separate from AudioSource so we can do 3d calculations without audio mutex.
+    // Data related to 3d processing, separate from AudioSource so we can do 3d calculations without
+    // audio mutex.
     AudioSourceInstance3dData m3dData[VOICE_COUNT];
 
     // For each voice group, first int is number of ints alocated.
@@ -620,7 +658,5 @@ namespace SoLoud {
     unsigned int mActiveVoiceCount;
     // Active voices list needs to be recalculated
     bool mActiveVoiceDirty;
-  };
 };
-
-
+}; // namespace SoLoud

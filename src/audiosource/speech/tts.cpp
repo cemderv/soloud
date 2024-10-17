@@ -1,66 +1,201 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include "darray.h"
 #include "tts.h"
+#include "darray.h"
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-static const char* ASCII[] =
-{
-    "null", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", "",
-    "space", "exclamation mark", "double quote", "hash",
-    "dollar", "percent", "ampersand", "quote",
-    "open parenthesis", "close parenthesis", "asterisk", "plus",
-    "comma", "minus", "full stop", "slash",
-    "zero", "one", "two", "three",
-    "four", "five", "six", "seven",
-    "eight", "nine", "colon", "semi colon",
-    "less than", "equals", "greater than", "question mark",
+static const char* ASCII[] = {"null",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                              "space",
+                              "exclamation mark",
+                              "double quote",
+                              "hash",
+                              "dollar",
+                              "percent",
+                              "ampersand",
+                              "quote",
+                              "open parenthesis",
+                              "close parenthesis",
+                              "asterisk",
+                              "plus",
+                              "comma",
+                              "minus",
+                              "full stop",
+                              "slash",
+                              "zero",
+                              "one",
+                              "two",
+                              "three",
+                              "four",
+                              "five",
+                              "six",
+                              "seven",
+                              "eight",
+                              "nine",
+                              "colon",
+                              "semi colon",
+                              "less than",
+                              "equals",
+                              "greater than",
+                              "question mark",
 #ifndef ALPHA_IN_DICT
-    "at", "ay", "bee", "see",
-    "dee", "e", "eff", "gee",
-    "aych", "i", "jay", "kay",
-    "ell", "em", "en", "ohe",
-    "pee", "kju", "are", "es",
-    "tee", "you", "vee", "double you",
-    "eks", "why", "zed", "open bracket",
-#else                             /* ALPHA_IN_DICT */
-	"at", "A", "B", "C",
-	"D", "E", "F", "G",
-	"H", "I", "J", "K",
-	"L", "M", "N", "O",
-	"P", "Q", "R", "S",
-	"T", "U", "V", "W",
-	"X", "Y", "Z", "open bracket",
-#endif                            /* ALPHA_IN_DICT */
-    "back slash", "close bracket", "circumflex", "underscore",
+                              "at",
+                              "ay",
+                              "bee",
+                              "see",
+                              "dee",
+                              "e",
+                              "eff",
+                              "gee",
+                              "aych",
+                              "i",
+                              "jay",
+                              "kay",
+                              "ell",
+                              "em",
+                              "en",
+                              "ohe",
+                              "pee",
+                              "kju",
+                              "are",
+                              "es",
+                              "tee",
+                              "you",
+                              "vee",
+                              "double you",
+                              "eks",
+                              "why",
+                              "zed",
+                              "open bracket",
+#else /* ALPHA_IN_DICT */
+                              "at",
+                              "A",
+                              "B",
+                              "C",
+                              "D",
+                              "E",
+                              "F",
+                              "G",
+                              "H",
+                              "I",
+                              "J",
+                              "K",
+                              "L",
+                              "M",
+                              "N",
+                              "O",
+                              "P",
+                              "Q",
+                              "R",
+                              "S",
+                              "T",
+                              "U",
+                              "V",
+                              "W",
+                              "X",
+                              "Y",
+                              "Z",
+                              "open bracket",
+#endif /* ALPHA_IN_DICT */
+                              "back slash",
+                              "close bracket",
+                              "circumflex",
+                              "underscore",
 #ifndef ALPHA_IN_DICT
-    "back quote", "ay", "bee", "see",
-    "dee", "e", "eff", "gee",
-    "aych", "i", "jay", "kay",
-    "ell", "em", "en", "ohe",
-    "pee", "kju", "are", "es",
-    "tee", "you", "vee", "double you",
-    "eks", "why", "zed", "open brace",
-#else                             /* ALPHA_IN_DICT */
-	"back quote", "A", "B", "C",
-	"D", "E", "F", "G",
-	"H", "I", "J", "K",
-	"L", "M", "N", "O",
-	"P", "Q", "R", "S",
-	"T", "U", "V", "W",
-	"X", "Y", "Z", "open brace",
-#endif                            /* ALPHA_IN_DICT */
-    "vertical bar", "close brace", "tilde", "delete",
-    NULL
-};
+                              "back quote",
+                              "ay",
+                              "bee",
+                              "see",
+                              "dee",
+                              "e",
+                              "eff",
+                              "gee",
+                              "aych",
+                              "i",
+                              "jay",
+                              "kay",
+                              "ell",
+                              "em",
+                              "en",
+                              "ohe",
+                              "pee",
+                              "kju",
+                              "are",
+                              "es",
+                              "tee",
+                              "you",
+                              "vee",
+                              "double you",
+                              "eks",
+                              "why",
+                              "zed",
+                              "open brace",
+#else /* ALPHA_IN_DICT */
+                              "back quote",
+                              "A",
+                              "B",
+                              "C",
+                              "D",
+                              "E",
+                              "F",
+                              "G",
+                              "H",
+                              "I",
+                              "J",
+                              "K",
+                              "L",
+                              "M",
+                              "N",
+                              "O",
+                              "P",
+                              "Q",
+                              "R",
+                              "S",
+                              "T",
+                              "U",
+                              "V",
+                              "W",
+                              "X",
+                              "Y",
+                              "Z",
+                              "open brace",
+#endif /* ALPHA_IN_DICT */
+                              "vertical bar",
+                              "close brace",
+                              "tilde",
+                              "delete",
+                              NULL};
 
 /* Context definitions */
 static const char Anything[] = "";
@@ -73,10 +208,10 @@ static const char Silent[] = "";
 /* No phonemes */
 
 
-#define LEFT_PART       0
-#define MATCH_PART      1
-#define RIGHT_PART      2
-#define OUT_PART        3
+#define LEFT_PART  0
+#define MATCH_PART 1
+#define RIGHT_PART 2
+#define OUT_PART   3
 
 typedef const char* Rule[4];
 /* Rule is an array of 4 character pointers */
@@ -88,8 +223,7 @@ typedef const char* Rule[4];
 */
 
 
-static Rule punct_rules[] =
-{
+static Rule punct_rules[] = {
     {Anything, " ", Anything, " "},
     {Anything, "-", Anything, ""},
     {".", "'S", Anything, "z"},
@@ -103,8 +237,7 @@ static Rule punct_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule A_rules[] =
-{
+static Rule A_rules[] = {
     {Anything, "A", Nothing, "@"},
     {Nothing, "ARE", Nothing, "0r"},
     {Nothing, "AR", "O", "@r"},
@@ -142,8 +275,7 @@ static Rule A_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule B_rules[] =
-{
+static Rule B_rules[] = {
     {Nothing, "BE", "^#", "bI"},
     {Anything, "BEING", Anything, "biIN"},
     {Nothing, "BOTH", Nothing, "b@UT"},
@@ -153,8 +285,7 @@ static Rule B_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule C_rules[] =
-{
+static Rule C_rules[] = {
     {Nothing, "CH", "^", "k"},
     {"^E", "CH", Anything, "k"},
     {Anything, "CH", Anything, "tS"},
@@ -169,8 +300,7 @@ static Rule C_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule D_rules[] =
-{
+static Rule D_rules[] = {
     {"#:", "DED", Nothing, "dId"},
     {".E", "D", Nothing, "d"},
     {"#:^E", "D", Nothing, "t"},
@@ -184,8 +314,7 @@ static Rule D_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule E_rules[] =
-{
+static Rule E_rules[] = {
     {"#:", "E", Nothing, ""},
     {"':^", "E", Nothing, ""},
     {" :", "E", Nothing, "i"},
@@ -241,15 +370,13 @@ static Rule E_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule F_rules[] =
-{
+static Rule F_rules[] = {
     {Anything, "FUL", Anything, "fUl"},
     {Anything, "F", Anything, "f"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule G_rules[] =
-{
+static Rule G_rules[] = {
     {Anything, "GIV", Anything, "gIv"},
     {Nothing, "G", "I^", "g"},
     {Anything, "GE", "T", "ge"},
@@ -263,8 +390,7 @@ static Rule G_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule H_rules[] =
-{
+static Rule H_rules[] = {
     {Nothing, "HAV", Anything, "h&v"},
     {Nothing, "HERE", Anything, "hir"},
     {Nothing, "HOUR", Anything, "aU3"},
@@ -274,8 +400,7 @@ static Rule H_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule I_rules[] =
-{
+static Rule I_rules[] = {
     {Nothing, "IAIN", Nothing, "I@n"},
     {Nothing, "ING", Nothing, "IN"},
     {Nothing, "IN", Anything, "In"},
@@ -310,21 +435,18 @@ static Rule I_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule J_rules[] =
-{
+static Rule J_rules[] = {
     {Anything, "J", Anything, "dZ"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule K_rules[] =
-{
+static Rule K_rules[] = {
     {Nothing, "K", "N", ""},
     {Anything, "K", Anything, "k"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule L_rules[] =
-{
+static Rule L_rules[] = {
     {Anything, "LO", "C#", "l@U"},
     {"L", "L", Anything, ""},
     {"#:^", "L", "%", "@l"},
@@ -333,16 +455,14 @@ static Rule L_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule M_rules[] =
-{
+static Rule M_rules[] = {
     {Anything, "MOV", Anything, "muv"},
     {"#", "MM", "#", "m"},
     {Anything, "M", Anything, "m"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule N_rules[] =
-{
+static Rule N_rules[] = {
     {"E", "NG", "+", "ndZ"},
     {Anything, "NG", "R", "Ng"},
     {Anything, "NG", "#", "Ng"},
@@ -355,8 +475,7 @@ static Rule N_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule O_rules[] =
-{
+static Rule O_rules[] = {
     {Anything, "OF", Nothing, "@v"},
     {Anything, "OROUGH", Anything, "3@U"},
     {"#:", "OR", Nothing, "3"},
@@ -408,8 +527,7 @@ static Rule O_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule P_rules[] =
-{
+static Rule P_rules[] = {
     {Anything, "PH", Anything, "f"},
     {Anything, "PEOP", Anything, "pip"},
     {Anything, "POW", Anything, "paU"},
@@ -418,23 +536,20 @@ static Rule P_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule Q_rules[] =
-{
+static Rule Q_rules[] = {
     {Anything, "QUAR", Anything, "kwOr"},
     {Anything, "QU", Anything, "kw"},
     {Anything, "Q", Anything, "k"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule R_rules[] =
-{
+static Rule R_rules[] = {
     {Nothing, "RE", "^#", "ri"},
     {Anything, "R", Anything, "r"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule S_rules[] =
-{
+static Rule S_rules[] = {
     {Anything, "SH", Anything, "S"},
     {"#", "SION", Anything, "Z@n"},
     {Anything, "SOME", Anything, "sVm"},
@@ -461,8 +576,7 @@ static Rule S_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule T_rules[] =
-{
+static Rule T_rules[] = {
     {Nothing, "THE", Nothing, "D@"},
     {Anything, "TO", Nothing, "tu"},
     {Anything, "THAT", Nothing, "D&t"},
@@ -492,8 +606,7 @@ static Rule T_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule U_rules[] =
-{
+static Rule U_rules[] = {
     {Nothing, "UN", "I", "jun"},
     {Nothing, "UN", Anything, "Vn"},
     {Nothing, "UPON", Anything, "@pOn"},
@@ -532,15 +645,13 @@ static Rule U_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule V_rules[] =
-{
+static Rule V_rules[] = {
     {Anything, "VIEW", Anything, "vju"},
     {Anything, "V", Anything, "v"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule W_rules[] =
-{
+static Rule W_rules[] = {
     {Nothing, "WERE", Anything, "w3"},
     {Anything, "WA", "S", "w0"},
     {Anything, "WA", "T", "w0"},
@@ -556,14 +667,12 @@ static Rule W_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule X_rules[] =
-{
+static Rule X_rules[] = {
     {Anything, "X", Anything, "ks"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule Y_rules[] =
-{
+static Rule Y_rules[] = {
     {Anything, "YOUNG", Anything, "jVN"},
     {Nothing, "YOU", Anything, "ju"},
     {Nothing, "YES", Anything, "jes"},
@@ -578,125 +687,119 @@ static Rule Y_rules[] =
     {Anything, 0, Anything, Silent},
 };
 
-static Rule Z_rules[] =
-{
+static Rule Z_rules[] = {
     {Anything, "Z", Anything, "z"},
     {Anything, 0, Anything, Silent},
 };
 
-static Rule* Rules[] =
-{
-    punct_rules,
-    A_rules, B_rules, C_rules, D_rules, E_rules, F_rules, G_rules,
-    H_rules, I_rules, J_rules, K_rules, L_rules, M_rules, N_rules,
-    O_rules, P_rules, Q_rules, R_rules, S_rules, T_rules, U_rules,
-    V_rules, W_rules, X_rules, Y_rules, Z_rules
-};
+static Rule* Rules[] = {punct_rules, A_rules, B_rules, C_rules, D_rules, E_rules, F_rules,
+                        G_rules,     H_rules, I_rules, J_rules, K_rules, L_rules, M_rules,
+                        N_rules,     O_rules, P_rules, Q_rules, R_rules, S_rules, T_rules,
+                        U_rules,     V_rules, W_rules, X_rules, Y_rules, Z_rules};
 
 
-static const char* Cardinals[] =
-{
-    "zero", "one", "two", "three", "four",
-    "five", "six", "seven", "eight", "nine",
-    "ten", "eleven", "twelve", "thirteen", "fourteen",
-    "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
-};
+static const char* Cardinals[] = {"zero",    "one",     "two",       "three",    "four",
+                                  "five",    "six",     "seven",     "eight",    "nine",
+                                  "ten",     "eleven",  "twelve",    "thirteen", "fourteen",
+                                  "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
 
 
-static const char* Twenties[] =
-{
-    "twenty", "thirty", "forty", "fifty",
-    "sixty", "seventy", "eighty", "ninety"
-};
+static const char* Twenties[] = {
+    "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
 
 
 /*
 ** Translate a number to phonemes.  This version is for CARDINAL numbers.
 **       Note: this is recursive.
 */
-static int xlate_cardinal(int value, darray* phone) {
-  int nph = 0;
+static int xlate_cardinal(int value, darray* phone)
+{
+    int nph = 0;
 
-  if (value < 0) {
-    nph += xlate_string("minus", phone);
-    value = (-value);
-
-    if (value < 0) /* Overflow!  -32768 */
+    if (value < 0)
     {
-      nph += xlate_string("a lot", phone);
-      return nph;
+        nph += xlate_string("minus", phone);
+        value = (-value);
+
+        if (value < 0) /* Overflow!  -32768 */
+        {
+            nph += xlate_string("a lot", phone);
+            return nph;
+        }
     }
-  }
 
-  if (value >= 1000000000L)
-  /* Billions */
-  {
-    nph += xlate_cardinal(value / 1000000000L, phone);
-    nph += xlate_string("billion", phone);
-    value = value % 1000000000;
+    if (value >= 1000000000L)
+    /* Billions */
+    {
+        nph += xlate_cardinal(value / 1000000000L, phone);
+        nph += xlate_string("billion", phone);
+        value = value % 1000000000;
 
-    if (value == 0)
-      return nph; /* Even billion */
+        if (value == 0)
+            return nph; /* Even billion */
 
-    if (value < 100)
-      nph += xlate_string("and", phone);
+        if (value < 100)
+            nph += xlate_string("and", phone);
 
-    /* as in THREE BILLION AND FIVE */
-  }
+        /* as in THREE BILLION AND FIVE */
+    }
 
-  if (value >= 1000000L)
-  /* Millions */
-  {
-    nph += xlate_cardinal(value / 1000000L, phone);
-    nph += xlate_string("million", phone);
-    value = value % 1000000L;
+    if (value >= 1000000L)
+    /* Millions */
+    {
+        nph += xlate_cardinal(value / 1000000L, phone);
+        nph += xlate_string("million", phone);
+        value = value % 1000000L;
 
-    if (value == 0)
-      return nph; /* Even million */
+        if (value == 0)
+            return nph; /* Even million */
 
-    if (value < 100)
-      nph += xlate_string("and", phone);
+        if (value < 100)
+            nph += xlate_string("and", phone);
 
-    /* as in THREE MILLION AND FIVE */
-  }
+        /* as in THREE MILLION AND FIVE */
+    }
 
-  /* Thousands 1000..1099 2000..99999 */
-  /* 1100 to 1999 is eleven-hunderd to ninteen-hunderd */
+    /* Thousands 1000..1099 2000..99999 */
+    /* 1100 to 1999 is eleven-hunderd to ninteen-hunderd */
 
-  if ((value >= 1000L && value <= 1099L) || value >= 2000L) {
-    nph += xlate_cardinal(value / 1000L, phone);
-    nph += xlate_string("thousand", phone);
-    value = value % 1000L;
+    if ((value >= 1000L && value <= 1099L) || value >= 2000L)
+    {
+        nph += xlate_cardinal(value / 1000L, phone);
+        nph += xlate_string("thousand", phone);
+        value = value % 1000L;
 
-    if (value == 0)
-      return nph; /* Even thousand */
+        if (value == 0)
+            return nph; /* Even thousand */
 
-    if (value < 100)
-      nph += xlate_string("and", phone);
+        if (value < 100)
+            nph += xlate_string("and", phone);
 
-    /* as in THREE THOUSAND AND FIVE */
-  }
+        /* as in THREE THOUSAND AND FIVE */
+    }
 
-  if (value >= 100L) {
-    nph += xlate_string(Cardinals[value / 100], phone);
-    nph += xlate_string("hundred", phone);
-    value = value % 100;
+    if (value >= 100L)
+    {
+        nph += xlate_string(Cardinals[value / 100], phone);
+        nph += xlate_string("hundred", phone);
+        value = value % 100;
 
-    if (value == 0)
-      return nph; /* Even hundred */
-  }
+        if (value == 0)
+            return nph; /* Even hundred */
+    }
 
-  if (value >= 20) {
-    nph += xlate_string(Twenties[(value - 20) / 10], phone);
-    value = value % 10;
+    if (value >= 20)
+    {
+        nph += xlate_string(Twenties[(value - 20) / 10], phone);
+        value = value % 10;
 
-    if (value == 0)
-      return nph; /* Even ten */
-  }
+        if (value == 0)
+            return nph; /* Even ten */
+    }
 
-  nph += xlate_string(Cardinals[value], phone);
+    nph += xlate_string(Cardinals[value], phone);
 
-  return nph;
+    return nph;
 }
 
 #if 0
@@ -815,526 +918,573 @@ static int xlate_ordinal(int value, darray *phone)
 }
 #endif
 
-static int isvowel(int chr) {
-  return (chr == 'A' || chr == 'E' || chr == 'I' ||
-          chr == 'O' || chr == 'U');
+static int isvowel(int chr)
+{
+    return (chr == 'A' || chr == 'E' || chr == 'I' || chr == 'O' || chr == 'U');
 }
 
-static int isconsonant(int chr) {
-  return (isupper(chr) && !isvowel(chr));
+static int isconsonant(int chr)
+{
+    return (isupper(chr) && !isvowel(chr));
 }
 
-static int leftmatch(
-    const char* pattern,
-    /* first char of pattern to match in text */
-    const char* context) /* last char of text to be matched */
+static int leftmatch(const char* pattern,
+                     /* first char of pattern to match in text */
+                     const char* context) /* last char of text to be matched */
 
 {
-  const char* pat;
-  const char* text;
-  int         count;
+    const char* pat;
+    const char* text;
+    int         count;
 
-  if (*pattern == '\0')
-  /* null string matches any context */
-  {
-    return 1;
-  }
-
-  /* point to last character in pattern string */
-  count = (int)strlen(pattern);
-
-  pat = pattern + (count - 1);
-
-  text = context;
-
-  for (; count > 0; pat--, count--) {
-    /* First check for simple text or space */
-    if (isalpha(*pat) || *pat == '\'' || *pat == ' ') {
-      if (*pat != *text) {
-        return 0;
-      }
-      else {
-        text--;
-        continue;
-      }
-    }
-
-    switch (*pat) {
-
-      case '#': /* One or more vowels */
-
-        if (!isvowel(*text))
-          return 0;
-
-        text--;
-
-        while (isvowel(*text))
-          text--;
-
-        break;
-
-      case ':': /* Zero or more consonants */
-        while (isconsonant(*text))
-          text--;
-
-        break;
-
-      case '^': /* One consonant */
-        if (!isconsonant(*text))
-          return 0;
-
-        text--;
-
-        break;
-
-      case '.': /* B, D, V, G, J, L, M, N, R, W, Z */
-        if (*text != 'B' && *text != 'D' && *text != 'V'
-            && *text != 'G' && *text != 'J' && *text != 'L'
-            && *text != 'M' && *text != 'N' && *text != 'R'
-            && *text != 'W' && *text != 'Z')
-          return 0;
-
-        text--;
-
-        break;
-
-      case '+': /* E, I or Y (front vowel) */
-        if (*text != 'E' && *text != 'I' && *text != 'Y')
-          return 0;
-
-        text--;
-
-        break;
-
-      case '%':
-
-      default: fprintf(stderr, "Bad char in left rule: '%c'\n", *pat);
-
-        return 0;
-    }
-  }
-
-  return 1;
-}
-
-static int rightmatch(
-    const char* pattern,
-    /* first char of pattern to match in text */
-    const char* context) /* last char of text to be matched */
-{
-  const char* pat;
-  const char* text;
-
-  if (*pattern == '\0')
+    if (*pattern == '\0')
     /* null string matches any context */
-    return 1;
-
-  pat = pattern;
-
-  text = context;
-
-  for (pat = pattern; *pat != '\0'; pat++) {
-    /* First check for simple text or space */
-    if (isalpha(*pat) || *pat == '\'' || *pat == ' ') {
-      if (*pat != *text) {
-        return 0;
-      }
-      else {
-        text++;
-        continue;
-      }
-    }
-
-    switch (*pat) {
-
-      case '#': /* One or more vowels */
-
-        if (!isvowel(*text))
-          return 0;
-
-        text++;
-
-        while (isvowel(*text))
-          text++;
-
-        break;
-
-      case ':': /* Zero or more consonants */
-        while (isconsonant(*text))
-          text++;
-
-        break;
-
-      case '^': /* One consonant */
-        if (!isconsonant(*text))
-          return 0;
-
-        text++;
-
-        break;
-
-      case '.': /* B, D, V, G, J, L, M, N, R, W, Z */
-        if (*text != 'B' && *text != 'D' && *text != 'V'
-            && *text != 'G' && *text != 'J' && *text != 'L'
-            && *text != 'M' && *text != 'N' && *text != 'R'
-            && *text != 'W' && *text != 'Z')
-          return 0;
-
-        text++;
-
-        break;
-
-      case '+': /* E, I or Y (front vowel) */
-        if (*text != 'E' && *text != 'I' && *text != 'Y')
-          return 0;
-
-        text++;
-
-        break;
-
-      case '%': /* ER, E, ES, ED, ING, ELY (a suffix) */
-        if (*text == 'E') {
-          text++;
-
-          if (*text == 'L') {
-            text++;
-
-            if (*text == 'Y') {
-              text++;
-              break;
-            }
-
-            else {
-              text--; /* Don't gobble L */
-              break;
-            }
-          }
-
-          else if (*text == 'R' || *text == 'S' || *text == 'D')
-            text++;
-
-          break;
-        }
-
-        else if (*text == 'I') {
-          text++;
-
-          if (*text == 'N') {
-            text++;
-
-            if (*text == 'G') {
-              text++;
-              break;
-            }
-          }
-
-          return 0;
-        }
-
-        else
-          return 0;
-
-      default: fprintf(stderr, "Bad char in right rule:'%c'\n", *pat);
-
-        return 0;
-    }
-  }
-
-  return 1;
-}
-
-static void phone_cat(darray* arg, const char* s) {
-  char ch;
-
-  while ((ch = *s++))
-    arg->put(ch);
-}
-
-
-static int find_rule(darray* arg, char* word, int index, Rule* rules) {
-  for (;;) /* Search for the rule */
-  {
-    Rule*       rule;
-    const char* left,
-              * match,
-              * right,
-              * output;
-    int         remainder;
-    rule  = rules++;
-    match = (*rule)[1];
-
-    if (match == 0)
-    /* bad symbol! */
     {
-      fprintf(stderr,
-              "Error: Can't find rule for: '%c' in \"%s\"\n",
-              word[index],
-              word);
-      return index + 1; /* Skip it! */
+        return 1;
     }
 
-    for (remainder = index; *match != '\0'; match++, remainder++) {
-      if (*match != word[remainder])
-        break;
-    }
+    /* point to last character in pattern string */
+    count = (int)strlen(pattern);
 
-    if (*match != '\0')
-      continue; /* found missmatch */
+    pat = pattern + (count - 1);
 
-    left = (*rule)[0];
+    text = context;
 
-    right = (*rule)[2];
-
-    if (!leftmatch(left, &word[index - 1]))
-      continue;
-
-    if (!rightmatch(right, &word[remainder]))
-      continue;
-
-    output = (*rule)[3];
-
-    phone_cat(arg, output);
-
-    return remainder;
-  }
-}
-
-static void guess_word(darray* arg, char* word) {
-  int index; /* Current position in word */
-  int type; /* First letter of match part */
-  index = 1; /* Skip the initial blank */
-
-  do {
-    if (isupper(word[index]))
-      type = word[index] - 'A' + 1;
-    else
-      type = 0;
-
-    index = find_rule(arg, word, index, Rules[type]);
-  } while (word[index] != '\0');
-}
-
-
-static int NRL(const char* s, int n, darray* phone) {
-  int   old  = phone->getSize();
-  char* word = (char*)malloc(n + 3); // TODO: may return null
-  char* d    = word;
-  *d++       = ' ';
-
-  while (n-- > 0) {
-    char ch = *s++;
-
-    if (islower(ch))
-      ch = (char)toupper(ch);
-
-    *d++ = ch;
-  }
-
-  *d++ = ' '; // kinda unnecessary
-
-  *d = '\0';
-  guess_word(phone, word);
-  free(word);
-  return phone->getSize() - old;
-}
-
-
-static int spell_out(const char* word, int n, darray* phone) {
-  int nph = 0;
-
-  while (n-- > 0) {
-    nph += xlate_string(ASCII[*word++ & 0x7F], phone);
-  }
-
-  return nph;
-}
-
-static int suspect_word(const char* s, int n) {
-  int i          = 0;
-  int seen_lower = 0;
-  int seen_upper = 0;
-  int seen_vowel = 0;
-  int last       = 0;
-
-  for (i = 0; i < n; i++) {
-    char ch = *s++;
-
-    if (i && last != '-' && isupper(ch))
-      seen_upper = 1;
-
-    if (islower(ch)) {
-      seen_lower = 1;
-      ch         = (char)toupper(ch);
-    }
-
-    if (ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U' || ch == 'Y')
-      seen_vowel = 1;
-
-    last = ch;
-  }
-
-  return !seen_vowel || (seen_upper && seen_lower) || !seen_lower;
-}
-
-static int xlate_word(const char* word, int n, darray* phone) {
-  int nph = 0;
-
-  if (*word != '[') {
-    if (suspect_word(word, n))
-      return spell_out(word, n, phone);
-    else {
-      nph += NRL(word, n, phone);
-    }
-  }
-
-  else {
-    if ((++word)[(--n) - 1] == ']')
-      n--;
-
-    while (n-- > 0) {
-      phone->put(*word++);
-      nph++;
-    }
-  }
-
-  phone->put(' ');
-
-  return nph + 1;
-}
-
-
-int xlate_string(const char* string, darray* phone) {
-  int         nph = 0;
-  const char* s   = string;
-  char        ch;
-
-  while (isspace(ch = *s))
-    s++;
-
-  while (*s) {
-    ch               = *s;
-    const char* word = s;
-
-    if (isalpha(ch)) {
-      while (isalpha(ch = *s) || ((ch == '\'' || ch == '-' || ch == '.') && isalpha(s[1]))) {
-        s++;
-      }
-
-      if (!ch || isspace(ch) || ispunct(ch) || (isdigit(ch) && !suspect_word(word, (int)(s - word)))) {
-        nph += xlate_word(word, (int)(s - word), phone);
-      }
-      else {
-        while (*s && !isspace(*s) && !ispunct(*s)) {
-          ch = *s;
-          s++;
+    for (; count > 0; pat--, count--)
+    {
+        /* First check for simple text or space */
+        if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
+        {
+            if (*pat != *text)
+            {
+                return 0;
+            }
+            else
+            {
+                text--;
+                continue;
+            }
         }
 
-        nph += spell_out(word, (int)(s - word), phone);
-      }
-    }
-    else {
-      if (isdigit(ch) || (ch == '-' && isdigit(s[1]))) {
-        int sign  = (ch == '-') ? -1 : 1;
-        int value = 0;
+        switch (*pat)
+        {
 
-        if (sign < 0) {
-          ch = *++s;
-        }
+            case '#': /* One or more vowels */
 
-        while (isdigit(ch = *s)) {
-          value = value * 10 + ch - '0';
-          s++;
-        }
+                if (!isvowel(*text))
+                    return 0;
 
-        if (ch == '.' && isdigit(s[1])) {
-          word = ++s;
-          nph += xlate_cardinal(value * sign, phone);
-          nph += xlate_string("point", phone);
+                text--;
 
-          while (isdigit(ch = *s)) {
-            s++;
-          }
+                while (isvowel(*text))
+                    text--;
 
-          nph += spell_out(word, (int)(s - word), phone);
-        }
-        else {
-          /* check for ordinals, date, time etc. can go in here */
-          nph += xlate_cardinal(value * sign, phone);
-        }
-      }
-      else {
-        if (ch == '[' && strchr(s, ']')) {
-          const char* thisword = s;
-
-          while (*s && *s++ != ']')
-            /* nothing */
-            ;
-
-          nph += xlate_word(thisword, (int)(s - thisword), phone);
-        }
-        else {
-          if (ispunct(ch)) {
-            switch (ch) {
-
-              case '!':
-
-              case '?':
-
-              case '.': s++;
-                phone->put('.'); // (' ');
                 break;
 
-              case '"': /* change pitch ? */
+            case ':': /* Zero or more consonants */
+                while (isconsonant(*text))
+                    text--;
 
-              case ':':
-
-              case '-':
-
-              case ';':
-
-              case ',':
-
-              case '(':
-
-              case ')': s++;
-                phone->put(' ');
                 break;
 
-              case '[': {
-                const char* e = strchr(s, ']');
+            case '^': /* One consonant */
+                if (!isconsonant(*text))
+                    return 0;
 
-                if (e) {
-                  s++;
+                text--;
 
-                  while (s < e)
-                    phone->put(*s++);
+                break;
 
-                  s = e + 1;
+            case '.': /* B, D, V, G, J, L, M, N, R, W, Z */
+                if (*text != 'B' && *text != 'D' && *text != 'V' && *text != 'G' && *text != 'J' &&
+                    *text != 'L' && *text != 'M' && *text != 'N' && *text != 'R' && *text != 'W' &&
+                    *text != 'Z')
+                    return 0;
 
-                  break;
+                text--;
+
+                break;
+
+            case '+': /* E, I or Y (front vowel) */
+                if (*text != 'E' && *text != 'I' && *text != 'Y')
+                    return 0;
+
+                text--;
+
+                break;
+
+            case '%':
+
+            default: fprintf(stderr, "Bad char in left rule: '%c'\n", *pat); return 0;
+        }
+    }
+
+    return 1;
+}
+
+static int rightmatch(const char* pattern,
+                      /* first char of pattern to match in text */
+                      const char* context) /* last char of text to be matched */
+{
+    const char* pat;
+    const char* text;
+
+    if (*pattern == '\0')
+        /* null string matches any context */
+        return 1;
+
+    pat = pattern;
+
+    text = context;
+
+    for (pat = pattern; *pat != '\0'; pat++)
+    {
+        /* First check for simple text or space */
+        if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
+        {
+            if (*pat != *text)
+            {
+                return 0;
+            }
+            else
+            {
+                text++;
+                continue;
+            }
+        }
+
+        switch (*pat)
+        {
+
+            case '#': /* One or more vowels */
+
+                if (!isvowel(*text))
+                    return 0;
+
+                text++;
+
+                while (isvowel(*text))
+                    text++;
+
+                break;
+
+            case ':': /* Zero or more consonants */
+                while (isconsonant(*text))
+                    text++;
+
+                break;
+
+            case '^': /* One consonant */
+                if (!isconsonant(*text))
+                    return 0;
+
+                text++;
+
+                break;
+
+            case '.': /* B, D, V, G, J, L, M, N, R, W, Z */
+                if (*text != 'B' && *text != 'D' && *text != 'V' && *text != 'G' && *text != 'J' &&
+                    *text != 'L' && *text != 'M' && *text != 'N' && *text != 'R' && *text != 'W' &&
+                    *text != 'Z')
+                    return 0;
+
+                text++;
+
+                break;
+
+            case '+': /* E, I or Y (front vowel) */
+                if (*text != 'E' && *text != 'I' && *text != 'Y')
+                    return 0;
+
+                text++;
+
+                break;
+
+            case '%': /* ER, E, ES, ED, ING, ELY (a suffix) */
+                if (*text == 'E')
+                {
+                    text++;
+
+                    if (*text == 'L')
+                    {
+                        text++;
+
+                        if (*text == 'Y')
+                        {
+                            text++;
+                            break;
+                        }
+
+                        else
+                        {
+                            text--; /* Don't gobble L */
+                            break;
+                        }
+                    }
+
+                    else if (*text == 'R' || *text == 'S' || *text == 'D')
+                        text++;
+
+                    break;
                 }
-              }
-              // fallthrough
-              default: nph += spell_out(word, 1, phone);
-                s++;
-                break;
-            }
-          }
-          else {
-            while (*s && !isspace(*s)) {
-              ch = *s;
-              s++;
-            }
 
-            nph += spell_out(word, (int)(s - word), phone);
-          }
+                else if (*text == 'I')
+                {
+                    text++;
+
+                    if (*text == 'N')
+                    {
+                        text++;
+
+                        if (*text == 'G')
+                        {
+                            text++;
+                            break;
+                        }
+                    }
+
+                    return 0;
+                }
+
+                else
+                    return 0;
+
+            default: fprintf(stderr, "Bad char in right rule:'%c'\n", *pat); return 0;
         }
-      }
-
-      while (isspace(ch = *s))
-        s++;
     }
-  }
 
-  return nph;
+    return 1;
+}
+
+static void phone_cat(darray* arg, const char* s)
+{
+    char ch;
+
+    while ((ch = *s++))
+        arg->put(ch);
+}
+
+
+static int find_rule(darray* arg, char* word, int index, Rule* rules)
+{
+    for (;;) /* Search for the rule */
+    {
+        Rule*       rule;
+        const char *left, *match, *right, *output;
+        int         remainder;
+        rule  = rules++;
+        match = (*rule)[1];
+
+        if (match == 0)
+        /* bad symbol! */
+        {
+            fprintf(stderr, "Error: Can't find rule for: '%c' in \"%s\"\n", word[index], word);
+            return index + 1; /* Skip it! */
+        }
+
+        for (remainder = index; *match != '\0'; match++, remainder++)
+        {
+            if (*match != word[remainder])
+                break;
+        }
+
+        if (*match != '\0')
+            continue; /* found missmatch */
+
+        left = (*rule)[0];
+
+        right = (*rule)[2];
+
+        if (!leftmatch(left, &word[index - 1]))
+            continue;
+
+        if (!rightmatch(right, &word[remainder]))
+            continue;
+
+        output = (*rule)[3];
+
+        phone_cat(arg, output);
+
+        return remainder;
+    }
+}
+
+static void guess_word(darray* arg, char* word)
+{
+    int index; /* Current position in word */
+    int type; /* First letter of match part */
+    index = 1; /* Skip the initial blank */
+
+    do
+    {
+        if (isupper(word[index]))
+            type = word[index] - 'A' + 1;
+        else
+            type = 0;
+
+        index = find_rule(arg, word, index, Rules[type]);
+    } while (word[index] != '\0');
+}
+
+
+static int NRL(const char* s, int n, darray* phone)
+{
+    int   old  = phone->getSize();
+    char* word = (char*)malloc(n + 3); // TODO: may return null
+    char* d    = word;
+    *d++       = ' ';
+
+    while (n-- > 0)
+    {
+        char ch = *s++;
+
+        if (islower(ch))
+            ch = (char)toupper(ch);
+
+        *d++ = ch;
+    }
+
+    *d++ = ' '; // kinda unnecessary
+
+    *d = '\0';
+    guess_word(phone, word);
+    free(word);
+    return phone->getSize() - old;
+}
+
+
+static int spell_out(const char* word, int n, darray* phone)
+{
+    int nph = 0;
+
+    while (n-- > 0)
+    {
+        nph += xlate_string(ASCII[*word++ & 0x7F], phone);
+    }
+
+    return nph;
+}
+
+static int suspect_word(const char* s, int n)
+{
+    int i          = 0;
+    int seen_lower = 0;
+    int seen_upper = 0;
+    int seen_vowel = 0;
+    int last       = 0;
+
+    for (i = 0; i < n; i++)
+    {
+        char ch = *s++;
+
+        if (i && last != '-' && isupper(ch))
+            seen_upper = 1;
+
+        if (islower(ch))
+        {
+            seen_lower = 1;
+            ch         = (char)toupper(ch);
+        }
+
+        if (ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U' || ch == 'Y')
+            seen_vowel = 1;
+
+        last = ch;
+    }
+
+    return !seen_vowel || (seen_upper && seen_lower) || !seen_lower;
+}
+
+static int xlate_word(const char* word, int n, darray* phone)
+{
+    int nph = 0;
+
+    if (*word != '[')
+    {
+        if (suspect_word(word, n))
+            return spell_out(word, n, phone);
+        else
+        {
+            nph += NRL(word, n, phone);
+        }
+    }
+
+    else
+    {
+        if ((++word)[(--n) - 1] == ']')
+            n--;
+
+        while (n-- > 0)
+        {
+            phone->put(*word++);
+            nph++;
+        }
+    }
+
+    phone->put(' ');
+
+    return nph + 1;
+}
+
+
+int xlate_string(const char* string, darray* phone)
+{
+    int         nph = 0;
+    const char* s   = string;
+    char        ch;
+
+    while (isspace(ch = *s))
+        s++;
+
+    while (*s)
+    {
+        ch               = *s;
+        const char* word = s;
+
+        if (isalpha(ch))
+        {
+            while (isalpha(ch = *s) || ((ch == '\'' || ch == '-' || ch == '.') && isalpha(s[1])))
+            {
+                s++;
+            }
+
+            if (!ch || isspace(ch) || ispunct(ch) ||
+                (isdigit(ch) && !suspect_word(word, (int)(s - word))))
+            {
+                nph += xlate_word(word, (int)(s - word), phone);
+            }
+            else
+            {
+                while (*s && !isspace(*s) && !ispunct(*s))
+                {
+                    ch = *s;
+                    s++;
+                }
+
+                nph += spell_out(word, (int)(s - word), phone);
+            }
+        }
+        else
+        {
+            if (isdigit(ch) || (ch == '-' && isdigit(s[1])))
+            {
+                int sign  = (ch == '-') ? -1 : 1;
+                int value = 0;
+
+                if (sign < 0)
+                {
+                    ch = *++s;
+                }
+
+                while (isdigit(ch = *s))
+                {
+                    value = value * 10 + ch - '0';
+                    s++;
+                }
+
+                if (ch == '.' && isdigit(s[1]))
+                {
+                    word = ++s;
+                    nph += xlate_cardinal(value * sign, phone);
+                    nph += xlate_string("point", phone);
+
+                    while (isdigit(ch = *s))
+                    {
+                        s++;
+                    }
+
+                    nph += spell_out(word, (int)(s - word), phone);
+                }
+                else
+                {
+                    /* check for ordinals, date, time etc. can go in here */
+                    nph += xlate_cardinal(value * sign, phone);
+                }
+            }
+            else
+            {
+                if (ch == '[' && strchr(s, ']'))
+                {
+                    const char* thisword = s;
+
+                    while (*s && *s++ != ']')
+                        /* nothing */
+                        ;
+
+                    nph += xlate_word(thisword, (int)(s - thisword), phone);
+                }
+                else
+                {
+                    if (ispunct(ch))
+                    {
+                        switch (ch)
+                        {
+
+                            case '!':
+
+                            case '?':
+
+                            case '.':
+                                s++;
+                                phone->put('.'); // (' ');
+                                break;
+
+                            case '"': /* change pitch ? */
+
+                            case ':':
+
+                            case '-':
+
+                            case ';':
+
+                            case ',':
+
+                            case '(':
+
+                            case ')':
+                                s++;
+                                phone->put(' ');
+                                break;
+
+                            case '[': {
+                                const char* e = strchr(s, ']');
+
+                                if (e)
+                                {
+                                    s++;
+
+                                    while (s < e)
+                                        phone->put(*s++);
+
+                                    s = e + 1;
+
+                                    break;
+                                }
+                            }
+                            // fallthrough
+                            default:
+                                nph += spell_out(word, 1, phone);
+                                s++;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        while (*s && !isspace(*s))
+                        {
+                            ch = *s;
+                            s++;
+                        }
+
+                        nph += spell_out(word, (int)(s - word), phone);
+                    }
+                }
+            }
+
+            while (isspace(ch = *s))
+                s++;
+        }
+    }
+
+    return nph;
 }

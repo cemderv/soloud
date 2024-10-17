@@ -28,28 +28,33 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	class DCRemovalFilter;
+class DCRemovalFilter;
 
-	class DCRemovalFilterInstance : public FilterInstance
-	{
-		float *mBuffer;
-		float *mTotals;
-		int mBufferLength;
-		DCRemovalFilter *mParent;
-		int mOffset;
+class DCRemovalFilterInstance : public FilterInstance
+{
+    float*           mBuffer;
+    float*           mTotals;
+    int              mBufferLength;
+    DCRemovalFilter* mParent;
+    int              mOffset;
 
-	public:
-		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
-		virtual ~DCRemovalFilterInstance();
-		DCRemovalFilterInstance(DCRemovalFilter *aParent);
-	};
+  public:
+    virtual void filter(float*       aBuffer,
+                        unsigned int aSamples,
+                        unsigned int aBufferSize,
+                        unsigned int aChannels,
+                        float        aSamplerate,
+                        time         aTime);
+    virtual ~DCRemovalFilterInstance();
+    DCRemovalFilterInstance(DCRemovalFilter* aParent);
+};
 
-	class DCRemovalFilter : public Filter
-	{
-	public:
-		float mLength;
-		virtual FilterInstance *createInstance();
-		DCRemovalFilter();
-		result setParams(float aLength = 0.1f);
-	};
-}
+class DCRemovalFilter : public Filter
+{
+  public:
+    float                   mLength;
+    virtual FilterInstance* createInstance();
+    DCRemovalFilter();
+    result setParams(float aLength = 0.1f);
+};
+} // namespace SoLoud

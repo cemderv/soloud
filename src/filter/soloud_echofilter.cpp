@@ -22,12 +22,14 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_error.hpp"
-#include "soloud.hpp"
 #include "soloud_echofilter.hpp"
+#include "soloud.hpp"
+#include "soloud_error.hpp"
 
-namespace SoLoud {
-  EchoFilterInstance::EchoFilterInstance(EchoFilter* aParent) {
+namespace SoLoud
+{
+EchoFilterInstance::EchoFilterInstance(EchoFilter* aParent)
+{
     mBuffer          = 0;
     mBufferLength    = 0;
     mBufferMaxLength = 0;
@@ -36,102 +38,112 @@ namespace SoLoud {
     mParam[EchoFilter::DELAY]  = aParent->mDelay;
     mParam[EchoFilter::DECAY]  = aParent->mDecay;
     mParam[EchoFilter::FILTER] = aParent->mFilter;
-  }
+}
 
-  void EchoFilterInstance::filter(float*       aBuffer,
-                                  unsigned int aSamples,
-                                  unsigned int aBufferSize,
-                                  unsigned int aChannels,
-                                  float        aSamplerate,
-                                  double       aTime) {
+void EchoFilterInstance::filter(float*       aBuffer,
+                                unsigned int aSamples,
+                                unsigned int aBufferSize,
+                                unsigned int aChannels,
+                                float        aSamplerate,
+                                double       aTime)
+{
     updateParams(aTime);
-    if (mBuffer == 0) {
-      // We only know channels and sample rate at this point.. not really optimal
-      mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
-      mBuffer          = new float[mBufferMaxLength * aChannels];
-      unsigned int i;
-      for (i = 0; i < mBufferMaxLength * aChannels; i++) {
-        mBuffer[i] = 0;
-      }
+    if (mBuffer == 0)
+    {
+        // We only know channels and sample rate at this point.. not really optimal
+        mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
+        mBuffer          = new float[mBufferMaxLength * aChannels];
+        unsigned int i;
+        for (i = 0; i < mBufferMaxLength * aChannels; i++)
+        {
+            mBuffer[i] = 0;
+        }
     }
 
     mBufferLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
     if (mBufferLength > mBufferMaxLength)
-      mBufferLength = mBufferMaxLength;
+        mBufferLength = mBufferMaxLength;
 
     unsigned int i, j;
     int          prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
-    for (i = 0; i < aSamples; i++) {
-      for (j = 0; j < aChannels; j++) {
-        int chofs  = j * mBufferLength;
-        int bchofs = j * aBufferSize;
+    for (i = 0; i < aSamples; i++)
+    {
+        for (j = 0; j < aChannels; j++)
+        {
+            int chofs  = j * mBufferLength;
+            int bchofs = j * aBufferSize;
 
-        mBuffer[mOffset + chofs] = mParam[EchoFilter::FILTER] * mBuffer[prevofs + chofs] + (
-                                     1 - mParam[EchoFilter::FILTER]) * mBuffer[mOffset + chofs];
+            mBuffer[mOffset + chofs] = mParam[EchoFilter::FILTER] * mBuffer[prevofs + chofs] +
+                                       (1 - mParam[EchoFilter::FILTER]) * mBuffer[mOffset + chofs];
 
-        float n                  = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * mParam[EchoFilter::DECAY];
-        mBuffer[mOffset + chofs] = n;
+            float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * mParam[EchoFilter::DECAY];
+            mBuffer[mOffset + chofs] = n;
 
-        aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[EchoFilter::WET];
-      }
-      prevofs = mOffset;
-      mOffset = (mOffset + 1) % mBufferLength;
+            aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[EchoFilter::WET];
+        }
+        prevofs = mOffset;
+        mOffset = (mOffset + 1) % mBufferLength;
     }
-  }
+}
 
-  EchoFilterInstance::~EchoFilterInstance() {
+EchoFilterInstance::~EchoFilterInstance()
+{
     delete[] mBuffer;
-  }
+}
 
-  EchoFilter::EchoFilter() {
+EchoFilter::EchoFilter()
+{
     mDelay  = 0.3f;
     mDecay  = 0.7f;
     mFilter = 0.0f;
-  }
+}
 
-  result EchoFilter::setParams(float aDelay, float aDecay, float aFilter) {
+result EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
+{
     if (aDelay <= 0 || aDecay <= 0 || aFilter < 0 || aFilter >= 1.0f)
-      return INVALID_PARAMETER;
+        return INVALID_PARAMETER;
 
     mDecay  = aDecay;
     mDelay  = aDelay;
     mFilter = aFilter;
 
     return 0;
-  }
+}
 
-  int EchoFilter::getParamCount() {
+int EchoFilter::getParamCount()
+{
     return 4;
-  }
+}
 
-  const char* EchoFilter::getParamName(unsigned int aParamIndex) {
+const char* EchoFilter::getParamName(unsigned int aParamIndex)
+{
     if (aParamIndex > 3)
-      return 0;
-    const char* names[4] = {
-        "Wet",
-        "Delay",
-        "Decay",
-        "Filter"
-    };
+        return 0;
+    const char* names[4] = {"Wet", "Delay", "Decay", "Filter"};
     return names[aParamIndex];
-  }
+}
 
-  unsigned int EchoFilter::getParamType(unsigned int aParamIndex) {
+unsigned int EchoFilter::getParamType(unsigned int aParamIndex)
+{
     return FLOAT_PARAM;
-  }
+}
 
-  float EchoFilter::getParamMax(unsigned int aParamIndex) {
-    switch (aParamIndex) {
-      case DELAY: return mDelay;
+float EchoFilter::getParamMax(unsigned int aParamIndex)
+{
+    switch (aParamIndex)
+    {
+        case DELAY: return mDelay;
     }
     return 1;
-  }
-
-  float EchoFilter::getParamMin(unsigned int aParamIndex) {
-    return 0;
-  }
-
-  FilterInstance* EchoFilter::createInstance() {
-    return new EchoFilterInstance(this);
-  }
 }
+
+float EchoFilter::getParamMin(unsigned int aParamIndex)
+{
+    return 0;
+}
+
+FilterInstance* EchoFilter::createInstance()
+{
+    return new EchoFilterInstance(this);
+}
+} // namespace SoLoud

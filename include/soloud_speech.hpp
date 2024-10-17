@@ -24,23 +24,26 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
 #include "../src/audiosource/speech/darray.h"
 #include "../src/audiosource/speech/klatt.h"
+#include "soloud.hpp"
 
-namespace SoLoud {
-  class Speech;
+namespace SoLoud
+{
+class Speech;
 
-  class Speech : public AudioSource {
+class Speech : public AudioSource
+{
     // copy of the enum in klatt.h for codegen purposes
-    enum KLATT_WAVEFORM {
-      KW_SAW,
-      KW_TRIANGLE,
-      KW_SIN,
-      KW_SQUARE,
-      KW_PULSE,
-      KW_NOISE,
-      KW_WARBLE
+    enum KLATT_WAVEFORM
+    {
+        KW_SAW,
+        KW_TRIANGLE,
+        KW_SIN,
+        KW_SQUARE,
+        KW_PULSE,
+        KW_NOISE,
+        KW_WARBLE
     };
 
   public:
@@ -56,11 +59,12 @@ namespace SoLoud {
                      float        aBaseSpeed       = 10.0f,
                      float        aBaseDeclination = 0.5f,
                      int          aBaseWaveform    = KW_TRIANGLE);
-    virtual                      ~Speech();
+    virtual ~Speech();
     virtual AudioSourceInstance* createInstance();
-  };
+};
 
-  class SpeechInstance : public AudioSourceInstance {
+class SpeechInstance : public AudioSourceInstance
+{
     klatt   mSynth;
     Speech* mParent;
     short*  mSample;
@@ -69,10 +73,11 @@ namespace SoLoud {
 
   public:
     SpeechInstance(Speech* aParent);
-    virtual              ~SpeechInstance();
-    virtual unsigned int getAudio(float* aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
+    virtual ~SpeechInstance();
+    virtual unsigned int getAudio(float*       aBuffer,
+                                  unsigned int aSamplesToRead,
+                                  unsigned int aBufferSize);
     virtual result       rewind();
     virtual bool         hasEnded();
-  };
 };
-
+}; // namespace SoLoud
