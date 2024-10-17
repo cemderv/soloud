@@ -70,14 +70,6 @@ namespace SoLoud {
     return 0;
   }
 
-  static void coreaudio_mutex_lock(void* mutex) {
-    Thread::lockMutex(mutex);
-  }
-
-  static void coreaudio_mutex_unlock(void* mutex) {
-    Thread::unlockMutex(mutex);
-  }
-
   static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueueBufferRef buffer) {
     SoLoud::Soloud* aSoloud = (SoLoud::Soloud*)context;
     aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);

@@ -24,9 +24,7 @@ freely, subject to the following restrictions:
 
 // FFT based on fftreal by Laurent de Soras, under WTFPL
 
-#include "soloud.hpp"
 #include "soloud_fft.hpp"
-#include <cstring>
 
 namespace fftimpl
 {
