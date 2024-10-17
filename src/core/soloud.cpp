@@ -323,7 +323,7 @@ float* Engine::calcFFT()
 }
 
 #if defined(SOLOUD_SSE_INTRINSICS)
-void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
+void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
                            size_t              aSamples,
                            float               aVolume0,
