@@ -122,7 +122,7 @@ void alsa_init(
     snd_pcm_hw_params_set_channels(handle, params, 2);
     snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
 
-    size_t val = aSamplerate;
+    auto val = static_cast<unsigned int>(aSamplerate);
     int    dir = 0;
     rc         = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
     if (rc < 0)
