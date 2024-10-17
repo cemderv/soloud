@@ -1,3 +1,7 @@
+> [!NOTE]
+> This is a customized fork of SoLoud intended to be used by [cerlib](https://github.com/cemderv/cerlib).
+> Below you will find the original README of SoLoud.
+
 SoLoud
 ======
 
