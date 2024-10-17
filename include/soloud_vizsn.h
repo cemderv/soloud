@@ -10,8 +10,7 @@ Integration and changes to work with SoLoud by Jari Komppa,
 released under same license.
 */
 
-#ifndef SOLOUD_VIZSN_H
-#define SOLOUD_VIZSN_H
+#pragma once
 
 #include "soloud.h"
 
@@ -81,4 +80,3 @@ namespace SoLoud
 	};
 };
 
-#endif

@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_WAVESHAPERFILTER_H
-#define SOLOUD_WAVESHAPERFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -59,5 +58,3 @@ namespace SoLoud
 		virtual float getParamMin(unsigned int aParamIndex);
 	};
 }
-
-#endif

@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#ifndef SOLOUD_SPEECH_H
-#define SOLOUD_SPEECH_H
+
+#pragma once
 
 #include "soloud.h"
 #include "../src/audiosource/speech/darray.h"
@@ -76,4 +76,3 @@ namespace SoLoud
 	};
 };
 
-#endif

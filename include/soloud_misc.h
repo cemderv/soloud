@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_MISC_H
-#define SOLOUD_MISC_H
+#pragma once
 
 #include "soloud.h"
 
@@ -49,5 +48,3 @@ namespace SoLoud
 
 	};
 };
-
-#endif

@@ -22,10 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_AUDIOSOURCE_H
-#define SOLOUD_AUDIOSOURCE_H
+#pragma once
 
-#include "soloud.h"
 #include "soloud_fader.h"
 #include "soloud_filter.h"
 
@@ -317,5 +315,3 @@ namespace SoLoud
 		void stop();
 	};
 };
-
-#endif

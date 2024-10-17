@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FFTFILTER_H
-#define SOLOUD_FFTFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -62,5 +61,3 @@ namespace SoLoud
 		FFTFilter();
 	};
 }
-
-#endif

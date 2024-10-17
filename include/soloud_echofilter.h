@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_ECHOFILTER_H
-#define SOLOUD_ECHOFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -67,5 +66,3 @@ namespace SoLoud
 		result setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
 	};
 }
-
-#endif

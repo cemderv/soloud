@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_LOFIFILTER_H
-#define SOLOUD_LOFIFILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -76,5 +75,3 @@ namespace SoLoud
 		virtual ~LofiFilter();
 	};
 }
-
-#endif

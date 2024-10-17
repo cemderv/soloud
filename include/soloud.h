@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include <stdlib.h> // rand
-#include <math.h> // sin
+#include <cstdlib> // rand
+#include <cmath> // sin
 
 #ifdef SOLOUD_NO_ASSERTS
 #define SOLOUD_ASSERT(x)
@@ -41,7 +41,7 @@ freely, subject to the following restrictions:
 #include <windows.h> // only needed for OutputDebugStringA, should be solved somehow.
 #define SOLOUD_ASSERT(x) if (!(x)) { char temp[200]; sprintf(temp, "%s(%d): assert(%s) failed.\n", __FILE__, __LINE__, #x); OutputDebugStringA(temp); __debugbreak(); }
 #else
-#include <assert.h> // assert
+#include <cassert> // assert
 #define SOLOUD_ASSERT(x) assert(x)
 #endif
 #endif

@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_DCREMOVAL_H
-#define SOLOUD_DCREMOVAL_H
+#pragma once
 
 #include "soloud.h"
 
@@ -54,5 +53,3 @@ namespace SoLoud
 		result setParams(float aLength = 0.1f);
 	};
 }
-
-#endif

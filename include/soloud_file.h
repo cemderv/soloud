@@ -22,10 +22,9 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FILE_H
-#define SOLOUD_FILE_H
+#pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include "soloud.h"
 
 typedef void* Soloud_Filehack;
@@ -86,5 +85,3 @@ namespace SoLoud
 		result openFileToMem(File *aFile);
 	};
 };
-
-#endif

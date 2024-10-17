@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef OPENMPT_H
-#define OPENMPT_H
+#pragma once
 
 #include "soloud.h"
 
@@ -58,5 +57,3 @@ namespace SoLoud
 		virtual AudioSourceInstance *createInstance();
 	};
 };
-
-#endif

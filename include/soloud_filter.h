@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FILTER_H
-#define SOLOUD_FILTER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -73,4 +72,3 @@ namespace SoLoud
 	};
 };
 
-#endif

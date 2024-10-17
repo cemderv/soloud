@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FADER_H
-#define SOLOUD_FADER_H
+#pragma once
 
 #include "soloud.h"
 
@@ -59,5 +58,3 @@ namespace SoLoud
 		float get(time aCurrentTime);
 	}; 
 };
-
-#endif 

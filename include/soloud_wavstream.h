@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_WAVSTREAM_H
-#define SOLOUD_WAVSTREAM_H
+#pragma once
 
 #include <stdio.h>
 #include "soloud.h"
@@ -103,5 +102,3 @@ namespace SoLoud
 		result parse(File *aFile);
 	};
 };
-
-#endif
