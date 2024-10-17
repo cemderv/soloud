@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 #include <math.h>
 #include <memory.h>
 
-#include "soloud.h"
-#include "soloud_thread.h"
+#include "soloud.hpp"
+#include "soloud_thread.hpp"
 
 #if !defined(WITH_OPENSLES)
 namespace SoLoud

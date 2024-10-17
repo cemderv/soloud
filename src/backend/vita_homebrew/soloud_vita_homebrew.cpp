@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 #include <atomic>
 #include <string.h>
 
-#include "soloud.h"
-#include "soloud_thread.h"
+#include "soloud.hpp"
+#include "soloud_thread.hpp"
 
 #include <psp2/audioout.h>
 #include <psp2/kernel/threadmgr.h>

@@ -8,10 +8,6 @@
 #define PI 3.1415926535897932384626433832795f
 #endif
 
-#ifndef NULL
-#define NULL 0
-#endif
-
 class Interp
 {
 public:
