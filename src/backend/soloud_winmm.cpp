@@ -149,8 +149,8 @@ static void winMMCleanup(Soloud* aSoloud)
     aSoloud->mBackendData = 0;
 }
 
-void winmm_init(Soloud*      aSoloud,
-                size_t aFlags,
+void winmm_init(Engine*      aSoloud,
+                Flags aFlags,
                 size_t aSamplerate,
                 size_t aBuffer,
                 size_t aChannels)
