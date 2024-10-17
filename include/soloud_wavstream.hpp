@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "soloud_audiosource.hpp"
 #include <optional>
+#include <variant>
 
 struct stb_vorbis;
 #ifndef dr_flac_h

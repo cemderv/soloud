@@ -24,25 +24,9 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#ifdef WITH_SDL
-#undef WITH_SDL2
-#undef WITH_SDL1
-#define WITH_SDL1
-#define WITH_SDL2
-#endif
-
-#ifdef WITH_SDL_STATIC
-#undef WITH_SDL1_STATIC
-#define WITH_SDL1_STATIC
-#endif
-
-#ifndef M_PI
-#define M_PI 3.14159265359
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-#define WINDOWS_VERSION
-#endif
+#include <cstdint>
+#include <cstddef>
+#include <cmath>
 
 #if !defined(DISABLE_SIMD)
 #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
@@ -50,10 +34,10 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-// Configuration defines
-
+// Typedefs have to be made before the includes, as the
+// includes depend on them.
+namespace SoLoud
+{
 // Maximum number of filters per stream
 static constexpr size_t FILTERS_PER_STREAM = 8;
 
@@ -66,14 +50,6 @@ static constexpr size_t VOICE_COUNT = 1024;
 // 1)mono, 2)stereo 4)quad 6)5.1 8)7.1
 static constexpr size_t MAX_CHANNELS = 8;
 
-//
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-
-// Typedefs have to be made before the includes, as the
-// includes depend on them.
-namespace SoLoud
-{
 class Engine;
 typedef void (*mutexCallFunction)(void* aMutexPtr);
 typedef void (*soloudCallFunction)(Engine* aSoloud);
