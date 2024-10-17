@@ -149,7 +149,7 @@ static void winMMCleanup(Soloud* aSoloud)
     aSoloud->mBackendData = 0;
 }
 
-result winmm_init(Soloud*      aSoloud,
+void winmm_init(Soloud*      aSoloud,
                   unsigned int aFlags,
                   unsigned int aSamplerate,
                   unsigned int aBuffer,
@@ -164,13 +164,13 @@ result winmm_init(Soloud*      aSoloud,
     if (0 == data->bufferEndEvent)
     {
         winMMCleanup(aSoloud);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize winMM"};
     }
     data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
     if (0 == data->audioProcessingDoneEvent)
     {
         winMMCleanup(aSoloud);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize winMM"};
     }
     WAVEFORMATEX format;
     ZeroMemory(&format, sizeof(WAVEFORMATEX));
@@ -188,7 +188,7 @@ result winmm_init(Soloud*      aSoloud,
                                         CALLBACK_EVENT))
     {
         winMMCleanup(aSoloud);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize winMM"};
     }
     data->buffer = AlignedFloatBuffer{size_t(data->samples * format.nChannels)};
     for (int i = 0; i < BUFFER_COUNT; ++i)
@@ -201,7 +201,7 @@ result winmm_init(Soloud*      aSoloud,
             waveOutPrepareHeader(data->waveOut, &data->header[i], sizeof(WAVEHDR)))
         {
             winMMCleanup(aSoloud);
-            return UNKNOWN_ERROR;
+            throw std::runtime_error{"Failed to initialize winMM"};
         }
     }
     aSoloud->postinit_internal(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
@@ -209,10 +209,9 @@ result winmm_init(Soloud*      aSoloud,
     if (0 == data->threadHandle)
     {
         winMMCleanup(aSoloud);
-        return UNKNOWN_ERROR;
+        throw std::runtime_error{"Failed to initialize winMM"};
     }
     aSoloud->mBackendString = "WinMM";
-    return 0;
 }
 }; // namespace SoLoud
 
