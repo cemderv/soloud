@@ -24,6 +24,10 @@ freely, subject to the following restrictions:
 
 #pragma once
 
+#include "soloud_vec3.hpp"
+#include <memory>
+#include <vector>
+
 #ifdef WITH_SDL
 #undef WITH_SDL2
 #undef WITH_SDL1
@@ -50,23 +54,21 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
-#define SOLOUD_VERSION 202002
-
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Configuration defines
 
 // Maximum number of filters per stream
-#define FILTERS_PER_STREAM 8
+static constexpr size_t FILTERS_PER_STREAM = 8;
 
 // Number of samples to process on one go
-#define SAMPLE_GRANULARITY 512
+static constexpr size_t SAMPLE_GRANULARITY = 512;
 
 // Maximum number of concurrent voices (hard limit is 4095)
-#define VOICE_COUNT 1024
+static constexpr size_t VOICE_COUNT = 1024;
 
 // 1)mono, 2)stereo 4)quad 6)5.1 8)7.1
-#define MAX_CHANNELS 8
+static constexpr size_t MAX_CHANNELS = 8;
 
 // Default resampler for both main and bus mixers
 #define SOLOUD_DEFAULT_RESAMPLER SoLoud::Soloud::RESAMPLER_LINEAR
@@ -80,10 +82,10 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 class Soloud;
-typedef void (*mutexCallFunction)(void* aMutexPtr);
-typedef void (*soloudCallFunction)(Soloud* aSoloud);
+typedef void (*      mutexCallFunction)(void* aMutexPtr);
+typedef void (*      soloudCallFunction)(Soloud* aSoloud);
 typedef unsigned int result;
-typedef result (*soloudResultFunction)(Soloud* aSoloud);
+typedef result (*    soloudResultFunction)(Soloud* aSoloud);
 typedef unsigned int handle;
 typedef double       time;
 }; // namespace SoLoud
@@ -93,25 +95,30 @@ namespace SoLoud
 // Class that handles aligned allocations to support vectorized operations
 class AlignedFloatBuffer
 {
-  public:
-    float*         mData; // aligned pointer
-    unsigned char* mBasePtr; // raw allocated pointer (for delete)
-    int            mFloats; // size of buffer (w/out padding)
+public:
+    AlignedFloatBuffer() = default;
 
-    // ctor
-    AlignedFloatBuffer();
     // Allocate and align buffer
-    result init(unsigned int aFloats);
+    explicit AlignedFloatBuffer(size_t aFloats);
+
+    AlignedFloatBuffer(const AlignedFloatBuffer& aBuffer)            = delete;
+    AlignedFloatBuffer& operator=(const AlignedFloatBuffer& aBuffer) = delete;
+
+    AlignedFloatBuffer(AlignedFloatBuffer&& aBuffer) noexcept            = default;
+    AlignedFloatBuffer& operator=(AlignedFloatBuffer&& aBuffer) noexcept = default;
+
     // Clear data to zero.
     void clear();
-    // dtor
-    ~AlignedFloatBuffer();
+
+    float*                           mData = nullptr; // aligned pointer
+    std::unique_ptr<unsigned char[]> mBasePtr;
+    size_t                           mFloats = 0; // size of buffer (w/out padding)
 };
 
 // Lightweight class that handles small aligned buffer to support vectorized operations
 class TinyAlignedFloatBuffer
 {
-  public:
+public:
     float*        mData; // aligned pointer
     unsigned char mActualData[sizeof(float) * 16 + 16];
 
@@ -130,14 +137,14 @@ namespace SoLoud
 // Soloud core class.
 class Soloud
 {
-  public:
+public:
     // Back-end data; content is up to the back-end implementation.
     void* mBackendData;
     // Pointer for the audio thread mutex.
     void* mAudioThreadMutex;
     // Flag for when we're inside the mutex, used for debugging.
     bool mInsideAudioThreadMutex;
-    // Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
+    // Called by SoLoud to shut down the back-end. If nullptr, not called. Should be set by back-end.
     soloudCallFunction mBackendCleanupFunc;
 
     // Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as
@@ -175,9 +182,9 @@ class Soloud
     enum FLAGS
     {
         // Use round-off clipper
-        CLIP_ROUNDOFF          = 1,
-        ENABLE_VISUALIZATION   = 2,
-        LEFT_HANDED_3D         = 4,
+        CLIP_ROUNDOFF = 1,
+        ENABLE_VISUALIZATION = 2,
+        LEFT_HANDED_3D = 4,
         NO_FPU_REGISTER_CHANGE = 8
     };
 
@@ -214,27 +221,22 @@ class Soloud
     // Deinitialize SoLoud. Must be called before shutting down.
     void deinit();
 
-    // Query SoLoud version number (should equal to SOLOUD_VERSION macro)
-    unsigned int getVersion() const;
-
-    // Translate error number to an asciiz string
-    const char* getErrorString(result aErrorCode) const;
-
     // Returns current backend ID (BACKENDS enum)
-    unsigned int getBackendId();
-    // Returns current backend string. May be NULL.
-    const char* getBackendString();
+    unsigned int getBackendId() const;
+    // Returns current backend string. May be nullptr.
+    const char* getBackendString() const;
     // Returns current backend channel count (1 mono, 2 stereo, etc)
-    unsigned int getBackendChannels();
+    unsigned int getBackendChannels() const;
     // Returns current backend sample rate
-    unsigned int getBackendSamplerate();
+    unsigned int getBackendSamplerate() const;
     // Returns current backend buffer size
-    unsigned int getBackendBufferSize();
+    unsigned int getBackendBufferSize() const;
 
     // Set speaker position in 3d space
-    result setSpeakerPosition(unsigned int aChannel, float aX, float aY, float aZ);
+    void setSpeakerPosition(unsigned int aChannel, vec3 value);
+
     // Get speaker position in 3d space
-    result getSpeakerPosition(unsigned int aChannel, float& aX, float& aY, float& aZ);
+    vec3 getSpeakerPosition(unsigned int aChannel) const;
 
     // Start playing a sound. Returns voice handle, which can be ignored or used to alter the
     // playing sound's parameters. Negative volume means to use default.
@@ -252,12 +254,8 @@ class Soloud
                        unsigned int aBus    = 0);
     // Start playing a 3d audio source
     handle play3d(AudioSource& aSound,
-                  float        aPosX,
-                  float        aPosY,
-                  float        aPosZ,
-                  float        aVelX   = 0.0f,
-                  float        aVelY   = 0.0f,
-                  float        aVelZ   = 0.0f,
+                  vec3         aPos,
+                  vec3         aVel    = {},
                   float        aVolume = 1.0f,
                   bool         aPaused = 0,
                   unsigned int aBus    = 0);
@@ -265,12 +263,8 @@ class Soloud
     // function.
     handle play3dClocked(time         aSoundTime,
                          AudioSource& aSound,
-                         float        aPosX,
-                         float        aPosY,
-                         float        aPosZ,
-                         float        aVelX   = 0.0f,
-                         float        aVelY   = 0.0f,
-                         float        aVelZ   = 0.0f,
+                         vec3         aPos,
+                         vec3         aVel    = {},
                          float        aVolume = 1.0f,
                          unsigned int aBus    = 0);
     // Start playing a sound without any panning. It will be played at full volume.
@@ -413,7 +407,7 @@ class Soloud
     // Set up global volume oscillator
     void oscillateGlobalVolume(float aFrom, float aTo, time aTime);
 
-    // Set global filters. Set to NULL to clear the filter.
+    // Set global filters. Set to nullptr to clear the filter.
     void setGlobalFilter(unsigned int aFilterId, Filter* aFilter);
 
     // Enable or disable visualization data gathering
@@ -454,44 +448,30 @@ class Soloud
     // Set the speed of sound constant for doppler
     result set3dSoundSpeed(float aSpeed);
     // Get the current speed of sound constant for doppler
-    float get3dSoundSpeed();
+    float get3dSoundSpeed() const;
     // Set 3d listener parameters
-    void set3dListenerParameters(float aPosX,
-                                 float aPosY,
-                                 float aPosZ,
-                                 float aAtX,
-                                 float aAtY,
-                                 float aAtZ,
-                                 float aUpX,
-                                 float aUpY,
-                                 float aUpZ,
-                                 float aVelocityX = 0.0f,
-                                 float aVelocityY = 0.0f,
-                                 float aVelocityZ = 0.0f);
+    void set3dListenerParameters(vec3 pos,
+                                 vec3 at,
+                                 vec3 up,
+                                 vec3 velocity = {});
     // Set 3d listener position
-    void set3dListenerPosition(float aPosX, float aPosY, float aPosZ);
+    void set3dListenerPosition(vec3 value);
     // Set 3d listener "at" vector
-    void set3dListenerAt(float aAtX, float aAtY, float aAtZ);
+    void set3dListenerAt(vec3 value);
     // set 3d listener "up" vector
-    void set3dListenerUp(float aUpX, float aUpY, float aUpZ);
+    void set3dListenerUp(vec3 value);
     // Set 3d listener velocity
-    void set3dListenerVelocity(float aVelocityX, float aVelocityY, float aVelocityZ);
+    void set3dListenerVelocity(vec3 value);
 
     // Set 3d audio source parameters
     void set3dSourceParameters(handle aVoiceHandle,
-                               float  aPosX,
-                               float  aPosY,
-                               float  aPosZ,
-                               float  aVelocityX = 0.0f,
-                               float  aVelocityY = 0.0f,
-                               float  aVelocityZ = 0.0f);
+                               vec3   aPos,
+                               vec3   aVelocity = {});
+
     // Set 3d audio source position
-    void set3dSourcePosition(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ);
+    void set3dSourcePosition(handle aVoiceHandle, vec3 pos);
     // Set 3d audio source velocity
-    void set3dSourceVelocity(handle aVoiceHandle,
-                             float  aVelocityX,
-                             float  aVelocityY,
-                             float  aVelocityZ);
+    void set3dSourceVelocity(handle aVoiceHandle, vec3 velocity);
     // Set 3d audio source min/max distance (distance < min means max volume)
     void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
     // Set 3d audio source attenuation parameters
@@ -509,7 +489,7 @@ class Soloud
     // null driver.
     void mixSigned16(short* aBuffer, unsigned int aSamples);
 
-  public:
+public:
     // Mix N samples * M channels. Called by other mix_ functions.
     void mix_internal(unsigned int aSamples, unsigned int aStride);
 
@@ -555,6 +535,7 @@ class Soloud
     // Perform 3d audio calculation for array of voices
     void update3dVoices_internal(unsigned int* aVoiceList, unsigned int aVoiceCount);
     // Clip the samples in the buffer
+
     void clip_internal(AlignedFloatBuffer& aBuffer,
                        AlignedFloatBuffer& aDestBuffer,
                        unsigned int        aSamples,
@@ -562,87 +543,113 @@ class Soloud
                        float               aVolume1);
     // Remove all non-active voices from group
     void trimVoiceGroup_internal(handle aVoiceGroupHandle);
+
     // Get pointer to the zero-terminated array of voice handles in a voice group
     handle* voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const;
 
     // Lock audio thread mutex.
     void lockAudioMutex_internal();
+
     // Unlock audio thread mutex.
     void unlockAudioMutex_internal();
 
     // Max. number of active voices. Busses and tickable inaudibles also count against this.
     unsigned int mMaxActiveVoices;
+
     // Highest voice in use so far
     unsigned int mHighestVoice;
+
     // Scratch buffer, used for resampling.
     AlignedFloatBuffer mScratch;
+
     // Current size of the scratch, in samples.
     unsigned int mScratchSize;
+
     // Output scratch buffer, used in mix_().
     AlignedFloatBuffer mOutputScratch;
+
     // Pointers to resampler buffers, two per active voice.
-    float** mResampleData;
+    std::vector<float*> mResampleData;
+
     // Actual allocated memory for resampler buffers
     AlignedFloatBuffer mResampleDataBuffer;
+
     // Owners of the resample data
-    AudioSourceInstance** mResampleDataOwner;
+    std::vector<AudioSourceInstance*> mResampleDataOwner;
+
     // Audio voices.
-    AudioSourceInstance* mVoice[VOICE_COUNT];
+    std::array<AudioSourceInstance*, VOICE_COUNT> mVoice{};
+
     // Resampler for the main bus
     unsigned int mResampler;
+
     // Output sample rate (not float)
     unsigned int mSamplerate;
+
     // Output channel count
     unsigned int mChannels;
+
     // Current backend ID
     unsigned int mBackendID;
+
     // Current backend string
     const char* mBackendString;
+
     // Maximum size of output buffer; used to calculate needed scratch.
     unsigned int mBufferSize;
+
     // Flags; see Soloud::FLAGS
     unsigned int mFlags;
+
     // Global volume. Applied before clipping.
     float mGlobalVolume;
+
     // Post-clip scaler. Applied after clipping.
     float mPostClipScaler;
+
     // Current play index. Used to create audio handles.
     unsigned int mPlayIndex;
+
     // Current sound source index. Used to create sound source IDs.
     unsigned int mAudioSourceID;
+
     // Fader for the global volume.
     Fader mGlobalVolumeFader;
+
     // Global stream time, for the global volume fader.
     time mStreamTime;
+
     // Last time seen by the playClocked call
     time mLastClockedTime;
+
     // Global filter
-    Filter* mFilter[FILTERS_PER_STREAM];
+    std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
+
     // Global filter instance
-    FilterInstance* mFilterInstance[FILTERS_PER_STREAM];
+    std::array<FilterInstance*, FILTERS_PER_STREAM> mFilterInstance{};
 
     // Approximate volume for channels.
-    float mVisualizationChannelVolume[MAX_CHANNELS];
-    // Mono-mixed wave data for visualization and for visualization FFT input
-    float mVisualizationWaveData[256];
-    // FFT output data
-    float mFFTData[256];
-    // Snapshot of wave data for visualization
-    float mWaveData[256];
+    std::array<float, MAX_CHANNELS> mVisualizationChannelVolume{};
 
-    // 3d listener position
-    float m3dPosition[3];
-    // 3d listener look-at
-    float m3dAt[3];
-    // 3d listener up
-    float m3dUp[3];
-    // 3d listener velocity
-    float m3dVelocity[3];
+    // Mono-mixed wave data for visualization and for visualization FFT input
+    std::array<float, 256> mVisualizationWaveData{};
+
+    // FFT output data
+    std::array<float, 256> mFFTData{};
+
+    // Snapshot of wave data for visualization
+    std::array<float, 256> mWaveData{};
+
+    vec3 m3dPosition{};
+    vec3 m3dAt{0, 0, -1};
+    vec3 m3dUp{0, 1, 0};
+    vec3 m3dVelocity;
+
     // 3d speed of sound (for doppler)
     float m3dSoundSpeed;
 
     // 3d position of speakers
-    float m3dSpeakerPosition[3 * MAX_CHANNELS];
+    std::array<vec3, MAX_CHANNELS> m3dSpeakerPosition;
 
     // Data related to 3d processing, separate from AudioSource so we can do 3d calculations without
     // audio mutex.
@@ -654,8 +661,10 @@ class Soloud
 
     // List of currently active voices
     unsigned int mActiveVoice[VOICE_COUNT];
+
     // Number of currently active voices
     unsigned int mActiveVoiceCount;
+
     // Active voices list needs to be recalculated
     bool mActiveVoiceDirty;
 };

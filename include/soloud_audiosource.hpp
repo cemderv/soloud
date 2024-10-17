@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "soloud_fader.hpp"
 #include "soloud_filter.hpp"
+#include <array>
+#include <memory>
 
 namespace SoLoud
 {
@@ -40,7 +42,7 @@ public:
 
     // Calculate volume multiplier. Assumed to return value between 0 and 1.
     virtual float collide(Soloud*                    aSoloud,
-                          AudioSourceInstance3dData* aAudioInstance3dData,
+                          AudioSourceInstance3dData& aAudioInstance3dData,
                           int                        aUserData) = 0;
 };
 
@@ -55,160 +57,223 @@ public:
                             float aRolloffFactor) = 0;
 };
 
+enum class AudioSourceInstanceFlags
+{
+    None = 0,
+    // This audio instance loops (if supported)
+    LOOPING = 1,
+    // This audio instance is protected - won't get stopped if we run out of voices
+    PROTECTED = 2,
+    // This audio instance is paused
+    PAUSED = 4,
+    // This audio instance is affected by 3d processing
+    PROCESS_3D = 8,
+    // This audio instance has listener-relative 3d coordinates
+    LISTENER_RELATIVE = 16,
+    // Currently inaudible
+    INAUDIBLE = 32,
+    // If inaudible, should be killed (default = don't kill kill)
+    INAUDIBLE_KILL = 64,
+    // If inaudible, should still be ticked (default = pause)
+    INAUDIBLE_TICK = 128,
+    // Don't auto-stop sound
+    DISABLE_AUTOSTOP = 256
+};
+
 class AudioSourceInstance3dData
 {
 public:
-    // ctor
-    AudioSourceInstance3dData();
-    // Set settings from audiosource
-    void init(AudioSource& aSource);
+    AudioSourceInstance3dData() = default;
+
+    explicit AudioSourceInstance3dData(AudioSource& aSource);
+
     // 3d position
-    float m3dPosition[3];
+    vec3 m3dPosition;
     // 3d velocity
-    float m3dVelocity[3];
-    // 3d cone direction
-    /*
-    float m3dConeDirection[3];
-    // 3d cone inner angle
-    float m3dConeInnerAngle;
-    // 3d cone outer angle
-    float m3dConeOuterAngle;
-    // 3d cone outer volume multiplier
-    float m3dConeOuterVolume;
-    */
+    vec3 m3dVelocity;
     // 3d min distance
-    float m3dMinDistance;
+    float m3dMinDistance = 0.0f;
     // 3d max distance
-    float m3dMaxDistance;
+    float m3dMaxDistance = 1000000.0f;
     // 3d attenuation rolloff factor
-    float m3dAttenuationRolloff;
+    float m3dAttenuationRolloff = 1.0f;
     // 3d attenuation model
-    unsigned int m3dAttenuationModel;
+    unsigned int m3dAttenuationModel = 0;
     // 3d doppler factor
-    float m3dDopplerFactor;
+    float m3dDopplerFactor = 1.0f;
     // Pointer to a custom audio collider object
-    AudioCollider* mCollider;
+    AudioCollider* mCollider = nullptr;
     // Pointer to a custom audio attenuator object
-    AudioAttenuator* mAttenuator;
+    AudioAttenuator* mAttenuator = nullptr;
     // User data related to audio collider
-    int mColliderData;
+    int mColliderData = 0;
 
     // Doppler sample rate multiplier
-    float mDopplerValue;
+    float mDopplerValue = 0.0f;
     // Overall 3d volume
-    float m3dVolume;
+    float m3dVolume = 0.0f;
     // Channel volume
-    float mChannelVolume[MAX_CHANNELS];
+    std::array<float, MAX_CHANNELS> mChannelVolume{};
+
     // Copy of flags
-    unsigned int mFlags;
+    AudioSourceInstanceFlags mFlags = AudioSourceInstanceFlags::None;
+
     // Latest handle for this voice
-    handle mHandle;
+    handle mHandle = 0;
 };
 
 // Base class for audio instances
 class AudioSourceInstance
 {
 public:
-    enum FLAGS
-    {
-        // This audio instance loops (if supported)
-        LOOPING = 1,
-        // This audio instance is protected - won't get stopped if we run out of voices
-        PROTECTED = 2,
-        // This audio instance is paused
-        PAUSED = 4,
-        // This audio instance is affected by 3d processing
-        PROCESS_3D = 8,
-        // This audio instance has listener-relative 3d coordinates
-        LISTENER_RELATIVE = 16,
-        // Currently inaudible
-        INAUDIBLE = 32,
-        // If inaudible, should be killed (default = don't kill kill)
-        INAUDIBLE_KILL = 64,
-        // If inaudible, should still be ticked (default = pause)
-        INAUDIBLE_TICK = 128,
-        // Don't auto-stop sound
-        DISABLE_AUTOSTOP = 256
-    };
-
-    // Ctor
     AudioSourceInstance();
-    // Dtor
-    virtual ~AudioSourceInstance();
+
+    virtual ~AudioSourceInstance() noexcept;
+
     // Play index; used to identify instances from handles
-    unsigned int mPlayIndex;
+    unsigned int mPlayIndex = 0;
+
     // Loop count
-    unsigned int mLoopCount;
-    // Flags; see AudioSourceInstance::FLAGS
-    unsigned int mFlags;
+    unsigned int mLoopCount = 0;
+
+    AudioSourceInstanceFlags mFlags = AudioSourceInstanceFlags::None;
+
+    bool hasFlag(AudioSourceInstanceFlags flag) const;
+
     // Pan value, for getPan()
-    float mPan;
+    float mPan = 0.0f;
+
     // Volume for each channel (panning)
-    float mChannelVolume[MAX_CHANNELS];
+    std::array<float, MAX_CHANNELS> mChannelVolume{};
+
     // Set volume
-    float mSetVolume;
+    float mSetVolume = 1.0f;
+
     // Overall volume overall = set * 3d
-    float mOverallVolume;
+    float mOverallVolume = 0.0f;
+
     // Base samplerate; samplerate = base samplerate * relative play speed
-    float mBaseSamplerate;
+    float mBaseSamplerate = 44100.0f;
+
     // Samplerate; samplerate = base samplerate * relative play speed
-    float mSamplerate;
+    float mSamplerate = 44100.0f;
+
     // Number of channels this audio source produces
-    unsigned int mChannels;
+    unsigned int mChannels = 1;
+
     // Relative play speed; samplerate = base samplerate * relative play speed
-    float mSetRelativePlaySpeed;
+    float mSetRelativePlaySpeed = 1.0f;
+
     // Overall relative plays peed; overall = set * 3d
-    float mOverallRelativePlaySpeed;
+    float mOverallRelativePlaySpeed = 1.0f;
+
     // How long this stream has played, in seconds.
-    time mStreamTime;
+    time mStreamTime = 0.0f;
+
     // Position of this stream, in seconds.
-    time mStreamPosition;
+    time mStreamPosition = 0.0f;
+
     // Fader for the audio panning
     Fader mPanFader;
+
     // Fader for the audio volume
     Fader mVolumeFader;
+
     // Fader for the relative play speed
     Fader mRelativePlaySpeedFader;
+
     // Fader used to schedule pausing of the stream
     Fader mPauseScheduler;
+
     // Fader used to schedule stopping of the stream
     Fader mStopScheduler;
+
     // Affected by some fader
-    int mActiveFader;
+    int mActiveFader = 0;
+
     // Current channel volumes, used to ramp the volume changes to avoid clicks
-    float mCurrentChannelVolume[MAX_CHANNELS];
+    std::array<float, MAX_CHANNELS> mCurrentChannelVolume{};
+
     // ID of the sound source that generated this instance
-    unsigned int mAudioSourceID;
+    unsigned int mAudioSourceID = 0;
+
     // Handle of the bus this audio instance is playing on. 0 for root.
-    unsigned int mBusHandle;
+    unsigned int mBusHandle = ~0u;
+
     // Filter pointer
-    FilterInstance* mFilter[FILTERS_PER_STREAM];
+    std::array<FilterInstance*, FILTERS_PER_STREAM> mFilter{};
+
     // Initialize instance. Mostly internal use.
     void init(AudioSource& aSource, int aPlayIndex);
+
     // Pointers to buffers for the resampler
-    float* mResampleData[2];
+    std::array<float*, 2> mResampleData{};
+
     // Sub-sample playhead; 16.16 fixed point
-    unsigned int mSrcOffset;
+    unsigned int mSrcOffset = 0;
+
     // Samples left over from earlier pass
-    unsigned int mLeftoverSamples;
+    unsigned int mLeftoverSamples = 0;
+
     // Number of samples to delay streaming
-    unsigned int mDelaySamples;
+    unsigned int mDelaySamples = 0;
+
     // When looping, start playing from this time
-    time mLoopPoint;
+    time mLoopPoint = 0;
 
     // Get N samples from the stream to the buffer. Report samples written.
     virtual unsigned int getAudio(float*       aBuffer,
                                   unsigned int aSamplesToRead,
                                   unsigned int aBufferSize) = 0;
+
     // Has the stream ended?
     virtual bool hasEnded() = 0;
+
     // Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
     virtual result seek(time aSeconds, float* mScratch, unsigned int mScratchSize);
+
     // Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
     virtual result rewind();
+
     // Get information. Returns 0 by default.
     virtual float getInfo(unsigned int aInfoKey);
 };
+
+static inline AudioSourceInstanceFlags operator&(AudioSourceInstanceFlags lhs,
+                                                 AudioSourceInstanceFlags rhs)
+{
+    return AudioSourceInstanceFlags(int(lhs) & int(rhs));
+}
+
+static inline AudioSourceInstanceFlags operator|(AudioSourceInstanceFlags lhs,
+                                                 AudioSourceInstanceFlags rhs)
+{
+    return AudioSourceInstanceFlags(int(lhs) | int(rhs));
+}
+
+static inline AudioSourceInstanceFlags operator~(AudioSourceInstanceFlags value)
+{
+    return AudioSourceInstanceFlags(~int(value));
+}
+
+static inline AudioSourceInstanceFlags& operator&=(AudioSourceInstanceFlags& lhs,
+                                                   AudioSourceInstanceFlags  rhs)
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
+
+static inline AudioSourceInstanceFlags& operator|=(AudioSourceInstanceFlags& lhs,
+                                                   AudioSourceInstanceFlags  rhs)
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+
+static inline bool testFlag(AudioSourceInstanceFlags value, AudioSourceInstanceFlags toTest)
+{
+    return int(value) & int(toTest) == int(toTest);
+}
 
 class Soloud;
 
@@ -305,9 +370,9 @@ public:
     // Enable delaying the start of the sound based on the distance.
     void set3dDistanceDelay(bool aDistanceDelay);
 
-    // Set a custom 3d audio collider. Set to NULL to disable.
+    // Set a custom 3d audio collider. Set to nullptr to disable.
     void set3dCollider(AudioCollider* aCollider, int aUserData = 0);
-    // Set a custom attenuator. Set to NULL to disable.
+    // Set a custom attenuator. Set to nullptr to disable.
     void set3dAttenuator(AudioAttenuator* aAttenuator);
 
     // Set behavior for inaudible sounds
@@ -318,7 +383,7 @@ public:
     // Get current loop point value
     time getLoopPoint();
 
-    // Set filter. Set to NULL to clear the filter.
+    // Set filter. Set to nullptr to clear the filter.
     virtual void setFilter(unsigned int aFilterId, Filter* aFilter);
     // DTor
     virtual ~AudioSource();

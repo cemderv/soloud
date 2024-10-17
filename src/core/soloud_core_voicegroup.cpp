@@ -38,10 +38,10 @@ handle Soloud::createVoiceGroup()
     // Check if there's any deleted voice groups and re-use if found
     for (i = 0; i < mVoiceGroupCount; i++)
     {
-        if (mVoiceGroup[i] == NULL)
+        if (mVoiceGroup[i] == nullptr)
         {
             mVoiceGroup[i] = new unsigned int[17];
-            if (mVoiceGroup[i] == NULL)
+            if (mVoiceGroup[i] == nullptr)
             {
                 unlockAudioMutex_internal();
                 return 0;
@@ -64,7 +64,7 @@ handle Soloud::createVoiceGroup()
     }
     mVoiceGroupCount *= 2;
     unsigned int** vg = new unsigned int*[mVoiceGroupCount];
-    if (vg == NULL)
+    if (vg == nullptr)
     {
         mVoiceGroupCount = oldcount;
         unlockAudioMutex_internal();
@@ -77,14 +77,14 @@ handle Soloud::createVoiceGroup()
 
     for (; i < mVoiceGroupCount; i++)
     {
-        vg[i] = NULL;
+        vg[i] = nullptr;
     }
 
     delete[] mVoiceGroup;
     mVoiceGroup    = vg;
     i              = oldcount;
     mVoiceGroup[i] = new unsigned int[17];
-    if (mVoiceGroup[i] == NULL)
+    if (mVoiceGroup[i] == nullptr)
     {
         unlockAudioMutex_internal();
         return 0;
@@ -104,7 +104,7 @@ result Soloud::destroyVoiceGroup(handle aVoiceGroupHandle)
 
     lockAudioMutex_internal();
     delete[] mVoiceGroup[c];
-    mVoiceGroup[c] = NULL;
+    mVoiceGroup[c] = nullptr;
     unlockAudioMutex_internal();
     return SO_NO_ERROR;
 }
@@ -146,7 +146,7 @@ result Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 
     // Full group, allocate more memory
     unsigned int* n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
-    if (n == NULL)
+    if (n == nullptr)
     {
         unlockAudioMutex_internal();
         return OUT_OF_MEMORY;
@@ -172,7 +172,7 @@ bool Soloud::isVoiceGroup(handle aVoiceGroupHandle)
         return 0;
 
     lockAudioMutex_internal();
-    bool res = mVoiceGroup[c] != NULL;
+    bool res = mVoiceGroup[c] != nullptr;
     unlockAudioMutex_internal();
 
     return res;
@@ -252,12 +252,12 @@ void Soloud::trimVoiceGroup_internal(handle aVoiceGroupHandle)
 handle* Soloud::voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
-        return NULL;
+        return nullptr;
     unsigned int c = aVoiceGroupHandle & 0xfff;
     if (c >= mVoiceGroupCount)
-        return NULL;
-    if (mVoiceGroup[c] == NULL)
-        return NULL;
+        return nullptr;
+    if (mVoiceGroup[c] == nullptr)
+        return nullptr;
     return mVoiceGroup[c] + 1;
 }
 

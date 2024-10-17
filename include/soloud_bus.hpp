@@ -28,7 +28,7 @@ namespace SoLoud
 {
 class Bus;
 
-class BusInstance : public AudioSourceInstance
+class BusInstance final : public AudioSourceInstance
 {
 public:
     Bus*               mParent;
@@ -36,9 +36,9 @@ public:
     AlignedFloatBuffer mScratch;
 
     // Approximate volume for channels.
-    float mVisualizationChannelVolume[MAX_CHANNELS];
+    std::array<float, MAX_CHANNELS> mVisualizationChannelVolume{};
     // Mono-mixed wave data for visualization and for visualization FFT input
-    float mVisualizationWaveData[256];
+    std::array<float, 256> mVisualizationWaveData{};
 
     explicit     BusInstance(Bus* aParent);
     unsigned int getAudio(float*       aBuffer,
@@ -48,12 +48,12 @@ public:
     ~BusInstance() override;
 };
 
-class Bus : public AudioSource
+class Bus final : public AudioSource
 {
 public:
     Bus();
     BusInstance* createInstance() override;
-    // Set filter. Set to NULL to clear the filter.
+    // Set filter. Set to nullptr to clear the filter.
     void setFilter(unsigned int aFilterId, Filter* aFilter) override;
     // Play sound through the bus
     handle play(AudioSource& aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0);
@@ -64,24 +64,16 @@ public:
                        float        aPan    = 0.0f);
     // Start playing a 3d audio source through the bus
     handle play3d(AudioSource& aSound,
-                  float        aPosX,
-                  float        aPosY,
-                  float        aPosZ,
-                  float        aVelX   = 0.0f,
-                  float        aVelY   = 0.0f,
-                  float        aVelZ   = 0.0f,
+                  vec3         aPos,
+                  vec3         aVel    = {},
                   float        aVolume = 1.0f,
                   bool         aPaused = 0);
     // Start playing a 3d audio source through the bus, delayed in relation to other sounds called
     // via this function.
     handle play3dClocked(time         aSoundTime,
                          AudioSource& aSound,
-                         float        aPosX,
-                         float        aPosY,
-                         float        aPosZ,
-                         float        aVelX   = 0.0f,
-                         float        aVelY   = 0.0f,
-                         float        aVelZ   = 0.0f,
+                         vec3         aPos,
+                         vec3         aVel    = {},
                          float        aVolume = 1.0f);
     // Set number of channels for the bus (default 2)
     result setChannels(unsigned int aChannels);

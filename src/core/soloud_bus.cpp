@@ -30,15 +30,11 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 BusInstance::BusInstance(Bus* aParent)
+    : mParent(aParent)
+      , mScratchSize(SAMPLE_GRANULARITY)
+      , mScratch(mScratchSize * MAX_CHANNELS)
 {
-    mParent = aParent;
-    mFlags |= PROTECTED | INAUDIBLE_TICK;
-    for (int i = 0; i < MAX_CHANNELS; i++)
-        mVisualizationChannelVolume[i] = 0;
-    for (int i = 0; i < 256; i++)
-        mVisualizationWaveData[i] = 0;
-    mScratchSize = SAMPLE_GRANULARITY;
-    mScratch.init(mScratchSize * MAX_CHANNELS);
+    mFlags |= AudioSourceInstanceFlags::PROTECTED | AudioSourceInstanceFlags::INAUDIBLE_TICK;
 }
 
 unsigned int BusInstance::getAudio(float*       aBuffer,
@@ -50,7 +46,7 @@ unsigned int BusInstance::getAudio(float*       aBuffer,
     {
         // Avoid reuse of scratch data if this bus hasn't played anything yet
         unsigned int i;
-        for (i = 0; i < aBufferSize * mChannels; i++)
+        for (i         = 0; i < aBufferSize * mChannels; i++)
             aBuffer[i] = 0;
         return aSamplesToRead;
     }
@@ -69,7 +65,7 @@ unsigned int BusInstance::getAudio(float*       aBuffer,
     int i;
     if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
     {
-        for (i = 0; i < MAX_CHANNELS; i++)
+        for (i                             = 0; i < MAX_CHANNELS; i++)
             mVisualizationChannelVolume[i] = 0;
 
         if (aSamplesToRead > 255)
@@ -204,12 +200,8 @@ handle Bus::playClocked(time aSoundTime, AudioSource& aSound, float aVolume, flo
 }
 
 handle Bus::play3d(AudioSource& aSound,
-                   float        aPosX,
-                   float        aPosY,
-                   float        aPosZ,
-                   float        aVelX,
-                   float        aVelY,
-                   float        aVelZ,
+                   vec3         aPos,
+                   vec3         aVel,
                    float        aVolume,
                    bool         aPaused)
 {
@@ -225,12 +217,8 @@ handle Bus::play3d(AudioSource& aSound,
         return 0;
     }
     return mSoloud->play3d(aSound,
-                           aPosX,
-                           aPosY,
-                           aPosZ,
-                           aVelX,
-                           aVelY,
-                           aVelZ,
+                           aPos,
+                           aVel,
                            aVolume,
                            aPaused,
                            mChannelHandle);
@@ -238,12 +226,8 @@ handle Bus::play3d(AudioSource& aSound,
 
 handle Bus::play3dClocked(time         aSoundTime,
                           AudioSource& aSound,
-                          float        aPosX,
-                          float        aPosY,
-                          float        aPosZ,
-                          float        aVelX,
-                          float        aVelY,
-                          float        aVelZ,
+                          vec3         aPos,
+                          vec3         aVel,
                           float        aVolume)
 {
     if (!mInstance || !mSoloud)
@@ -259,12 +243,8 @@ handle Bus::play3dClocked(time         aSoundTime,
     }
     return mSoloud->play3dClocked(aSoundTime,
                                   aSound,
-                                  aPosX,
-                                  aPosY,
-                                  aPosZ,
-                                  aVelX,
-                                  aVelY,
-                                  aVelZ,
+                                  aPos,
+                                  aVel,
                                   aVolume,
                                   mChannelHandle);
 }
@@ -273,7 +253,7 @@ void Bus::annexSound(handle aVoiceHandle)
 {
     findBusHandle();
     FOR_ALL_VOICES_PRE_EXT
-    mSoloud->mVoice[ch]->mBusHandle = mChannelHandle;
+        mSoloud->mVoice[ch]->mBusHandle = mChannelHandle;
     FOR_ALL_VOICES_POST_EXT
 }
 
@@ -354,7 +334,7 @@ float* Bus::getWave()
     {
         int i;
         mSoloud->lockAudioMutex_internal();
-        for (i = 0; i < 256; i++)
+        for (i           = 0; i < 256; i++)
             mWaveData[i] = mInstance->mVisualizationWaveData[i];
         mSoloud->unlockAudioMutex_internal();
     }

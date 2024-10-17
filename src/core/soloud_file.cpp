@@ -109,7 +109,7 @@ result MemoryFile::openMem(const unsigned char* aData,
                            bool                 aCopy,
                            bool                 aTakeOwnership)
 {
-    if (aData == NULL || aDataLength == 0)
+    if (aData == nullptr || aDataLength == 0)
         return INVALID_PARAMETER;
 
     if (mDataOwned)
@@ -123,7 +123,7 @@ result MemoryFile::openMem(const unsigned char* aData,
     {
         mDataOwned = true;
         mDataPtr   = new unsigned char[aDataLength];
-        if (mDataPtr == NULL)
+        if (mDataPtr == nullptr)
             return OUT_OF_MEMORY;
         memcpy((void*)mDataPtr, aData, aDataLength);
         return SO_NO_ERROR;
@@ -145,7 +145,7 @@ result MemoryFile::openFileToMem(File* aFile)
 
     mDataLength = aFile->length();
     mDataPtr    = new unsigned char[mDataLength];
-    if (mDataPtr == NULL)
+    if (mDataPtr == nullptr)
         return OUT_OF_MEMORY;
     aFile->read((unsigned char*)mDataPtr, mDataLength);
     mDataOwned = true;

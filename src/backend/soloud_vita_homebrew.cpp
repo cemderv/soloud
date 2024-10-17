@@ -68,7 +68,7 @@ static void vita_cleanup(Soloud* aSoloud)
     VitaData* data = (VitaData*)aSoloud->mBackendData;
     data->done     = true;
 
-    sceKernelWaitThreadEnd(data->tid, NULL, NULL);
+    sceKernelWaitThreadEnd(data->tid, nullptr, nullptr);
     sceKernelDeleteThread(data->tid);
     sceAudioOutReleasePort(data->port);
 
@@ -76,7 +76,7 @@ static void vita_cleanup(Soloud* aSoloud)
     delete[] data->buffer[1];
 
     delete data;
-    aSoloud->mBackendData = NULL;
+    aSoloud->mBackendData = nullptr;
 }
 
 static int vita_thread(SceSize args, void* argp)
@@ -126,7 +126,7 @@ result vita_homebrew_init(Soloud*      aSoloud,
     aSoloud->postinit_internal(aSamplerate, data->samples * aChannels, aFlags, aChannels);
 
     data->tid =
-        sceKernelCreateThread("soloud audio output", vita_thread, 0x10000100, 0x10000, 0, 0, NULL);
+        sceKernelCreateThread("soloud audio output", vita_thread, 0x10000100, 0x10000, 0, 0, nullptr);
     sceKernelStartThread(data->tid, sizeof(data), &data);
 
     return 0;

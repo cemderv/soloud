@@ -55,7 +55,7 @@ void FlangerFilterInstance::filter(float*       aBuffer,
         delete[] mBuffer;
         mBufferLength = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
         mBuffer       = new float[mBufferLength * aChannels];
-        if (mBuffer == NULL)
+        if (mBuffer == nullptr)
         {
             mBufferLength = 0;
             return;

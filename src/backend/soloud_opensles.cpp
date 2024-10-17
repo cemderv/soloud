@@ -132,7 +132,7 @@ void soloud_opensles_deinit(SoLoud::Soloud* aSoloud)
 {
     BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
     delete data;
-    aSoloud->mBackendData = NULL;
+    aSoloud->mBackendData = nullptr;
 }
 
 static void opensles_iterate(SoLoud::Soloud* aSoloud)
@@ -202,7 +202,7 @@ result opensles_init(SoLoud::Soloud* aSoloud,
 
     // Create engine.
     const SLEngineOption opts[] = {SL_ENGINEOPTION_THREADSAFE, SL_BOOLEAN_TRUE};
-    if (slCreateEngine(&data->engineObj, 1, opts, 0, NULL, NULL) != SL_RESULT_SUCCESS)
+    if (slCreateEngine(&data->engineObj, 1, opts, 0, nullptr, nullptr) != SL_RESULT_SUCCESS)
     {
         LOG_ERROR("Failed to create engine.");
         return UNKNOWN_ERROR;
@@ -268,7 +268,7 @@ result opensles_init(SoLoud::Soloud* aSoloud,
     data->outLocator.outputMix   = data->outputMixObj;
 
     data->dstDataSink.pLocator = &data->outLocator;
-    data->dstDataSink.pFormat  = NULL;
+    data->dstDataSink.pFormat  = nullptr;
 
     // Setup player.
     {

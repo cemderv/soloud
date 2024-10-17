@@ -24,6 +24,9 @@ target_precompile_headers(SoLoud PRIVATE
   <cstdio>
   <cstring>
   <cmath>
+  <optional>
+  <memory>
+  <array>
   include/soloud.hpp
 )
 

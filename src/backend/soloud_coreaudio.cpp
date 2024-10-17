@@ -81,7 +81,7 @@ static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueue
 {
     SoLoud::Soloud* aSoloud = (SoLoud::Soloud*)context;
     aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
-    AudioQueueEnqueueBuffer(queue, buffer, 0, NULL);
+    AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 
 result coreaudio_init(SoLoud::Soloud* aSoloud,
@@ -110,8 +110,8 @@ result coreaudio_init(SoLoud::Soloud* aSoloud,
     OSStatus result = AudioQueueNewOutput(&audioFormat,
                                           coreaudio_fill_buffer,
                                           aSoloud,
-                                          NULL,
-                                          NULL,
+                                          nullptr,
+                                          nullptr,
                                           0,
                                           &audioQueue);
     if (result)
@@ -132,11 +132,11 @@ result coreaudio_init(SoLoud::Soloud* aSoloud,
         }
         buffer->mAudioDataByteSize = aBuffer * 4;
         memset(buffer->mAudioData, 0, buffer->mAudioDataByteSize);
-        AudioQueueEnqueueBuffer(audioQueue, buffer, 0, NULL);
+        AudioQueueEnqueueBuffer(audioQueue, buffer, 0, nullptr);
     }
 
     // start playback
-    result = AudioQueueStart(audioQueue, NULL);
+    result = AudioQueueStart(audioQueue, nullptr);
     if (result)
     {
         // printf("AudioQueueStart failed (%d)\n", result);

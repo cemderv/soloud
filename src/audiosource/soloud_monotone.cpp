@@ -392,7 +392,7 @@ result Monotone::loadMem(const unsigned char* aMem,
 
 result Monotone::loadFile(File* aFile)
 {
-    if (aFile == NULL)
+    if (aFile == nullptr)
         return INVALID_PARAMETER;
     clear();
     int           i;

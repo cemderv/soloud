@@ -195,7 +195,7 @@ static const char* ASCII[] = {"null",
                               "close brace",
                               "tilde",
                               "delete",
-                              NULL};
+                              nullptr};
 
 /* Context definitions */
 static const char Anything[] = "";

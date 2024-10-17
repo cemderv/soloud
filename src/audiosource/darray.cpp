@@ -6,7 +6,7 @@ darray::darray()
 {
     mAllocChunk = 128;
     mAllocated = mUsed = 0;
-    mData              = NULL;
+    mData              = nullptr;
 }
 
 void darray::clear()
@@ -14,7 +14,7 @@ void darray::clear()
     free(mData);
     mAllocChunk = 128;
     mAllocated = mUsed = 0;
-    mData              = NULL;
+    mData              = nullptr;
 }
 
 darray::~darray()
@@ -41,9 +41,9 @@ char* darray::getDataInPos(int aPosition)
         if (!newdata)
         {
             free(mData);
-            mData      = NULL;
+            mData      = nullptr;
             mAllocated = mUsed = 0;
-            return NULL;
+            return nullptr;
         }
         else
         {

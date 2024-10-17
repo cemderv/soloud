@@ -24,35 +24,12 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_error.hpp"
+#include <algorithm>
+#include <ranges>
 
 namespace SoLoud
 {
-
-AudioSourceInstance3dData::AudioSourceInstance3dData()
-{
-    m3dAttenuationModel   = 0;
-    m3dAttenuationRolloff = 1;
-    m3dDopplerFactor      = 1.0;
-    m3dMaxDistance        = 1000000.0f;
-    m3dMinDistance        = 0.0f;
-    m3dPosition[0]        = 0;
-    m3dPosition[1]        = 0;
-    m3dPosition[2]        = 0;
-    m3dVelocity[0]        = 0;
-    m3dVelocity[1]        = 0;
-    m3dVelocity[2]        = 0;
-    m3dVolume             = 0;
-    mCollider             = 0;
-    mColliderData         = 0;
-    mAttenuator           = 0;
-    mDopplerValue         = 0;
-    mFlags                = 0;
-    mHandle               = 0;
-    for (int i = 0; i < MAX_CHANNELS; i++)
-        mChannelVolume[i] = 0;
-}
-
-void AudioSourceInstance3dData::init(AudioSource& aSource)
+AudioSourceInstance3dData::AudioSourceInstance3dData(AudioSource& aSource)
 {
     m3dAttenuationModel   = aSource.m3dAttenuationModel;
     m3dAttenuationRolloff = aSource.m3dAttenuationRolloff;
@@ -68,50 +45,21 @@ void AudioSourceInstance3dData::init(AudioSource& aSource)
 
 AudioSourceInstance::AudioSourceInstance()
 {
-    mPlayIndex = 0;
-    mFlags     = 0;
-    mPan       = 0;
     // Default all volumes to 1.0 so sound behind N mix busses isn't super quiet.
-    int i;
-    for (i = 0; i < MAX_CHANNELS; i++)
-        mChannelVolume[i] = 1.0f;
-    mSetVolume            = 1.0f;
-    mBaseSamplerate       = 44100.0f;
-    mSamplerate           = 44100.0f;
-    mSetRelativePlaySpeed = 1.0f;
-    mStreamTime           = 0.0f;
-    mStreamPosition       = 0.0f;
-    mAudioSourceID        = 0;
-    mActiveFader          = 0;
-    mChannels             = 1;
-    mBusHandle            = ~0u;
-    mLoopCount            = 0;
-    mLoopPoint            = 0;
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
-    {
-        mFilter[i] = NULL;
-    }
-    for (i = 0; i < MAX_CHANNELS; i++)
-    {
-        mCurrentChannelVolume[i] = 0;
-    }
-    // behind pointers because we swap between the two buffers
-    mResampleData[0]          = 0;
-    mResampleData[1]          = 0;
-    mSrcOffset                = 0;
-    mLeftoverSamples          = 0;
-    mDelaySamples             = 0;
-    mOverallVolume            = 0;
-    mOverallRelativePlaySpeed = 1;
+    std::fill(mChannelVolume.begin(), mChannelVolume.end(), 1.0f);
 }
 
-AudioSourceInstance::~AudioSourceInstance()
+AudioSourceInstance::~AudioSourceInstance() noexcept
 {
-    int i;
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
+    for (int i = 0; i < FILTERS_PER_STREAM; i++)
     {
         delete mFilter[i];
     }
+}
+
+bool AudioSourceInstance::hasFlag(AudioSourceInstanceFlags flag) const
+{
+    return testFlag(mFlags, flag);
 }
 
 void AudioSourceInstance::init(AudioSource& aSource, int aPlayIndex)
@@ -126,27 +74,27 @@ void AudioSourceInstance::init(AudioSource& aSource, int aPlayIndex)
 
     if (aSource.mFlags & AudioSource::SHOULD_LOOP)
     {
-        mFlags |= AudioSourceInstance::LOOPING;
+        mFlags |= AudioSourceInstanceFlags::LOOPING;
     }
     if (aSource.mFlags & AudioSource::PROCESS_3D)
     {
-        mFlags |= AudioSourceInstance::PROCESS_3D;
+        mFlags |= AudioSourceInstanceFlags::PROCESS_3D;
     }
     if (aSource.mFlags & AudioSource::LISTENER_RELATIVE)
     {
-        mFlags |= AudioSourceInstance::LISTENER_RELATIVE;
+        mFlags |= AudioSourceInstanceFlags::LISTENER_RELATIVE;
     }
     if (aSource.mFlags & AudioSource::INAUDIBLE_KILL)
     {
-        mFlags |= AudioSourceInstance::INAUDIBLE_KILL;
+        mFlags |= AudioSourceInstanceFlags::INAUDIBLE_KILL;
     }
     if (aSource.mFlags & AudioSource::INAUDIBLE_TICK)
     {
-        mFlags |= AudioSourceInstance::INAUDIBLE_TICK;
+        mFlags |= AudioSourceInstanceFlags::INAUDIBLE_TICK;
     }
     if (aSource.mFlags & AudioSource::DISABLE_AUTOSTOP)
     {
-        mFlags |= AudioSourceInstance::DISABLE_AUTOSTOP;
+        mFlags |= AudioSourceInstanceFlags::DISABLE_AUTOSTOP;
     }
 }
 

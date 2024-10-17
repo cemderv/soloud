@@ -95,7 +95,7 @@ ThreadHandle createThread(threadFunction aThreadFunction, void* aParameter)
     soloud_thread_data* d = new soloud_thread_data;
     d->mFunc              = aThreadFunction;
     d->mParam             = aParameter;
-    HANDLE h              = CreateThread(NULL, 0, threadfunc, d, 0, NULL);
+    HANDLE h              = CreateThread(nullptr, 0, threadfunc, d, 0, nullptr);
     if (0 == h)
     {
         return 0;
@@ -195,7 +195,7 @@ ThreadHandle createThread(threadFunction aThreadFunction, void* aParameter)
     d->mParam             = aParameter;
 
     ThreadHandleData* threadHandle = new ThreadHandleData;
-    pthread_create(&threadHandle->thread, NULL, threadfunc, (void*)d);
+    pthread_create(&threadHandle->thread, nullptr, threadfunc, (void*)d);
     return threadHandle;
 }
 
@@ -205,7 +205,7 @@ void sleep(int aMSec)
     struct timespec req = {0};
     req.tv_sec          = 0;
     req.tv_nsec         = aMSec * 1000000L;
-    nanosleep(&req, (struct timespec*)NULL);
+    nanosleep(&req, (struct timespec*)nullptr);
 }
 
 void wait(ThreadHandle aThreadHandle)

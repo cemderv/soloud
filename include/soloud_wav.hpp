@@ -92,6 +92,6 @@ public:
                        bool         aTakeOwnership = true);
 
     AudioSourceInstance* createInstance() override;
-    time                 getLength();
+    time                 getLength() const;
 };
 }; // namespace SoLoud

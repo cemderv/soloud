@@ -129,7 +129,7 @@ result Speech::setParams(unsigned int aBaseFrequency,
 
 result Speech::setText(const char* aText)
 {
-    if (aText == NULL)
+    if (aText == nullptr)
         return INVALID_PARAMETER;
 
     stop();

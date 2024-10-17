@@ -59,7 +59,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
     mVoice[ch]->mBusHandle     = aBus;
     mVoice[ch]->init(aSound, mPlayIndex);
-    m3dData[ch].init(aSound);
+    m3dData[ch] = AudioSourceInstance3dData{aSound};
 
     mPlayIndex++;
 
@@ -71,7 +71,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     if (aPaused)
     {
-        mVoice[ch]->mFlags |= AudioSourceInstance::PAUSED;
+        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::PAUSED;
     }
 
     setVoicePan_internal(ch, aPan);
@@ -111,7 +111,11 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 }
 
 handle Soloud::playClocked(
-    time aSoundTime, AudioSource& aSound, float aVolume, float aPan, unsigned int aBus)
+    time         aSoundTime,
+    AudioSource& aSound,
+    float        aVolume,
+    float        aPan,
+    unsigned int aBus)
 {
     handle h = play(aSound, aVolume, aPan, 1, aBus);
     lockAudioMutex_internal();
@@ -144,9 +148,9 @@ result Soloud::seek(handle aVoiceHandle, time aSeconds)
     result res       = SO_NO_ERROR;
     result singleres = SO_NO_ERROR;
     FOR_ALL_VOICES_PRE
-    singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
-    if (singleres != SO_NO_ERROR)
-        res = singleres;
+        singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+        if (singleres != SO_NO_ERROR)
+            res = singleres;
     FOR_ALL_VOICES_POST
     return res;
 }
@@ -155,7 +159,7 @@ result Soloud::seek(handle aVoiceHandle, time aSeconds)
 void Soloud::stop(handle aVoiceHandle)
 {
     FOR_ALL_VOICES_PRE
-    stopVoice_internal(ch);
+        stopVoice_internal(ch);
     FOR_ALL_VOICES_POST
 }
 

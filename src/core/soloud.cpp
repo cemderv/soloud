@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 #include "soloud_thread.hpp"
 #include <cfloat> // _controlfp
 #include <cmath> // sin
-#include <cstdlib>
 #include <cstring>
 
 
@@ -54,41 +53,21 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-AlignedFloatBuffer::AlignedFloatBuffer()
+AlignedFloatBuffer::AlignedFloatBuffer(size_t aFloats)
+    : mFloats(aFloats)
 {
-    mBasePtr = 0;
-    mData    = 0;
-    mFloats  = 0;
-}
-
-result AlignedFloatBuffer::init(unsigned int aFloats)
-{
-    delete[] mBasePtr;
-    mBasePtr = 0;
-    mData    = 0;
-    mFloats  = aFloats;
 #ifndef SOLOUD_SSE_INTRINSICS
-    mBasePtr = new unsigned char[aFloats * sizeof(float)];
-    if (mBasePtr == NULL)
-        return OUT_OF_MEMORY;
-    mData = (float*)mBasePtr;
+    mBasePtr = std::make_unique<unsigned char[]>(mFloats * sizeof(float));
+    mData    = reinterpret_cast<float*>(mBasePtr.get());
 #else
-    mBasePtr = new unsigned char[aFloats * sizeof(float) + 16];
-    if (mBasePtr == NULL)
-        return OUT_OF_MEMORY;
-    mData = (float*)(((size_t)mBasePtr + 15) & ~15);
+    mBasePtr = std::make_unique<unsigned char[]>(aFloats * sizeof(float) + 16);
+    mData = (float*)(((size_t)mBasePtr.get() + 15) & ~15);
 #endif
-    return SO_NO_ERROR;
 }
 
 void AlignedFloatBuffer::clear()
 {
-    memset(mData, 0, sizeof(float) * mFloats);
-}
-
-AlignedFloatBuffer::~AlignedFloatBuffer()
-{
-    delete[] mBasePtr;
+    std::fill_n(mData, mFloats, 0.0f);
 }
 
 TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
@@ -114,12 +93,12 @@ Soloud::Soloud()
     mFlags                  = 0;
     mGlobalVolume           = 0;
     mPlayIndex              = 0;
-    mBackendData            = NULL;
-    mAudioThreadMutex       = NULL;
+    mBackendData            = nullptr;
+    mAudioThreadMutex       = nullptr;
     mPostClipScaler         = 0;
-    mBackendCleanupFunc     = NULL;
-    mBackendPauseFunc       = NULL;
-    mBackendResumeFunc      = NULL;
+    mBackendCleanupFunc     = nullptr;
+    mBackendPauseFunc       = nullptr;
+    mBackendResumeFunc      = nullptr;
     mChannels               = 2;
     mStreamTime             = 0;
     mLastClockedTime        = 0;
@@ -133,8 +112,8 @@ Soloud::Soloud()
         mActiveVoice[i] = 0;
     for (i = 0; i < FILTERS_PER_STREAM; i++)
     {
-        mFilter[i]         = NULL;
-        mFilterInstance[i] = NULL;
+        mFilter[i]         = nullptr;
+        mFilterInstance[i] = nullptr;
     }
     for (i = 0; i < 256; i++)
     {
@@ -142,36 +121,11 @@ Soloud::Soloud()
         mVisualizationWaveData[i] = 0;
         mWaveData[i]              = 0;
     }
-    for (i = 0; i < MAX_CHANNELS; i++)
-    {
-        mVisualizationChannelVolume[i] = 0;
-    }
-    for (i = 0; i < VOICE_COUNT; i++)
-    {
-        mVoice[i] = 0;
-    }
     mVoiceGroup      = 0;
     mVoiceGroupCount = 0;
-
-    m3dPosition[0]     = 0;
-    m3dPosition[1]     = 0;
-    m3dPosition[2]     = 0;
-    m3dAt[0]           = 0;
-    m3dAt[1]           = 0;
-    m3dAt[2]           = -1;
-    m3dUp[0]           = 0;
-    m3dUp[1]           = 1;
-    m3dUp[2]           = 0;
-    m3dVelocity[0]     = 0;
-    m3dVelocity[1]     = 0;
-    m3dVelocity[2]     = 0;
-    m3dSoundSpeed      = 343.3f;
-    mMaxActiveVoices   = 16;
-    mHighestVoice      = 0;
-    mResampleData      = NULL;
-    mResampleDataOwner = NULL;
-    for (i                    = 0; i < 3 * MAX_CHANNELS; i++)
-        m3dSpeakerPosition[i] = 0;
+    m3dSoundSpeed    = 343.3f;
+    mMaxActiveVoices = 16;
+    mHighestVoice    = 0;
 }
 
 Soloud::~Soloud()
@@ -187,8 +141,6 @@ Soloud::~Soloud()
     for (i = 0; i < mVoiceGroupCount; i++)
         delete[] mVoiceGroup[i];
     delete[] mVoiceGroup;
-    delete[] mResampleData;
-    delete[] mResampleDataOwner;
 }
 
 void Soloud::deinit()
@@ -203,7 +155,7 @@ void Soloud::deinit()
     mBackendCleanupFunc = 0;
     if (mAudioThreadMutex)
         Thread::destroyMutex(mAudioThreadMutex);
-    mAudioThreadMutex = NULL;
+    mAudioThreadMutex = nullptr;
 }
 
 result Soloud::init(unsigned int aFlags,
@@ -414,133 +366,92 @@ void Soloud::postinit_internal(unsigned int aSamplerate,
         mScratchSize = SAMPLE_GRANULARITY * 2;
     if (mScratchSize < 4096)
         mScratchSize = 4096;
-    mScratch.init(mScratchSize * MAX_CHANNELS);
-    mOutputScratch.init(mScratchSize * MAX_CHANNELS);
-    mResampleData      = new float*[mMaxActiveVoices * 2];
-    mResampleDataOwner = new AudioSourceInstance*[mMaxActiveVoices];
-    mResampleDataBuffer.init(mMaxActiveVoices * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS);
-    unsigned int i;
-    for (i               = 0; i < mMaxActiveVoices * 2; i++)
+    mScratch       = AlignedFloatBuffer{mScratchSize * MAX_CHANNELS};
+    mOutputScratch = AlignedFloatBuffer{mScratchSize * MAX_CHANNELS};
+
+    mResampleData.resize(mMaxActiveVoices * 2);
+    mResampleDataOwner.resize(mMaxActiveVoices);
+
+    mResampleDataBuffer = AlignedFloatBuffer{
+        mMaxActiveVoices * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS};
+
+    for (size_t i        = 0; i < mMaxActiveVoices * 2; i++)
         mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
-    for (i                    = 0; i < mMaxActiveVoices; i++)
-        mResampleDataOwner[i] = NULL;
+
     mFlags          = aFlags;
     mPostClipScaler = 0.95f;
+
     switch (mChannels)
     {
-        case 1: m3dSpeakerPosition[0 * 3 + 0] = 0;
-            m3dSpeakerPosition[0 * 3 + 1] = 0;
-            m3dSpeakerPosition[0 * 3 + 2] = 1;
+        case 1: {
+            m3dSpeakerPosition[0] = {0, 0, 1};
             break;
-        case 2: m3dSpeakerPosition[0 * 3 + 0] = 2;
-            m3dSpeakerPosition[0 * 3 + 1] = 0;
-            m3dSpeakerPosition[0 * 3 + 2] = 1;
-            m3dSpeakerPosition[1 * 3 + 0] = -2;
-            m3dSpeakerPosition[1 * 3 + 1] = 0;
-            m3dSpeakerPosition[1 * 3 + 2] = 1;
+        }
+        case 2: {
+            m3dSpeakerPosition[0] = {2, 0, 1};
+            m3dSpeakerPosition[1] = {-2, 0, 1};
             break;
-        case 4: m3dSpeakerPosition[0 * 3 + 0] = 2;
-            m3dSpeakerPosition[0 * 3 + 1] = 0;
-            m3dSpeakerPosition[0 * 3 + 2] = 1;
-            m3dSpeakerPosition[1 * 3 + 0] = -2;
-            m3dSpeakerPosition[1 * 3 + 1] = 0;
-            m3dSpeakerPosition[1 * 3 + 2] = 1;
-        // I suppose technically the second pair should be straight left & right,
-        // but I prefer moving them a bit back to mirror the front speakers.
-            m3dSpeakerPosition[2 * 3 + 0] = 2;
-            m3dSpeakerPosition[2 * 3 + 1] = 0;
-            m3dSpeakerPosition[2 * 3 + 2] = -1;
-            m3dSpeakerPosition[3 * 3 + 0] = -2;
-            m3dSpeakerPosition[3 * 3 + 1] = 0;
-            m3dSpeakerPosition[3 * 3 + 2] = -1;
+        }
+        case 4: {
+            m3dSpeakerPosition[0] = {2, 0, 1};
+            m3dSpeakerPosition[1] = {-2, 0, 1};
+
+            // I suppose technically the second pair should be straight left & right,
+            // but I prefer moving them a bit back to mirror the front speakers.
+            m3dSpeakerPosition[2] = {2, 0, -1};
+            m3dSpeakerPosition[3] = {-2, 0, -1};
+
             break;
-        case 6: m3dSpeakerPosition[0 * 3 + 0] = 2;
-            m3dSpeakerPosition[0 * 3 + 1] = 0;
-            m3dSpeakerPosition[0 * 3 + 2] = 1;
-            m3dSpeakerPosition[1 * 3 + 0] = -2;
-            m3dSpeakerPosition[1 * 3 + 1] = 0;
-            m3dSpeakerPosition[1 * 3 + 2] = 1;
+        }
+        case 6: {
+            m3dSpeakerPosition[0] = {2, 0, 1};
+            m3dSpeakerPosition[1] = {-2, 0, 1};
 
-        // center and subwoofer.
-            m3dSpeakerPosition[2 * 3 + 0] = 0;
-            m3dSpeakerPosition[2 * 3 + 1] = 0;
-            m3dSpeakerPosition[2 * 3 + 2] = 1;
-        // Sub should be "mix of everything". We'll handle it as a special case and make it a
-        // null vector.
-            m3dSpeakerPosition[3 * 3 + 0] = 0;
-            m3dSpeakerPosition[3 * 3 + 1] = 0;
-            m3dSpeakerPosition[3 * 3 + 2] = 0;
+            // center and subwoofer.
+            m3dSpeakerPosition[2] = {0, 0, 1};
 
-        // I suppose technically the second pair should be straight left & right,
-        // but I prefer moving them a bit back to mirror the front speakers.
-            m3dSpeakerPosition[4 * 3 + 0] = 2;
-            m3dSpeakerPosition[4 * 3 + 1] = 0;
-            m3dSpeakerPosition[4 * 3 + 2] = -1;
-            m3dSpeakerPosition[5 * 3 + 0] = -2;
-            m3dSpeakerPosition[5 * 3 + 1] = 0;
-            m3dSpeakerPosition[5 * 3 + 2] = -1;
+            // Sub should be "mix of everything". We'll handle it as a special case and make it a
+            // null vector.
+            m3dSpeakerPosition[3] = {0, 0, 0};
+
+            // I suppose technically the second pair should be straight left & right,
+            // but I prefer moving them a bit back to mirror the front speakers.
+            m3dSpeakerPosition[4] = {2, 0, -1};
+            m3dSpeakerPosition[5] = {-2, 0, -1};
+
             break;
-        case 8: m3dSpeakerPosition[0 * 3 + 0] = 2;
-            m3dSpeakerPosition[0 * 3 + 1] = 0;
-            m3dSpeakerPosition[0 * 3 + 2] = 1;
-            m3dSpeakerPosition[1 * 3 + 0] = -2;
-            m3dSpeakerPosition[1 * 3 + 1] = 0;
-            m3dSpeakerPosition[1 * 3 + 2] = 1;
+        }
+        case 8: {
+            m3dSpeakerPosition[0] = {2, 0, 1};
+            m3dSpeakerPosition[1] = {-2, 0, 1};
 
-        // center and subwoofer.
-            m3dSpeakerPosition[2 * 3 + 0] = 0;
-            m3dSpeakerPosition[2 * 3 + 1] = 0;
-            m3dSpeakerPosition[2 * 3 + 2] = 1;
-        // Sub should be "mix of everything". We'll handle it as a special case and make it a
-        // null vector.
-            m3dSpeakerPosition[3 * 3 + 0] = 0;
-            m3dSpeakerPosition[3 * 3 + 1] = 0;
-            m3dSpeakerPosition[3 * 3 + 2] = 0;
+            // center and subwoofer.
+            m3dSpeakerPosition[2] = {0, 0, 1};
 
-        // side
-            m3dSpeakerPosition[4 * 3 + 0] = 2;
-            m3dSpeakerPosition[4 * 3 + 1] = 0;
-            m3dSpeakerPosition[4 * 3 + 2] = 0;
-            m3dSpeakerPosition[5 * 3 + 0] = -2;
-            m3dSpeakerPosition[5 * 3 + 1] = 0;
-            m3dSpeakerPosition[5 * 3 + 2] = 0;
+            // Sub should be "mix of everything". We'll handle it as a special case and make it a
+            // null vector.
+            m3dSpeakerPosition[3] = {0, 0, 0};
 
-        // back
-            m3dSpeakerPosition[6 * 3 + 0] = 2;
-            m3dSpeakerPosition[6 * 3 + 1] = 0;
-            m3dSpeakerPosition[6 * 3 + 2] = -1;
-            m3dSpeakerPosition[7 * 3 + 0] = -2;
-            m3dSpeakerPosition[7 * 3 + 1] = 0;
-            m3dSpeakerPosition[7 * 3 + 2] = -1;
+            // side
+            m3dSpeakerPosition[4] = {2, 0, 0};
+            m3dSpeakerPosition[5] = {-2, 0, 0};
+
+            // back
+            m3dSpeakerPosition[6] = {2, 0, -1};
+            m3dSpeakerPosition[7] = {-2, 0, -1};
+
             break;
+        }
     }
 }
-
-const char* Soloud::getErrorString(result aErrorCode) const
-{
-    switch (aErrorCode)
-    {
-        case SO_NO_ERROR: return "No error";
-        case INVALID_PARAMETER: return "Some parameter is invalid";
-        case FILE_NOT_FOUND: return "File not found";
-        case FILE_LOAD_FAILED: return "File found, but could not be loaded";
-        case DLL_NOT_FOUND: return "DLL not found, or wrong DLL";
-        case OUT_OF_MEMORY: return "Out of memory";
-        case NOT_IMPLEMENTED: return "Feature not implemented";
-        /*case UNKNOWN_ERROR: return "Other error";*/
-    }
-    return "Other error";
-}
-
 
 float* Soloud::getWave()
 {
-    int i;
     lockAudioMutex_internal();
-    for (i           = 0; i < 256; i++)
+    for (int i       = 0; i < 256; i++)
         mWaveData[i] = mVisualizationWaveData[i];
     unlockAudioMutex_internal();
-    return mWaveData;
+    return mWaveData.data();
 }
 
 float Soloud::getApproximateVolume(unsigned int aChannel)
@@ -569,16 +480,16 @@ float* Soloud::calcFFT()
     }
     unlockAudioMutex_internal();
 
-    SoLoud::FFT::fft1024(temp);
+    FFT::fft1024(temp);
 
     for (i = 0; i < 256; i++)
     {
         float real  = temp[i * 2];
         float imag  = temp[i * 2 + 1];
-        mFFTData[i] = (float)sqrt(real * real + imag * imag);
+        mFFTData[i] = std::sqrt(real * real + imag * imag);
     }
 
-    return mFFTData;
+    return mFFTData.data();
 }
 
 #if defined(SOLOUD_SSE_INTRINSICS)
@@ -1493,8 +1404,10 @@ void Soloud::mixBus_internal(float*       aBuffer,
     for (i = 0; i < mActiveVoiceCount; i++)
     {
         AudioSourceInstance* voice = mVoice[mActiveVoice[i]];
-        if (voice && voice->mBusHandle == aBus && !(voice->mFlags & AudioSourceInstance::PAUSED) &&
-            !(voice->mFlags & AudioSourceInstance::INAUDIBLE))
+
+        if (voice && voice->mBusHandle == aBus && !testFlag(voice->mFlags,
+                                                            AudioSourceInstanceFlags::PAUSED) &&
+            !testFlag(voice->mFlags, AudioSourceInstanceFlags::INAUDIBLE))
         {
             float step = voice->mSamplerate / aSamplerate;
             // avoid step overflow
@@ -1517,8 +1430,7 @@ void Soloud::mixBus_internal(float*       aBuffer,
                 }
 
                 // Clear scratch where we're skipping
-                unsigned int k;
-                for (k = 0; k < voice->mChannels; k++)
+                for (unsigned int k = 0; k < voice->mChannels; k++)
                 {
                     memset(aScratch + k * aBufferSize, 0, sizeof(float) * outofs);
                 }
@@ -1536,14 +1448,15 @@ void Soloud::mixBus_internal(float*       aBuffer,
                     // Get a block of source data
 
                     int readcount = 0;
-                    if (!voice->hasEnded() || voice->mFlags & AudioSourceInstance::LOOPING)
+                    if (!voice->hasEnded() || testFlag(voice->mFlags,
+                                                       AudioSourceInstanceFlags::LOOPING))
                     {
                         readcount = voice->getAudio(voice->mResampleData[0],
                                                     SAMPLE_GRANULARITY,
                                                     SAMPLE_GRANULARITY);
                         if (readcount < SAMPLE_GRANULARITY)
                         {
-                            if (voice->mFlags & AudioSourceInstance::LOOPING)
+                            if (testFlag(voice->mFlags, AudioSourceInstanceFlags::LOOPING))
                             {
                                 while (readcount < SAMPLE_GRANULARITY &&
                                        voice->seek(voice->mLoopPoint,
@@ -1551,9 +1464,12 @@ void Soloud::mixBus_internal(float*       aBuffer,
                                                    mScratchSize) == SO_NO_ERROR)
                                 {
                                     voice->mLoopCount++;
-                                    int inc = voice->getAudio(voice->mResampleData[0] + readcount,
-                                                              SAMPLE_GRANULARITY - readcount,
-                                                              SAMPLE_GRANULARITY);
+
+                                    const int inc = voice->getAudio(
+                                        voice->mResampleData[0] + readcount,
+                                        SAMPLE_GRANULARITY - readcount,
+                                        SAMPLE_GRANULARITY);
+
                                     readcount += inc;
                                     if (inc == 0)
                                         break;
@@ -1565,11 +1481,12 @@ void Soloud::mixBus_internal(float*       aBuffer,
                     // Clear remaining of the resample data if the full scratch wasn't used
                     if (readcount < SAMPLE_GRANULARITY)
                     {
-                        unsigned int k;
-                        for (k = 0; k < voice->mChannels; k++)
+                        for (unsigned int k = 0; k < voice->mChannels; k++)
+                        {
                             memset(voice->mResampleData[0] + readcount + SAMPLE_GRANULARITY * k,
                                    0,
                                    sizeof(float) * (SAMPLE_GRANULARITY - readcount));
+                        }
                     }
 
                     // If we go past zero, crop to zero (a bit of a kludge)
@@ -1682,17 +1599,19 @@ void Soloud::mixBus_internal(float*       aBuffer,
             panAndExpand(voice, aBuffer, aSamplesToRead, aBufferSize, aScratch, aChannels);
 
             // clear voice if the sound is over
-            if (!(voice->mFlags &
-                  (AudioSourceInstance::LOOPING | AudioSourceInstance::DISABLE_AUTOSTOP)) &&
+            if (!testFlag(voice->mFlags,
+                          AudioSourceInstanceFlags::LOOPING |
+                          AudioSourceInstanceFlags::DISABLE_AUTOSTOP)
+                &&
                 voice->hasEnded())
             {
                 stopVoice_internal(mActiveVoice[i]);
             }
         }
         else if (voice && voice->mBusHandle == aBus &&
-                 !(voice->mFlags & AudioSourceInstance::PAUSED) &&
-                 (voice->mFlags & AudioSourceInstance::INAUDIBLE) &&
-                 (voice->mFlags & AudioSourceInstance::INAUDIBLE_TICK))
+                 !testFlag(voice->mFlags, AudioSourceInstanceFlags::PAUSED) &&
+                 testFlag(voice->mFlags, AudioSourceInstanceFlags::INAUDIBLE) &&
+                 testFlag(voice->mFlags, AudioSourceInstanceFlags::INAUDIBLE_TICK))
         {
             // Inaudible but needs ticking. Do minimal work (keep counters up to date and ask
             // audiosource for data)
@@ -1726,14 +1645,14 @@ void Soloud::mixBus_internal(float*       aBuffer,
                     // Get a block of source data
 
                     int readcount = 0;
-                    if (!voice->hasEnded() || voice->mFlags & AudioSourceInstance::LOOPING)
+                    if (!voice->hasEnded() || voice->hasFlag(AudioSourceInstanceFlags::LOOPING))
                     {
                         readcount = voice->getAudio(voice->mResampleData[0],
                                                     SAMPLE_GRANULARITY,
                                                     SAMPLE_GRANULARITY);
                         if (readcount < SAMPLE_GRANULARITY)
                         {
-                            if (voice->mFlags & AudioSourceInstance::LOOPING)
+                            if (voice->hasFlag(AudioSourceInstanceFlags::LOOPING))
                             {
                                 while (readcount < SAMPLE_GRANULARITY &&
                                        voice->seek(voice->mLoopPoint,
@@ -1803,9 +1722,8 @@ void Soloud::mixBus_internal(float*       aBuffer,
             }
 
             // clear voice if the sound is over
-            if (!(voice->mFlags &
-                  (AudioSourceInstance::LOOPING | AudioSourceInstance::DISABLE_AUTOSTOP)) &&
-                voice->hasEnded())
+            if (voice->hasEnded() && !voice->hasFlag(
+                    AudioSourceInstanceFlags::LOOPING | AudioSourceInstanceFlags::DISABLE_AUTOSTOP))
             {
                 stopVoice_internal(mActiveVoice[i]);
             }
@@ -1816,12 +1734,11 @@ void Soloud::mixBus_internal(float*       aBuffer,
 void Soloud::mapResampleBuffers_internal()
 {
     assert(mMaxActiveVoices < 256);
-    char live[256];
-    memset(live, 0, mMaxActiveVoices);
-    unsigned int i, j;
-    for (i = 0; i < mMaxActiveVoices; i++)
+    std::array<char, 256> live{};
+
+    for (unsigned int i = 0; i < mMaxActiveVoices; i++)
     {
-        for (j = 0; j < mMaxActiveVoices; j++)
+        for (unsigned int j = 0; j < mMaxActiveVoices; j++)
         {
             if (mResampleDataOwner[i] && mResampleDataOwner[i] == mVoice[mActiveVoice[j]])
             {
@@ -1831,7 +1748,7 @@ void Soloud::mapResampleBuffers_internal()
         }
     }
 
-    for (i = 0; i < mMaxActiveVoices; i++)
+    for (unsigned int i = 0; i < mMaxActiveVoices; i++)
     {
         if (!(live[i] & 1) && mResampleDataOwner[i]) // For all dead channels with owners..
         {
@@ -1842,12 +1759,12 @@ void Soloud::mapResampleBuffers_internal()
     }
 
     int latestfree = 0;
-    for (i = 0; i < mActiveVoiceCount; i++)
+    for (unsigned int i = 0; i < mActiveVoiceCount; i++)
     {
         if (!(live[i] & 2) && mVoice[mActiveVoice[i]]) // For all live voices with no channel..
         {
             int found = -1;
-            for (j = latestfree; found == -1 && j < mMaxActiveVoices; j++)
+            for (unsigned int j = latestfree; found == -1 && j < mMaxActiveVoices; j++)
             {
                 if (mResampleDataOwner[j] == 0)
                 {
@@ -1878,18 +1795,26 @@ void Soloud::calcActiveVoices_internal()
     mActiveVoiceDirty = false;
 
     // Populate
-    unsigned int i, candidates, mustlive;
-    candidates = 0;
-    mustlive   = 0;
-    for (i = 0; i < mHighestVoice; i++)
+    unsigned int candidates = 0;
+    unsigned int mustlive   = 0;
+
+    for (unsigned int i = 0; i < mHighestVoice; i++)
     {
-        if (mVoice[i] && (!(mVoice[i]->mFlags &
-                            (AudioSourceInstance::INAUDIBLE | AudioSourceInstance::PAUSED)) ||
-                          (mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE_TICK)))
+        const auto voice = mVoice[i];
+        if (voice == nullptr)
+        {
+            continue;
+        }
+
+        if (
+            !voice->hasFlag(
+                AudioSourceInstanceFlags::INAUDIBLE | AudioSourceInstanceFlags::PAUSED)
+            ||
+            voice->hasFlag(AudioSourceInstanceFlags::INAUDIBLE_TICK))
         {
             mActiveVoice[candidates] = i;
             candidates++;
-            if (mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE_TICK)
+            if (testFlag(mVoice[i]->mFlags, AudioSourceInstanceFlags::INAUDIBLE_TICK))
             {
                 mActiveVoice[candidates - 1] = mActiveVoice[mustlive];
                 mActiveVoice[mustlive]       = i;
@@ -2041,7 +1966,7 @@ void Soloud::mix_internal(unsigned int aSamples, unsigned int aStride)
     int i;
     for (i = 0; i < (signed)mHighestVoice; i++)
     {
-        if (mVoice[i] && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
+        if (mVoice[i] && !mVoice[i]->hasFlag(AudioSourceInstanceFlags::PAUSED))
         {
             float volume[2];
 
@@ -2054,7 +1979,7 @@ void Soloud::mix_internal(unsigned int aSamples, unsigned int aStride)
 
             mVoice[i]->mStreamTime += buffertime;
             mVoice[i]->mStreamPosition +=
-                (double)buffertime * (double)mVoice[i]->mOverallRelativePlaySpeed;
+                double(buffertime) * double(mVoice[i]->mOverallRelativePlaySpeed);
 
             // TODO: this is actually unstable, because mStreamTime depends on the relative
             // play speed.
@@ -2218,15 +2143,14 @@ void interlace_samples_s16(const float* aSourceBuffer,
                            unsigned int aStride)
 {
     // 111222 -> 121212
-    unsigned int i, j, c;
-    c = 0;
-    for (j = 0; j < aChannels; j++)
+    for (unsigned int j = 0; j < aChannels; j++)
     {
-        c = j * aStride;
-        for (i = j; i < aSamples * aChannels; i += aChannels)
+        unsigned int c = j * aStride;
+
+        for (unsigned int i = j; i < aSamples * aChannels; i += aChannels)
         {
-            aDestBuffer[i] = (short)(aSourceBuffer[c] * 0x7fff);
-            c++;
+            aDestBuffer[i] = short(aSourceBuffer[c] * 0x7fff);
+            ++c;
         }
     }
 }
@@ -2250,5 +2174,4 @@ void Soloud::unlockAudioMutex_internal()
         Thread::unlockMutex(mAudioThreadMutex);
     }
 }
-
 }; // namespace SoLoud

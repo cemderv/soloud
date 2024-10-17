@@ -77,12 +77,12 @@ result FilterInstance::initParams(int aNumParams)
     mParam      = new float[mNumParams];
     mParamFader = new Fader[mNumParams];
 
-    if (mParam == NULL || mParamFader == NULL)
+    if (mParam == nullptr || mParamFader == nullptr)
     {
         delete[] mParam;
         delete[] mParamFader;
-        mParam      = NULL;
-        mParamFader = NULL;
+        mParam      = nullptr;
+        mParamFader = nullptr;
         mNumParams  = 0;
         return OUT_OF_MEMORY;
     }

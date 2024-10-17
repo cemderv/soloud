@@ -71,7 +71,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             fperiod = fmaxperiod;
             if (mParams.p_freq_limit > 0.0f)
             {
-                if (mFlags & LOOPING)
+                if (hasFlag(AudioSourceInstanceFlags::LOOPING))
                 {
                     resetSample(false);
                 }
@@ -82,13 +82,13 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
                 }
             }
         }
-        float rfperiod = (float)fperiod;
+        auto rfperiod = float(fperiod);
         if (vib_amp > 0.0f)
         {
             vib_phase += vib_speed;
-            rfperiod = (float)(fperiod * (1.0 + sin(vib_phase) * vib_amp));
+            rfperiod = float(fperiod * (1.0 + sin(vib_phase) * vib_amp));
         }
-        period = (int)rfperiod;
+        period = int(rfperiod);
         if (period < 8)
             period = 8;
         square_duty += square_slide;
@@ -104,7 +104,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             env_stage++;
             if (env_stage == 3)
             {
-                if (mFlags & LOOPING)
+                if (testFlag(mFlags, AudioSourceInstanceFlags::LOOPING))
                 {
                     resetSample(false);
                 }
@@ -119,7 +119,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
         {
             if (env_length[0])
             {
-                env_vol = (float)env_time / env_length[0];
+                env_vol = float(env_time) / env_length[0];
             }
             else
             {
@@ -130,7 +130,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
         {
             if (env_length[1])
             {
-                env_vol = 1.0f + (float)pow(1.0f - (float)env_time / env_length[1], 1.0f) * 2.0f *
+                env_vol = 1.0f + (float)pow(1.0f - float(env_time) / env_length[1], 1.0f) * 2.0f *
                           mParams.p_env_punch;
             }
             else
@@ -142,7 +142,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
         {
             if (env_length[2])
             {
-                env_vol = 1.0f - (float)env_time / env_length[2];
+                env_vol = 1.0f - float(env_time) / env_length[2];
             }
             else
             {
@@ -175,14 +175,14 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
                 phase %= period;
                 if (mParams.wave_type == 3)
                 {
-                    for (int k = 0; k < 32; k++)
+                    for (float& k : noise_buffer)
                     {
-                        noise_buffer[k] = frnd(2.0f) - 1.0f;
+                        k = frnd(2.0f) - 1.0f;
                     }
                 }
             }
             // base waveform
-            float fp = (float)phase / period;
+            const float fp = float(phase) / period;
             switch (mParams.wave_type)
             {
                 case 0: // square
@@ -199,14 +199,14 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
                     sample = 1.0f - fp * 2;
                     break;
                 case 2: // sine
-                    sample = (float)sin(fp * 2 * M_PI);
+                    sample = float(sin(fp * 2 * M_PI));
                     break;
                 case 3: // noise
                     sample = noise_buffer[phase * 32 / period];
                     break;
             }
             // lp filter
-            float pp = fltp;
+            const float pp = fltp;
             fltw *= fltw_d;
             if (fltw < 0.0f)
                 fltw = 0.0f;
@@ -238,7 +238,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
 
         ssample *= 2.0f * mParams.sound_vol;
 
-        if (buffer != NULL)
+        if (buffer != nullptr)
         {
             if (ssample > 1.0f)
                 ssample = 1.0f;
@@ -261,18 +261,18 @@ void SfxrInstance::resetSample(bool aRestart)
     if (!aRestart)
         phase = 0;
     fperiod      = 100.0 / (mParams.p_base_freq * mParams.p_base_freq + 0.001);
-    period       = (int)fperiod;
+    period       = int(fperiod);
     fmaxperiod   = 100.0 / (mParams.p_freq_limit * mParams.p_freq_limit + 0.001);
-    fslide       = 1.0 - pow((double)mParams.p_freq_ramp, 3.0) * 0.01;
-    fdslide      = -pow((double)mParams.p_freq_dramp, 3.0) * 0.000001;
+    fslide       = 1.0 - pow(double(mParams.p_freq_ramp), 3.0) * 0.01;
+    fdslide      = -pow(double(mParams.p_freq_dramp), 3.0) * 0.000001;
     square_duty  = 0.5f - mParams.p_duty * 0.5f;
     square_slide = -mParams.p_duty_ramp * 0.00005f;
     if (mParams.p_arp_mod >= 0.0f)
-        arp_mod = 1.0 - pow((double)mParams.p_arp_mod, 2.0) * 0.9;
+        arp_mod = 1.0 - pow(double(mParams.p_arp_mod), 2.0) * 0.9;
     else
-        arp_mod = 1.0 + pow((double)mParams.p_arp_mod, 2.0) * 10.0;
+        arp_mod = 1.0 + pow(double(mParams.p_arp_mod), 2.0) * 10.0;
     arp_time  = 0;
-    arp_limit = (int)(pow(1.0f - mParams.p_arp_speed, 2.0f) * 20000 + 32);
+    arp_limit = int(pow(1.0f - mParams.p_arp_speed, 2.0f) * 20000 + 32);
     if (mParams.p_arp_speed == 1.0f)
         arp_limit = 0;
     if (!aRestart)
@@ -280,42 +280,43 @@ void SfxrInstance::resetSample(bool aRestart)
         // reset filter
         fltp   = 0.0f;
         fltdp  = 0.0f;
-        fltw   = (float)pow(mParams.p_lpf_freq, 3.0f) * 0.1f;
+        fltw   = pow(mParams.p_lpf_freq, 3.0f) * 0.1f;
         fltw_d = 1.0f + mParams.p_lpf_ramp * 0.0001f;
-        fltdmp = 5.0f / (1.0f + (float)pow(mParams.p_lpf_resonance, 2.0f) * 20.0f) * (0.01f + fltw);
+        fltdmp = 5.0f / (1.0f + pow(mParams.p_lpf_resonance, 2.0f) * 20.0f) * (0.01f + fltw);
         if (fltdmp > 0.8f)
             fltdmp = 0.8f;
         fltphp  = 0.0f;
-        flthp   = (float)pow(mParams.p_hpf_freq, 2.0f) * 0.1f;
-        flthp_d = (float)(1.0 + mParams.p_hpf_ramp * 0.0003f);
+        flthp   = pow(mParams.p_hpf_freq, 2.0f) * 0.1f;
+        flthp_d = float(1.0 + mParams.p_hpf_ramp * 0.0003f);
         // reset vibrato
         vib_phase = 0.0f;
-        vib_speed = (float)pow(mParams.p_vib_speed, 2.0f) * 0.01f;
+        vib_speed = pow(mParams.p_vib_speed, 2.0f) * 0.01f;
         vib_amp   = mParams.p_vib_strength * 0.5f;
         // reset envelope
         env_vol       = 0.0f;
         env_stage     = 0;
         env_time      = 0;
-        env_length[0] = (int)(mParams.p_env_attack * mParams.p_env_attack * 100000.0f);
-        env_length[1] = (int)(mParams.p_env_sustain * mParams.p_env_sustain * 100000.0f);
-        env_length[2] = (int)(mParams.p_env_decay * mParams.p_env_decay * 100000.0f);
+        env_length[0] = int(mParams.p_env_attack * mParams.p_env_attack * 100000.0f);
+        env_length[1] = int(mParams.p_env_sustain * mParams.p_env_sustain * 100000.0f);
+        env_length[2] = int(mParams.p_env_decay * mParams.p_env_decay * 100000.0f);
 
-        fphase = (float)pow(mParams.p_pha_offset, 2.0f) * 1020.0f;
+        fphase = pow(mParams.p_pha_offset, 2.0f) * 1020.0f;
         if (mParams.p_pha_offset < 0.0f)
             fphase = -fphase;
-        fdphase = (float)pow(mParams.p_pha_ramp, 2.0f) * 1.0f;
+        fdphase = pow(mParams.p_pha_ramp, 2.0f) * 1.0f;
         if (mParams.p_pha_ramp < 0.0f)
             fdphase = -fdphase;
-        iphase = abs((int)fphase);
+        iphase = abs(int(fphase));
         ipp    = 0;
-        for (int i           = 0; i < 1024; i++)
-            phaser_buffer[i] = 0.0f;
 
-        for (int i          = 0; i < 32; i++)
-            noise_buffer[i] = frnd(2.0f) - 1.0f;
+        for (float& i : phaser_buffer)
+            i = 0.0f;
+
+        for (float& i : noise_buffer)
+            i = frnd(2.0f) - 1.0f;
 
         rep_time  = 0;
-        rep_limit = (int)(pow(1.0f - mParams.p_repeat_speed, 2.0f) * 20000 + 32);
+        rep_limit = int(pow(1.0f - mParams.p_repeat_speed, 2.0f) * 20000 + 32);
         if (mParams.p_repeat_speed == 0.0f)
             rep_limit = 0;
     }

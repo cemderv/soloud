@@ -100,11 +100,11 @@ void interlace_samples_s16(const float* aSourceBuffer,
 }; // namespace SoLoud
 
 #define FOR_ALL_VOICES_PRE                                                                         \
-    handle* h_     = NULL;                                                                         \
+    handle* h_     = nullptr;                                                                         \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     lockAudioMutex_internal();                                                                     \
     h_ = voiceGroupHandleToArray_internal(aVoiceHandle);                                           \
-    if (h_ == NULL)                                                                                \
+    if (h_ == nullptr)                                                                                \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -119,10 +119,10 @@ void interlace_samples_s16(const float* aSourceBuffer,
     unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D                                                                      \
-    handle* h_     = NULL;                                                                         \
+    handle* h_     = nullptr;                                                                         \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     h_             = voiceGroupHandleToArray_internal(aVoiceHandle);                               \
-    if (h_ == NULL)                                                                                \
+    if (h_ == nullptr)                                                                                \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -136,11 +136,11 @@ void interlace_samples_s16(const float* aSourceBuffer,
     }
 
 #define FOR_ALL_VOICES_PRE_EXT                                                                     \
-    handle* h_     = NULL;                                                                         \
+    handle* h_     = nullptr;                                                                         \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     mSoloud->lockAudioMutex_internal();                                                            \
     h_ = mSoloud->voiceGroupHandleToArray_internal(aVoiceHandle);                                  \
-    if (h_ == NULL)                                                                                \
+    if (h_ == nullptr)                                                                                \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
@@ -155,10 +155,10 @@ void interlace_samples_s16(const float* aSourceBuffer,
     mSoloud->unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D_EXT                                                                  \
-    handle* h_     = NULL;                                                                         \
+    handle* h_     = nullptr;                                                                         \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
     h_             = mSoloud->voiceGroupHandleToArray(aVoiceHandle);                               \
-    if (h_ == NULL)                                                                                \
+    if (h_ == nullptr)                                                                                \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \

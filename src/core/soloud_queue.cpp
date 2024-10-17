@@ -30,7 +30,7 @@ namespace SoLoud
 QueueInstance::QueueInstance(Queue* aParent)
 {
     mParent = aParent;
-    mFlags |= PROTECTED;
+    mFlags |= AudioSourceInstanceFlags::PROTECTED;
 }
 
 unsigned int QueueInstance::getAudio(float*       aBuffer,
@@ -46,8 +46,8 @@ unsigned int QueueInstance::getAudio(float*       aBuffer,
     while (copycount && mParent->mCount)
     {
         int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs,
-                                                                        copycount,
-                                                                        aBufferSize);
+            copycount,
+            aBufferSize);
         copyofs += readcount;
         copycount -= readcount;
         if (mParent->mSource[mParent->mReadIndex]->hasEnded())
@@ -65,22 +65,6 @@ unsigned int QueueInstance::getAudio(float*       aBuffer,
 bool QueueInstance::hasEnded()
 {
     return mLoopCount != 0 && mParent->mCount == 0;
-}
-
-QueueInstance::~QueueInstance()
-{
-}
-
-Queue::Queue()
-{
-    mQueueHandle = 0;
-    mInstance    = 0;
-    mReadIndex   = 0;
-    mWriteIndex  = 0;
-    mCount       = 0;
-    int i;
-    for (i = 0; i < SOLOUD_QUEUE_MAX; i++)
-        mSource[i] = 0;
 }
 
 QueueInstance* Queue::createInstance()

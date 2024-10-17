@@ -93,7 +93,7 @@ result sdl2static_init(SoLoud::Soloud* aSoloud,
     as.userdata = (void*)aSoloud;
 
     gAudioDeviceID =
-        SDL_OpenAudioDevice(NULL,
+        SDL_OpenAudioDevice(nullptr,
                             0,
                             &as,
                             &gActiveAudioSpec,
@@ -103,7 +103,7 @@ result sdl2static_init(SoLoud::Soloud* aSoloud,
     {
         as.format = AUDIO_S16;
         gAudioDeviceID =
-            SDL_OpenAudioDevice(NULL,
+            SDL_OpenAudioDevice(nullptr,
                                 0,
                                 &as,
                                 &gActiveAudioSpec,

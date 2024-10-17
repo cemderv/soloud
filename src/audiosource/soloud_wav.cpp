@@ -44,7 +44,7 @@ unsigned int WavInstance::getAudio(float*       aBuffer,
                                    unsigned int aSamplesToRead,
                                    unsigned int aBufferSize)
 {
-    if (mParent->mData == NULL)
+    if (mParent->mData == nullptr)
         return 0;
 
     unsigned int dataleft = mParent->mSampleCount - mOffset;
@@ -73,16 +73,16 @@ result WavInstance::rewind()
 
 bool WavInstance::hasEnded()
 {
-    if (!(mFlags & AudioSourceInstance::LOOPING) && mOffset >= mParent->mSampleCount)
+    if (!testFlag(mFlags, AudioSourceInstanceFlags::LOOPING) && mOffset >= mParent->mSampleCount)
     {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 Wav::Wav()
 {
-    mData        = NULL;
+    mData        = nullptr;
     mSampleCount = 0;
 }
 
@@ -98,7 +98,7 @@ result Wav::loadwav(MemoryFile* aReader)
 {
     drwav decoder;
 
-    if (!drwav_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), NULL))
+    if (!drwav_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), nullptr))
     {
         return FILE_LOAD_FAILED;
     }
@@ -165,7 +165,7 @@ result Wav::loadogg(MemoryFile* aReader)
     while (1)
     {
         float** outputs;
-        int     n = stb_vorbis_get_frame_float(vorbis, NULL, &outputs);
+        int     n = stb_vorbis_get_frame_float(vorbis, nullptr, &outputs);
         if (n == 0)
         {
             break;
@@ -186,7 +186,7 @@ result Wav::loadmp3(MemoryFile* aReader)
 {
     drmp3 decoder;
 
-    if (!drmp3_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), NULL))
+    if (!drmp3_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), nullptr))
     {
         return FILE_LOAD_FAILED;
     }
@@ -226,7 +226,7 @@ result Wav::loadmp3(MemoryFile* aReader)
 
 result Wav::loadflac(MemoryFile* aReader)
 {
-    drflac* decoder = drflac_open_memory(aReader->mDataPtr, aReader->mDataLength, NULL);
+    drflac* decoder = drflac_open_memory(aReader->mDataPtr, aReader->mDataLength, nullptr);
 
     if (!decoder)
     {
@@ -269,23 +269,23 @@ result Wav::loadflac(MemoryFile* aReader)
 result Wav::testAndLoadFile(MemoryFile* aReader)
 {
     delete[] mData;
-    mData        = 0;
-    mSampleCount = 0;
-    mChannels    = 1;
-    int tag      = aReader->read32();
+    mData         = nullptr;
+    mSampleCount  = 0;
+    mChannels     = 1;
+    const int tag = aReader->read32();
     if (tag == MAKEDWORD('O', 'g', 'g', 'S'))
     {
         return loadogg(aReader);
     }
-    else if (tag == MAKEDWORD('R', 'I', 'F', 'F'))
+    if (tag == MAKEDWORD('R', 'I', 'F', 'F'))
     {
         return loadwav(aReader);
     }
-    else if (tag == MAKEDWORD('f', 'L', 'a', 'C'))
+    if (tag == MAKEDWORD('f', 'L', 'a', 'C'))
     {
         return loadflac(aReader);
     }
-    else if (loadmp3(aReader) == SO_NO_ERROR)
+    if (loadmp3(aReader) == SO_NO_ERROR)
     {
         return SO_NO_ERROR;
     }
@@ -298,7 +298,7 @@ result Wav::loadMem(const unsigned char* aMem,
                     bool                 aCopy,
                     bool                 aTakeOwnership)
 {
-    if (aMem == NULL || aLength == 0)
+    if (aMem == nullptr || aLength == 0)
         return INVALID_PARAMETER;
     stop();
 
@@ -328,7 +328,7 @@ AudioSourceInstance* Wav::createInstance()
     return new WavInstance(this);
 }
 
-double Wav::getLength()
+double Wav::getLength() const
 {
     if (mBaseSamplerate == 0)
         return 0;
@@ -350,7 +350,7 @@ result Wav::loadRawWave8(unsigned char* aMem,
     mBaseSamplerate = aSamplerate;
     unsigned int i;
     for (i       = 0; i < aLength; i++)
-        mData[i] = ((signed)aMem[i] - 128) / (float)0x80;
+        mData[i] = (signed(aMem[i]) - 128) / float(0x80);
     return SO_NO_ERROR;
 }
 
@@ -369,7 +369,7 @@ result Wav::loadRawWave16(short*       aMem,
     mBaseSamplerate = aSamplerate;
     unsigned int i;
     for (i       = 0; i < aLength; i++)
-        mData[i] = ((signed short)aMem[i]) / (float)0x8000;
+        mData[i] = aMem[i] / float(0x8000);
     return SO_NO_ERROR;
 }
 
