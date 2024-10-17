@@ -211,9 +211,9 @@ void Wav::loadmp3(const MemoryFile& aReader)
 
     for (size_t i = 0; i < mSampleCount; i += 512)
     {
-        float  tmp[512 * MAX_CHANNELS];
-        size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
-        drmp3_read_pcm_frames_f32(&decoder, blockSize, tmp);
+        auto        tmp= std::array<float,512*MAX_CHANNELS>{};
+        const size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
+        drmp3_read_pcm_frames_f32(&decoder, blockSize, tmp.data());
 
         for (size_t j = 0; j < blockSize; ++j)
         {
@@ -252,9 +252,9 @@ void Wav::loadflac(const MemoryFile& aReader)
 
     for (size_t i = 0; i < mSampleCount; i += 512)
     {
-        float  tmp[512 * MAX_CHANNELS];
-        size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
-        drflac_read_pcm_frames_f32(decoder, blockSize, tmp);
+        auto        tmp = std::array<float,512 * MAX_CHANNELS>{};
+        const size_t blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
+        drflac_read_pcm_frames_f32(decoder, blockSize, tmp.data());
         for (size_t j = 0; j < blockSize; ++j)
         {
             for (size_t k = 0; k < decoder->channels; k++)

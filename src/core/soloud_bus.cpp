@@ -269,9 +269,8 @@ float* Bus::calcFFT()
     if (mInstance && engine)
     {
         engine->lockAudioMutex_internal();
-        float temp[1024];
-        int   i;
-        for (i = 0; i < 256; ++i)
+        auto temp = std::array<float,1024>{};
+        for (int i = 0; i < 256; ++i)
         {
             temp[i * 2]     = mInstance->mVisualizationWaveData[i];
             temp[i * 2 + 1] = 0;
@@ -280,13 +279,13 @@ float* Bus::calcFFT()
         }
         engine->unlockAudioMutex_internal();
 
-        SoLoud::FFT::fft1024(temp);
+        FFT::fft1024(temp.data());
 
-        for (i = 0; i < 256; ++i)
+        for (int i = 0; i < 256; ++i)
         {
-            float real  = temp[i * 2];
-            float imag  = temp[i * 2 + 1];
-            mFFTData[i] = (float)sqrt(real * real + imag * imag);
+            const float real = temp[i * 2];
+            const float imag = temp[i * 2 + 1];
+            mFFTData[i]      = sqrt(real * real + imag * imag);
         }
     }
 
@@ -297,9 +296,8 @@ float* Bus::getWave()
 {
     if (mInstance && engine)
     {
-        int i;
         engine->lockAudioMutex_internal();
-        for (i = 0; i < 256; ++i)
+        for (int i = 0; i < 256; ++i)
             mWaveData[i] = mInstance->mVisualizationWaveData[i];
         engine->unlockAudioMutex_internal();
     }
@@ -309,8 +307,10 @@ float* Bus::getWave()
 float Bus::getApproximateVolume(size_t aChannel)
 {
     if (aChannel > channel_count)
+    {
         return 0;
-    float vol = 0;
+    }
+    auto vol = 0.0f;
     if (mInstance && engine)
     {
         engine->lockAudioMutex_internal();
@@ -322,13 +322,16 @@ float Bus::getApproximateVolume(size_t aChannel)
 
 size_t Bus::getActiveVoiceCount()
 {
-    int    i;
     size_t count = 0;
     findBusHandle();
     engine->lockAudioMutex_internal();
-    for (i = 0; i < VOICE_COUNT; ++i)
+    for (int i = 0; i < VOICE_COUNT; ++i)
+    {
         if (engine->mVoice[i] && engine->mVoice[i]->mBusHandle == mChannelHandle)
+        {
             count++;
+        }
+    }
     engine->unlockAudioMutex_internal();
     return count;
 }

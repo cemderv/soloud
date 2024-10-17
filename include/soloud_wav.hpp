@@ -34,7 +34,7 @@ namespace SoLoud
 class Wav;
 class MemoryFile;
 
-class WavInstance : public AudioSourceInstance
+class WavInstance final : public AudioSourceInstance
 {
   public:
     explicit WavInstance(Wav* aParent);
@@ -50,7 +50,7 @@ class WavInstance : public AudioSourceInstance
     size_t mOffset = 0;
 };
 
-class Wav : public AudioSource
+class Wav final : public AudioSource
 {
     friend WavInstance;
 

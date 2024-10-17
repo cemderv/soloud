@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,45 +24,23 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.hpp"
-
 namespace SoLoud
 {
-// Helper class to process faders
-class Fader
+namespace FFT
 {
-  public:
-    // Set up LFO
-    void setLFO(float aFrom, float aTo, time_t aTime, time_t aStartTime);
+// Perform 1024 unit FFT. Buffer must have 1024 floats, and will be overwritten
+void fft1024(float* aBuffer);
 
-    // Set up fader
-    void set(float aFrom, float aTo, time_t aTime, time_t aStartTime);
+// Perform 256 unit FFT. Buffer must have 256 floats, and will be overwritten
+void fft256(float* aBuffer);
 
-    // Get the current fading value
-    float get(time_t aCurrentTime);
+// Perform 256 unit IFFT. Buffer must have 256 floats, and will be overwritten
+void ifft256(float* aBuffer);
 
-    // Value to fade from
-    float mFrom=0.0f;
+// Generic (slower) power of two FFT. Buffer is overwritten.
+void fft(float* aBuffer, size_t aBufferLength);
 
-    // Value to fade to
-    float mTo=0.0f;
-
-    // Delta between from and to
-    float mDelta=0.0f;
-
-    // Total time to fade
-    time_t mTime=0;
-
-    // Time fading started
-    time_t mStartTime=0;
-
-    // Time fading will end
-    time_t mEndTime=0;
-
-    // Current value. Used in case time rolls over.
-    float mCurrent=0.0f;
-
-    // Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
-    int mActive=0;
-};
+// Generic (slower) power of two IFFT. Buffer is overwritten.
+void ifft(float* aBuffer, size_t aBufferLength);
+}; // namespace FFT
 }; // namespace SoLoud

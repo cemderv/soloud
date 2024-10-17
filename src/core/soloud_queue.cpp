@@ -108,7 +108,7 @@ void Queue::play(AudioSource& aSound)
     instance->mAudioSourceID = aSound.audio_source_id;
 
     engine->lockAudioMutex_internal();
-    mSource[mWriteIndex] = instance;
+    mSource[mWriteIndex] = std::move(instance);
     mWriteIndex          = (mWriteIndex + 1) % SOLOUD_QUEUE_MAX;
     mCount++;
     engine->unlockAudioMutex_internal();
@@ -155,4 +155,4 @@ void Queue::setParams(float aSamplerate, size_t aChannels)
     channel_count    = aChannels;
     base_sample_rate = aSamplerate;
 }
-}; // namespace SoLoud
+} // namespace SoLoud

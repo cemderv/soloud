@@ -42,6 +42,8 @@ target_precompile_headers(SoLoud PRIVATE
   <stdexcept>
   <vector>
   <string>
+  <span>
+  <variant>
   include/soloud.hpp
   include/soloud_audiosource.hpp
   include/soloud_filter.hpp

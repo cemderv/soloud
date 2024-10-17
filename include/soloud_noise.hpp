@@ -31,10 +31,10 @@ namespace SoLoud
 {
 class Noise;
 
-class NoiseInstance : public AudioSourceInstance
+class NoiseInstance final : public AudioSourceInstance
 {
   public:
-    explicit NoiseInstance(Noise* aParent);
+    explicit NoiseInstance(const Noise* aParent);
 
     size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
     bool   hasEnded() override;
@@ -43,7 +43,7 @@ class NoiseInstance : public AudioSourceInstance
     Prg   mPrg;
 };
 
-class Noise : public AudioSource
+class Noise final : public AudioSource
 {
   public:
     enum NOISETYPES

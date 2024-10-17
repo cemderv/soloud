@@ -105,7 +105,7 @@ float attenuateExponentialDistance(float aDistance,
     return pow(distance / aMinDistance, -aRolloffFactor);
 }
 
-void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
+void Engine::update3dVoices_internal(std::span<const size_t> voiceList)
 {
     auto speaker = std::array<vec3, MAX_CHANNELS>{};
 
@@ -118,9 +118,9 @@ void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
     const auto up   = m3dUp;
     const auto m    = lookatRH(at, up);
 
-    for (size_t i = 0; i < aVoiceCount; ++i)
+    for(const size_t voice_id : voiceList)
     {
-        auto& v = m3dData[aVoiceArray[i]];
+        auto& v = m3dData[voice_id];
 
         auto vol = v.mCollider != nullptr ? v.mCollider->collide(this, v, v.mColliderData) : 1.0f;
 
@@ -218,7 +218,7 @@ void Engine::update3dAudio()
 
     // Step 2 - do 3d processing
 
-    update3dVoices_internal(voices, voicecount);
+    update3dVoices_internal({voices, voicecount});
 
     // Step 3 - update SoLoud voices
 
@@ -261,7 +261,7 @@ void Engine::update3dAudio()
 handle Engine::play3d(
     AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, size_t aBus)
 {
-    const handle h = play(aSound, aVolume, 0, 1, aBus);
+    const handle h = play(aSound, aVolume, 0, true, aBus);
     lockAudioMutex_internal();
     auto v = getVoiceFromHandle_internal(h);
 
@@ -285,7 +285,7 @@ handle Engine::play3d(
         samples += int(floor(dist / m3dSoundSpeed * float(mSamplerate)));
     }
 
-    update3dVoices_internal(reinterpret_cast<size_t*>(&v), 1);
+    update3dVoices_internal({reinterpret_cast<size_t*>(&v), 1});
     updateVoiceRelativePlaySpeed_internal(v);
 
     for (size_t j = 0; j < MAX_CHANNELS; ++j)
@@ -362,7 +362,7 @@ handle Engine::play3dClocked(
         samples += int(floor((dist / m3dSoundSpeed) * mSamplerate));
     }
 
-    update3dVoices_internal(reinterpret_cast<size_t*>(&v), 1);
+    update3dVoices_internal({reinterpret_cast<size_t*>(&v), 1});
     lockAudioMutex_internal();
     updateVoiceRelativePlaySpeed_internal(v);
     int j;

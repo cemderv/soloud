@@ -62,11 +62,11 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Engine::Engine(EngineFlags           aFlags,
+Engine::Engine(EngineFlags           flags,
                std::optional<size_t> aSamplerate,
                std::optional<size_t> aBufferSize,
                size_t                aChannels)
-    : mFlags(aFlags)
+    : mFlags(flags)
 {
     assert(aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
@@ -129,7 +129,7 @@ Engine::Engine(EngineFlags           aFlags,
         if (!aBufferSize.has_value())
             buffersize = 2048;
 
-        coreaudio_init(this, aFlags, samplerate, buffersize, aChannels);
+        coreaudio_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -636,10 +636,10 @@ static void resample_linear(const float* aSrc,
 
     for (int i = 0; i < aDstSampleCount; ++i, pos += aStepFixed)
     {
-        int       p  = pos >> FIXPOINT_FRAC_BITS;
-        const int f  = pos & FIXPOINT_FRAC_MASK;
-        float     s1 = aSrc1[SAMPLE_GRANULARITY - 1];
-        float     s2 = aSrc[p];
+        const int         p  = pos >> FIXPOINT_FRAC_BITS;
+        const int   f  = pos & FIXPOINT_FRAC_MASK;
+        float       s1 = aSrc1[SAMPLE_GRANULARITY - 1];
+        const float s2 = aSrc[p];
         if (p != 0)
         {
             s1 = aSrc[p - 1];
@@ -692,7 +692,6 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
             aSamplesToRead; // TODO: this is a bit inconsistent.. but it's a hack to begin with
     }
 
-    int ofs = 0;
     switch (aChannels)
     {
         case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1, 8->1)

@@ -44,7 +44,7 @@ namespace SoLoud
 class WavStream;
 class MemoryFile;
 
-class WavStreamInstance : public AudioSourceInstance
+class WavStreamInstance final : public AudioSourceInstance
 {
     WavStream* mParent = nullptr;
     size_t     mOffset = 0;
@@ -73,7 +73,7 @@ enum WAVSTREAM_FILETYPE
     WAVSTREAM_MP3  = 3
 };
 
-class WavStream : public AudioSource
+class WavStream final : public AudioSource
 {
     friend WavStreamInstance;
 

@@ -35,7 +35,9 @@ class Engine;
 class FilterInstance
 {
   public:
-    FilterInstance() = default;
+    FilterInstance()          = default;
+
+    virtual ~FilterInstance() noexcept = default;
 
     virtual void initParams(int aNumParams);
 
@@ -86,7 +88,7 @@ class Filter
 
 class FlangerFilter;
 
-class FlangerFilterInstance : public FilterInstance
+class FlangerFilterInstance final : public FilterInstance
 {
   public:
     void filter(float* aBuffer,
@@ -106,7 +108,7 @@ class FlangerFilterInstance : public FilterInstance
     double                   mIndex;
 };
 
-class FlangerFilter : public Filter
+class FlangerFilter final : public Filter
 {
   public:
     enum FILTERPARAMS
@@ -130,7 +132,7 @@ namespace FreeverbImpl
 class Revmodel;
 }
 
-class FreeverbFilterInstance : public FilterInstance
+class FreeverbFilterInstance final : public FilterInstance
 {
     enum FILTERPARAM
     {
@@ -155,7 +157,7 @@ class FreeverbFilterInstance : public FilterInstance
     explicit FreeverbFilterInstance(FreeverbFilter* aParent);
 };
 
-class FreeverbFilter : public Filter
+class FreeverbFilter final : public Filter
 {
   public:
     enum FILTERPARAM
@@ -177,7 +179,7 @@ class FreeverbFilter : public Filter
 
 class DuckFilter;
 
-class DuckFilterInstance : public FilterInstance
+class DuckFilterInstance final : public FilterInstance
 {
   public:
     void filter(float* aBuffer,
@@ -195,7 +197,7 @@ class DuckFilterInstance : public FilterInstance
     float   mCurrentLevel;
 };
 
-class DuckFilter : public Filter
+class DuckFilter final : public Filter
 {
   public:
     enum FILTERATTRIBUTE
@@ -217,7 +219,7 @@ class DuckFilter : public Filter
 
 class EchoFilter;
 
-class EchoFilterInstance : public FilterInstance
+class EchoFilterInstance final : public FilterInstance
 {
     std::unique_ptr<float[]> mBuffer;
     int                      mBufferLength;
@@ -235,7 +237,7 @@ class EchoFilterInstance : public FilterInstance
     explicit EchoFilterInstance(EchoFilter* aParent);
 };
 
-class EchoFilter : public Filter
+class EchoFilter final : public Filter
 {
   public:
     enum FILTERATTRIBUTE
@@ -261,7 +263,7 @@ struct LofiChannelData
     float mSamplesToSkip;
 };
 
-class LofiFilterInstance : public FilterInstance
+class LofiFilterInstance final : public FilterInstance
 {
     enum FILTERPARAMS
     {
@@ -285,7 +287,7 @@ class LofiFilterInstance : public FilterInstance
     explicit LofiFilterInstance(LofiFilter* aParent);
 };
 
-class LofiFilter : public Filter
+class LofiFilter final : public Filter
 {
   public:
     enum FILTERPARAMS
@@ -303,7 +305,7 @@ class LofiFilter : public Filter
 
 class WaveShaperFilter;
 
-class WaveShaperFilterInstance : public FilterInstance
+class WaveShaperFilterInstance final : public FilterInstance
 {
     WaveShaperFilter* mParent;
 
@@ -318,7 +320,7 @@ class WaveShaperFilterInstance : public FilterInstance
     explicit WaveShaperFilterInstance(WaveShaperFilter* aParent);
 };
 
-class WaveShaperFilter : public Filter
+class WaveShaperFilter final : public Filter
 {
   public:
     enum FILTERPARAMS
@@ -334,7 +336,7 @@ class WaveShaperFilter : public Filter
 
 class RobotizeFilter;
 
-class RobotizeFilterInstance : public FilterInstance
+class RobotizeFilterInstance final : public FilterInstance
 {
     enum FILTERATTRIBUTE
     {
@@ -355,7 +357,7 @@ class RobotizeFilterInstance : public FilterInstance
     explicit RobotizeFilterInstance(RobotizeFilter* aParent);
 };
 
-class RobotizeFilter : public Filter
+class RobotizeFilter final : public Filter
 {
   public:
     enum FILTERATTRIBUTE
@@ -417,7 +419,7 @@ class FFTFilter : public Filter
 
 class EqFilter;
 
-class EqFilterInstance : public FFTFilterInstance
+class EqFilterInstance final : public FFTFilterInstance
 {
     enum FILTERATTRIBUTE
     {
@@ -444,7 +446,7 @@ class EqFilterInstance : public FFTFilterInstance
     explicit EqFilterInstance(EqFilter* aParent);
 };
 
-class EqFilter : public FFTFilter
+class EqFilter final : public FFTFilter
 {
   public:
     enum FILTERATTRIBUTE
@@ -474,7 +476,7 @@ struct BQRStateData
     float mY1, mY2, mX1, mX2;
 };
 
-class BiquadResonantFilterInstance : public FilterInstance
+class BiquadResonantFilterInstance final : public FilterInstance
 {
   public:
     explicit BiquadResonantFilterInstance(BiquadResonantFilter* aParent);
@@ -508,7 +510,7 @@ class BiquadResonantFilterInstance : public FilterInstance
     void                  calcBQRParams();
 };
 
-class BiquadResonantFilter : public Filter
+class BiquadResonantFilter final : public Filter
 {
   public:
     enum FILTERTYPE

@@ -65,7 +65,7 @@ bool soloud_coreaudio_resume(Engine* engine)
 static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueueBufferRef buffer)
 {
     auto engine = static_cast<Engine*>(context);
-    engine->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
+    engine->mixSigned16(static_cast<short*>(buffer->mAudioData), buffer->mAudioDataByteSize / 4);
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 

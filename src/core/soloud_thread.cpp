@@ -25,13 +25,11 @@ freely, subject to the following restrictions:
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #else
-#include <cinttypes>
 #include <ctime>
 #include <pthread.h>
 #include <unistd.h>
 #endif
 
-#include "soloud.hpp"
 #include "soloud_thread.hpp"
 
 namespace SoLoud
@@ -147,7 +145,7 @@ void* createMutex()
 
 void destroyMutex(void* aHandle)
 {
-    pthread_mutex_t* mutex = (pthread_mutex_t*)aHandle;
+    auto mutex = static_cast<pthread_mutex_t*>(aHandle);
 
     if (mutex)
     {
@@ -158,7 +156,7 @@ void destroyMutex(void* aHandle)
 
 void lockMutex(void* aHandle)
 {
-    pthread_mutex_t* mutex = (pthread_mutex_t*)aHandle;
+    auto mutex = static_cast<pthread_mutex_t*>(aHandle);
     if (mutex)
     {
         pthread_mutex_lock(mutex);
@@ -167,7 +165,7 @@ void lockMutex(void* aHandle)
 
 void unlockMutex(void* aHandle)
 {
-    pthread_mutex_t* mutex = (pthread_mutex_t*)aHandle;
+    auto mutex = static_cast<pthread_mutex_t*>(aHandle);
     if (mutex)
     {
         pthread_mutex_unlock(mutex);
@@ -182,7 +180,7 @@ struct soloud_thread_data
 
 static void* threadfunc(void* d)
 {
-    auto* p = (soloud_thread_data*)d;
+    auto* p = static_cast<soloud_thread_data*>(d);
     p->mFunc(p->mParam);
     delete p;
     return nullptr;

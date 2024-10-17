@@ -109,7 +109,7 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 handle Engine::playClocked(
     time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, size_t aBus)
 {
-    handle h = play(aSound, aVolume, aPan, 1, aBus);
+    const handle h = play(aSound, aVolume, aPan, 1, aBus);
     lockAudioMutex_internal();
     // mLastClockedTime is cleared to zero at start of every output buffer
     time_t lasttime = mLastClockedTime;
@@ -124,13 +124,13 @@ handle Engine::playClocked(
     if (samples < 0 || samples > 2048)
         samples = 0;
     setDelaySamples(h, samples);
-    setPause(h, 0);
+    setPause(h, false);
     return h;
 }
 
 handle Engine::playBackground(AudioSource& aSound, float aVolume, bool aPaused, size_t aBus)
 {
-    handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
+    const handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
     setPanAbsolute(h, 1.0f, 1.0f);
     return h;
 }
@@ -160,8 +160,7 @@ void Engine::stopAudioSource(AudioSource& aSound)
     {
         lockAudioMutex_internal();
 
-        int i;
-        for (i = 0; i < (signed)mHighestVoice; ++i)
+        for (size_t i = 0; i < mHighestVoice; ++i)
         {
             if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
             {
@@ -174,9 +173,8 @@ void Engine::stopAudioSource(AudioSource& aSound)
 
 void Engine::stopAll()
 {
-    int i;
     lockAudioMutex_internal();
-    for (i = 0; i < (signed)mHighestVoice; ++i)
+    for (size_t i = 0; i < mHighestVoice; ++i)
     {
         stopVoice_internal(i);
     }
@@ -190,8 +188,7 @@ int Engine::countAudioSource(AudioSource& aSound)
     {
         lockAudioMutex_internal();
 
-        int i;
-        for (i = 0; i < (signed)mHighestVoice; ++i)
+        for (size_t i = 0; i < mHighestVoice; ++i)
         {
             if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
             {

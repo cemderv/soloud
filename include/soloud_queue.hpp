@@ -32,7 +32,7 @@ namespace SoLoud
 {
 class Queue;
 
-class QueueInstance : public AudioSourceInstance
+class QueueInstance final : public AudioSourceInstance
 {
     Queue* mParent = nullptr;
 
@@ -44,7 +44,7 @@ class QueueInstance : public AudioSourceInstance
     bool hasEnded() override;
 };
 
-class Queue : public AudioSource
+class Queue final : public AudioSource
 {
   public:
     std::shared_ptr<AudioSourceInstance> createInstance() override;

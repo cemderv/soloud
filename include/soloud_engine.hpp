@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <span>
 
 namespace SoLoud
 {
@@ -351,7 +352,7 @@ class Engine
     // Update overall relative play speed from set and 3d speeds
     void updateVoiceRelativePlaySpeed_internal(size_t aVoice);
     // Perform 3d audio calculation for array of voices
-    void update3dVoices_internal(size_t* aVoiceList, size_t aVoiceCount);
+    void update3dVoices_internal(std::span<const size_t> voiceList);
     // Clip the samples in the buffer
 
     void clip_internal(const AlignedFloatBuffer& aBuffer,

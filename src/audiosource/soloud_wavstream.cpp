@@ -117,7 +117,7 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
 
             mOggFrameSize   = 0;
             mOggFrameOffset = 0;
-            mOggOutputs     = 0;
+            mOggOutputs     = nullptr;
         }
         else if (mParent->mFiletype == WAVSTREAM_FLAC)
         {
@@ -186,6 +186,7 @@ WavStreamInstance::~WavStreamInstance()
             }
             break;
         }
+        default: break;
     }
 }
 
@@ -250,7 +251,6 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
 
             return offset;
         }
-        break;
         case WAVSTREAM_MP3: {
             auto* mp3 = std::get<drmp3*>(mCodec);
 
@@ -270,7 +270,6 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
             mOffset += offset;
             return offset;
         }
-        break;
         case WAVSTREAM_OGG: {
             if (mOggFrameOffset < mOggFrameSize)
             {
@@ -332,7 +331,6 @@ size_t WavStreamInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t
             mOffset += offset;
             return offset;
         }
-        break;
     }
     return aSamplesToRead;
 }
@@ -352,10 +350,8 @@ bool WavStreamInstance::seek(double aSeconds, float* mScratch, size_t mScratchSi
 
         return false;
     }
-    else
-    {
-        return AudioSourceInstance::seek(aSeconds, mScratch, mScratchSize);
-    }
+
+    return AudioSourceInstance::seek(aSeconds, mScratch, mScratchSize);
 }
 
 bool WavStreamInstance::rewind()
@@ -386,6 +382,7 @@ bool WavStreamInstance::rewind()
                 drwav_seek_to_pcm_frame(*wav, 0);
             }
             break;
+        default: break;
     }
 
     mOffset         = 0;
@@ -435,7 +432,7 @@ void WavStream::loadwav(MemoryFile& fp)
     }
 
     base_sample_rate = float(decoder.sampleRate);
-    mSampleCount     = (size_t)decoder.totalPCMFrameCount;
+    mSampleCount     = size_t(decoder.totalPCMFrameCount);
     mFiletype        = WAVSTREAM_WAV;
     drwav_uninit(&decoder);
 }
@@ -452,8 +449,8 @@ void WavStream::loadogg(MemoryFile& fp)
         throw std::runtime_error{"Failed to load OGG file"};
     }
 
-    stb_vorbis_info info = stb_vorbis_get_info(v);
-    channel_count        = info.channels;
+    const auto info = stb_vorbis_get_info(v);
+    channel_count   = info.channels;
     if (info.channels > MAX_CHANNELS)
     {
         channel_count = MAX_CHANNELS;
@@ -482,8 +479,8 @@ void WavStream::loadflac(MemoryFile& fp)
         channel_count = MAX_CHANNELS;
     }
 
-    base_sample_rate = (float)decoder->sampleRate;
-    mSampleCount     = (size_t)decoder->totalPCMFrameCount;
+    base_sample_rate = float(decoder->sampleRate);
+    mSampleCount     = size_t(decoder->totalPCMFrameCount);
     mFiletype        = WAVSTREAM_FLAC;
     drflac_close(decoder);
 }
@@ -504,10 +501,10 @@ void WavStream::loadmp3(MemoryFile& fp)
         channel_count = MAX_CHANNELS;
     }
 
-    drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
+    const drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
 
     base_sample_rate = float(decoder.sampleRate);
-    mSampleCount     = (size_t)samples;
+    mSampleCount     = size_t(samples);
     mFiletype        = WAVSTREAM_MP3;
     drmp3_uninit(&decoder);
 }

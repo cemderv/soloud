@@ -127,7 +127,7 @@ size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aB
         {
             if (env_length[1])
             {
-                env_vol = 1.0f + (float)pow(1.0f - float(env_time) / env_length[1], 1.0f) * 2.0f *
+                env_vol = 1.0f + pow(1.0f - float(env_time) / env_length[1], 1.0f) * 2.0f *
                                      mParams.p_env_punch;
             }
             else
@@ -201,6 +201,7 @@ size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aB
                 case 3: // noise
                     sample = noise_buffer[phase * 32 / period];
                     break;
+                default: break;
             }
             // lp filter
             const float pp = fltp;
@@ -482,6 +483,7 @@ Sfxr::Sfxr(int aPresetNo, int aRandSeed)
             mParams.p_env_decay   = frnd(0.2f);
             mParams.p_hpf_freq    = 0.1f;
             break;
+        default: break;
     }
 }
 
@@ -548,5 +550,4 @@ std::shared_ptr<AudioSourceInstance> Sfxr::createInstance()
 {
     return std::make_shared<SfxrInstance>(this);
 }
-
 }; // namespace SoLoud

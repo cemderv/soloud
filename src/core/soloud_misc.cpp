@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_misc.hpp"
-#include <cmath>
 
 namespace SoLoud
 {
@@ -35,30 +34,30 @@ Prg::Prg()
 void Prg::srand(int aSeed)
 {
     mIndex = 0;
-    int i;
-    for (i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i)
+    {
         mState[i] = aSeed + i * aSeed + i;
+    }
 }
 
 // WELL512 implementation, public domain by Chris Lomont
 size_t Prg::rand()
 {
-    size_t a, b, c, d;
-    a = mState[mIndex];
-    c = mState[(mIndex + 13) & 15];
-    b = a ^ c ^ (a << 16) ^ (c << 15);
-    c = mState[(mIndex + 9) & 15];
+    size_t       a = mState[mIndex];
+    size_t       c = mState[(mIndex + 13) & 15];
+    const size_t b = a ^ c ^ (a << 16) ^ (c << 15);
+    c              = mState[(mIndex + 9) & 15];
     c ^= (c >> 11);
-    a = mState[mIndex] = b ^ c;
-    d                  = a ^ ((a << 5) & 0xDA442D24UL);
-    mIndex             = (mIndex + 15) & 15;
-    a                  = mState[mIndex];
-    mState[mIndex]     = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
+    a              = mState[mIndex] = b ^ c;
+    const size_t d = a ^ ((a << 5) & 0xDA442D24UL);
+    mIndex         = (mIndex + 15) & 15;
+    a              = mState[mIndex];
+    mState[mIndex] = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
     return mState[mIndex];
 }
 
 float Prg::rand_float()
 {
-    return (float)rand() * 2.3283064365386963e-10f;
+    return float(rand()) * 2.3283064365386963e-10f;
 }
 }; // namespace SoLoud

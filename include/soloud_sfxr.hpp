@@ -75,7 +75,7 @@ struct SfxrParams
 
 class Sfxr;
 
-class SfxrInstance : public AudioSourceInstance
+class SfxrInstance final : public AudioSourceInstance
 {
     Sfxr* mParent;
 
@@ -139,7 +139,7 @@ enum class SFXR_PRESETS
     BLIP
 };
 
-class Sfxr : public AudioSource
+class Sfxr final : public AudioSource
 {
     friend SfxrInstance;
 

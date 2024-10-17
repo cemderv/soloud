@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-NoiseInstance::NoiseInstance(Noise* aParent)
+NoiseInstance::NoiseInstance(const Noise* aParent)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -121,5 +121,4 @@ std::shared_ptr<AudioSourceInstance> Noise::createInstance()
 {
     return std::make_shared<NoiseInstance>(this);
 }
-
 }; // namespace SoLoud
