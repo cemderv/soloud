@@ -35,10 +35,6 @@ NoiseInstance::NoiseInstance(Noise* aParent)
     mPrg.srand(0xfade);
 }
 
-NoiseInstance::~NoiseInstance()
-{
-}
-
 unsigned int NoiseInstance::getAudio(float*       aBuffer,
                                      unsigned int aSamplesToRead,
                                      unsigned int /*aBufferSize*/)
@@ -122,7 +118,6 @@ Noise::~Noise()
 {
     stop();
 }
-
 
 AudioSourceInstance* Noise::createInstance()
 {

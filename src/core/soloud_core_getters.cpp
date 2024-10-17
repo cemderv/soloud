@@ -28,29 +28,29 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-float Soloud::getPostClipScaler() const
+float Engine::getPostClipScaler() const
 {
     return mPostClipScaler;
 }
 
-Resampler Soloud::getMainResampler() const
+Resampler Engine::getMainResampler() const
 {
     return mResampler;
 }
 
-float Soloud::getGlobalVolume() const
+float Engine::getGlobalVolume() const
 {
     return mGlobalVolume;
 }
 
-handle Soloud::getHandleFromVoice_internal(unsigned int aVoice) const
+handle Engine::getHandleFromVoice_internal(unsigned int aVoice) const
 {
     if (mVoice[aVoice] == 0)
         return 0;
     return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 }
 
-int Soloud::getVoiceFromHandle_internal(handle aVoiceHandle) const
+int Engine::getVoiceFromHandle_internal(handle aVoiceHandle) const
 {
     // If this is a voice group handle, pick the first handle from the group
     handle* h = voiceGroupHandleToArray_internal(aVoiceHandle);
@@ -71,12 +71,12 @@ int Soloud::getVoiceFromHandle_internal(handle aVoiceHandle) const
     return -1;
 }
 
-unsigned int Soloud::getMaxActiveVoiceCount() const
+unsigned int Engine::getMaxActiveVoiceCount() const
 {
     return mMaxActiveVoices;
 }
 
-unsigned int Soloud::getActiveVoiceCount()
+unsigned int Engine::getActiveVoiceCount()
 {
     lockAudioMutex_internal();
     if (mActiveVoiceDirty)
@@ -86,7 +86,7 @@ unsigned int Soloud::getActiveVoiceCount()
     return c;
 }
 
-unsigned int Soloud::getVoiceCount()
+unsigned int Engine::getVoiceCount()
 {
     lockAudioMutex_internal();
     int i;
@@ -102,7 +102,7 @@ unsigned int Soloud::getVoiceCount()
     return c;
 }
 
-bool Soloud::isValidVoiceHandle(handle aVoiceHandle)
+bool Engine::isValidVoiceHandle(handle aVoiceHandle)
 {
     // voice groups are not valid voice handles
     if ((aVoiceHandle & 0xfffff000) == 0xfffff000)
@@ -119,7 +119,7 @@ bool Soloud::isValidVoiceHandle(handle aVoiceHandle)
 }
 
 
-time_t Soloud::getLoopPoint(handle aVoiceHandle)
+time_t Engine::getLoopPoint(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -133,7 +133,7 @@ time_t Soloud::getLoopPoint(handle aVoiceHandle)
     return v;
 }
 
-bool Soloud::getLooping(handle aVoiceHandle)
+bool Engine::getLooping(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -147,7 +147,7 @@ bool Soloud::getLooping(handle aVoiceHandle)
     return v;
 }
 
-bool Soloud::getAutoStop(handle aVoiceHandle)
+bool Engine::getAutoStop(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -161,7 +161,7 @@ bool Soloud::getAutoStop(handle aVoiceHandle)
     return !v;
 }
 
-float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
+float Engine::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -175,7 +175,7 @@ float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
     return v;
 }
 
-float Soloud::getVolume(handle aVoiceHandle)
+float Engine::getVolume(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -189,7 +189,7 @@ float Soloud::getVolume(handle aVoiceHandle)
     return v;
 }
 
-float Soloud::getOverallVolume(handle aVoiceHandle)
+float Engine::getOverallVolume(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -203,7 +203,7 @@ float Soloud::getOverallVolume(handle aVoiceHandle)
     return v;
 }
 
-float Soloud::getPan(handle aVoiceHandle)
+float Engine::getPan(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -217,7 +217,7 @@ float Soloud::getPan(handle aVoiceHandle)
     return v;
 }
 
-time_t Soloud::getStreamTime(handle aVoiceHandle)
+time_t Engine::getStreamTime(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -231,7 +231,7 @@ time_t Soloud::getStreamTime(handle aVoiceHandle)
     return v;
 }
 
-time_t Soloud::getStreamPosition(handle aVoiceHandle)
+time_t Engine::getStreamPosition(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -245,7 +245,7 @@ time_t Soloud::getStreamPosition(handle aVoiceHandle)
     return v;
 }
 
-float Soloud::getRelativePlaySpeed(handle aVoiceHandle)
+float Engine::getRelativePlaySpeed(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -259,7 +259,7 @@ float Soloud::getRelativePlaySpeed(handle aVoiceHandle)
     return v;
 }
 
-float Soloud::getSamplerate(handle aVoiceHandle)
+float Engine::getSamplerate(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -273,7 +273,7 @@ float Soloud::getSamplerate(handle aVoiceHandle)
     return v;
 }
 
-bool Soloud::getPause(handle aVoiceHandle)
+bool Engine::getPause(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -287,7 +287,7 @@ bool Soloud::getPause(handle aVoiceHandle)
     return v;
 }
 
-bool Soloud::getProtectVoice(handle aVoiceHandle)
+bool Engine::getProtectVoice(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     const int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -301,7 +301,7 @@ bool Soloud::getProtectVoice(handle aVoiceHandle)
     return v;
 }
 
-int Soloud::findFreeVoice_internal()
+int Engine::findFreeVoice_internal()
 {
     unsigned int lowest_play_index_value = 0xffffffff;
     int          lowest_play_index       = -1;
@@ -331,7 +331,7 @@ int Soloud::findFreeVoice_internal()
     return lowest_play_index;
 }
 
-unsigned int Soloud::getLoopCount(handle aVoiceHandle)
+unsigned int Engine::getLoopCount(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
     int ch = getVoiceFromHandle_internal(aVoiceHandle);
@@ -346,25 +346,25 @@ unsigned int Soloud::getLoopCount(handle aVoiceHandle)
 }
 
 // Returns current backend channel count (1 mono, 2 stereo, etc)
-unsigned int Soloud::getBackendChannels() const
+unsigned int Engine::getBackendChannels() const
 {
     return mChannels;
 }
 
 // Returns current backend sample rate
-unsigned int Soloud::getBackendSamplerate() const
+unsigned int Engine::getBackendSamplerate() const
 {
     return mSamplerate;
 }
 
 // Returns current backend buffer size
-unsigned int Soloud::getBackendBufferSize() const
+unsigned int Engine::getBackendBufferSize() const
 {
     return mBufferSize;
 }
 
 // Get speaker position in 3d space
-vec3 Soloud::getSpeakerPosition(unsigned int aChannel) const
+vec3 Engine::getSpeakerPosition(unsigned int aChannel) const
 {
     return m3dSpeakerPosition.at(aChannel);
 }

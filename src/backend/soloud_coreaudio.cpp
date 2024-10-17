@@ -50,13 +50,13 @@ static AudioQueueRef audioQueue = 0;
 
 namespace SoLoud
 {
-void soloud_coreaudio_deinit(Soloud* aSoloud)
+void soloud_coreaudio_deinit(Engine* aSoloud)
 {
     AudioQueueStop(audioQueue, true);
     AudioQueueDispose(audioQueue, false);
 }
 
-bool soloud_coreaudio_pause(Soloud* aSoloud)
+bool soloud_coreaudio_pause(Engine* aSoloud)
 {
     if (!audioQueue)
         return false;
@@ -66,7 +66,7 @@ bool soloud_coreaudio_pause(Soloud* aSoloud)
     return true;
 }
 
-bool soloud_coreaudio_resume(Soloud* aSoloud)
+bool soloud_coreaudio_resume(Engine* aSoloud)
 {
     if (!audioQueue)
         return false;
@@ -78,12 +78,12 @@ bool soloud_coreaudio_resume(Soloud* aSoloud)
 
 static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueueBufferRef buffer)
 {
-    auto aSoloud = static_cast<Soloud*>(context);
+    auto aSoloud = static_cast<Engine*>(context);
     aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 
-void coreaudio_init(Soloud*      aSoloud,
+void coreaudio_init(Engine*      aSoloud,
                     Flags        aFlags,
                     unsigned int aSamplerate,
                     unsigned int aBuffer,

@@ -41,7 +41,6 @@ class WaveShaperFilterInstance : public FilterInstance
                        time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
-    ~WaveShaperFilterInstance() override;
 
     explicit WaveShaperFilterInstance(WaveShaperFilter* aParent);
 };
@@ -55,10 +54,8 @@ class WaveShaperFilter : public Filter
         AMOUNT
     };
 
-    float                     mAmount;
     WaveShaperFilterInstance* createInstance() override;
-    void                      setParams(float aAmount);
-    WaveShaperFilter();
-    ~WaveShaperFilter() override;
+
+    float mAmount = 0.0f;
 };
 } // namespace SoLoud

@@ -105,7 +105,7 @@ float attenuateExponentialDistance(float aDistance,
     return pow(distance / aMinDistance, -aRolloffFactor);
 }
 
-void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVoiceCount)
+void Engine::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVoiceCount)
 {
     auto speaker = std::array<vec3, MAX_CHANNELS>{};
 
@@ -198,7 +198,7 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
     }
 }
 
-void Soloud::update3dAudio()
+void Engine::update3dAudio()
 {
     unsigned int voicecount = 0;
     unsigned int voices[VOICE_COUNT];
@@ -260,7 +260,7 @@ void Soloud::update3dAudio()
 }
 
 
-handle Soloud::play3d(
+handle Engine::play3d(
     AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
@@ -326,7 +326,7 @@ handle Soloud::play3d(
     return h;
 }
 
-handle Soloud::play3dClocked(
+handle Engine::play3dClocked(
     time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
@@ -400,20 +400,20 @@ handle Soloud::play3dClocked(
 }
 
 
-void Soloud::set3dSoundSpeed(float aSpeed)
+void Engine::set3dSoundSpeed(float aSpeed)
 {
     assert(aSpeed > 0.0f);
     m3dSoundSpeed = aSpeed;
 }
 
 
-float Soloud::get3dSoundSpeed() const
+float Engine::get3dSoundSpeed() const
 {
     return m3dSoundSpeed;
 }
 
 
-void Soloud::set3dListenerParameters(vec3 pos, vec3 at, vec3 up, vec3 velocity)
+void Engine::set3dListenerParameters(vec3 pos, vec3 at, vec3 up, vec3 velocity)
 {
     m3dPosition = pos;
     m3dAt       = at;
@@ -422,31 +422,31 @@ void Soloud::set3dListenerParameters(vec3 pos, vec3 at, vec3 up, vec3 velocity)
 }
 
 
-void Soloud::set3dListenerPosition(vec3 value)
+void Engine::set3dListenerPosition(vec3 value)
 {
     m3dPosition = value;
 }
 
 
-void Soloud::set3dListenerAt(vec3 value)
+void Engine::set3dListenerAt(vec3 value)
 {
     m3dAt = value;
 }
 
 
-void Soloud::set3dListenerUp(vec3 value)
+void Engine::set3dListenerUp(vec3 value)
 {
     m3dUp = value;
 }
 
 
-void Soloud::set3dListenerVelocity(vec3 value)
+void Engine::set3dListenerVelocity(vec3 value)
 {
     m3dVelocity = value;
 }
 
 
-void Soloud::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocity)
+void Engine::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocity)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dPosition = aPos;
@@ -455,7 +455,7 @@ void Soloud::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocit
 }
 
 
-void Soloud::set3dSourcePosition(handle aVoiceHandle, vec3 value)
+void Engine::set3dSourcePosition(handle aVoiceHandle, vec3 value)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dPosition = value;
@@ -463,7 +463,7 @@ void Soloud::set3dSourcePosition(handle aVoiceHandle, vec3 value)
 }
 
 
-void Soloud::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
+void Engine::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dVelocity = velocity;
@@ -471,7 +471,7 @@ void Soloud::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
 }
 
 
-void Soloud::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance)
+void Engine::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dMinDistance = aMinDistance;
@@ -480,7 +480,7 @@ void Soloud::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, 
 }
 
 
-void Soloud::set3dSourceAttenuation(handle       aVoiceHandle,
+void Engine::set3dSourceAttenuation(handle       aVoiceHandle,
                                     unsigned int aAttenuationModel,
                                     float        aAttenuationRolloffFactor)
 {
@@ -491,7 +491,7 @@ void Soloud::set3dSourceAttenuation(handle       aVoiceHandle,
 }
 
 
-void Soloud::set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor)
+void Engine::set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dDopplerFactor = aDopplerFactor;

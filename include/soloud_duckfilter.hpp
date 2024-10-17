@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 class DuckFilter;
+class Engine;
 
 class DuckFilterInstance : public FilterInstance
 {
@@ -46,7 +47,7 @@ class DuckFilterInstance : public FilterInstance
 
   private:
     handle  mListenTo;
-    Soloud* mSoloud;
+    Engine* mSoloud;
     float   mCurrentLevel;
 };
 
@@ -63,7 +64,7 @@ class DuckFilter : public Filter
 
     FilterInstance* createInstance() override;
 
-    Soloud* mSoloud   = nullptr;
+    Engine* mSoloud   = nullptr;
     float   mOnRamp   = 0.1f;
     float   mOffRamp  = 0.5f;
     float   mLevel    = 0.5f;

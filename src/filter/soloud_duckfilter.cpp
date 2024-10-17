@@ -23,9 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_duckfilter.hpp"
-#include "soloud.hpp"
-#include "soloud_bus.hpp"
 #include "soloud_engine.hpp"
+#include "soloud_bus.hpp"
 
 namespace SoLoud
 {

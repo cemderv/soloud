@@ -27,27 +27,24 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 SpeechInstance::SpeechInstance(Speech* aParent)
+    : mParent(aParent)
+    , mSynth(mParent->mBaseFrequency,
+             mParent->mBaseSpeed,
+             mParent->mBaseDeclination,
+             mParent->mBaseWaveform)
 {
-    mParent = aParent;
-    mSynth.init(mParent->mBaseFrequency,
-                mParent->mBaseSpeed,
-                mParent->mBaseDeclination,
-                mParent->mBaseWaveform);
-    mSample = new short[mSynth.mNspFr * 100];
-    mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
+    mSample = std::make_unique<short[]>(mSynth.mNspFr * 100);
+
+    mSynth.initsynth(mParent->mElement.getSize(),
+                     reinterpret_cast<unsigned char*>(mParent->mElement.getData()));
+
     mOffset      = 10;
     mSampleCount = 10;
 }
 
-SpeechInstance::~SpeechInstance()
-{
-    delete[] mSample;
-}
-
 static void writesamples(short* aSrc, float* aDst, int aCount)
 {
-    int i;
-    for (i = 0; i < aCount; i++)
+    for (int i = 0; i < aCount; i++)
     {
         aDst[i] = aSrc[i] * (1 / (float)0x8000);
     }
@@ -57,10 +54,12 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
                                       unsigned int aSamplesToRead,
                                       unsigned int /*aBufferSize*/)
 {
-    mSynth.init(mParent->mBaseFrequency,
-                mParent->mBaseSpeed,
-                mParent->mBaseDeclination,
-                mParent->mBaseWaveform);
+    // TODO: check this, was .init() before (mLastElement etc)
+    mSynth = klatt{mParent->mBaseFrequency,
+                   mParent->mBaseSpeed,
+                   mParent->mBaseDeclination,
+                   mParent->mBaseWaveform};
+
     unsigned int samples_out = 0;
     if (mSampleCount > mOffset)
     {
@@ -69,7 +68,7 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
         {
             copycount = aSamplesToRead;
         }
-        writesamples(mSample + mOffset, aBuffer, copycount);
+        writesamples(mSample.get() + mOffset, aBuffer, copycount);
         mOffset += copycount;
         samples_out += copycount;
     }
@@ -77,7 +76,7 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
     while (mSampleCount >= 0 && samples_out < aSamplesToRead)
     {
         mOffset      = 0;
-        mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
+        mSampleCount = mSynth.synth(mSynth.mNspFr, mSample.get());
         if (mSampleCount > 0)
         {
             unsigned int copycount = mSampleCount;
@@ -85,7 +84,7 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
             {
                 copycount = aSamplesToRead - samples_out;
             }
-            writesamples(mSample, aBuffer + samples_out, copycount);
+            writesamples(mSample.get(), aBuffer + samples_out, copycount);
             mOffset += copycount;
             samples_out += copycount;
         }
@@ -95,11 +94,15 @@ unsigned int SpeechInstance::getAudio(float*       aBuffer,
 
 bool SpeechInstance::rewind()
 {
-    mSynth.init(mParent->mBaseFrequency,
-                mParent->mBaseSpeed,
-                mParent->mBaseDeclination,
-                mParent->mBaseWaveform);
-    mSynth.initsynth(mParent->mElement.getSize(), (unsigned char*)mParent->mElement.getData());
+    // TODO: check this, was .init() before (mLastElement etc)
+    mSynth = klatt{mParent->mBaseFrequency,
+                   mParent->mBaseSpeed,
+                   mParent->mBaseDeclination,
+                   mParent->mBaseWaveform};
+
+    mSynth.initsynth(mParent->mElement.getSize(),
+                     reinterpret_cast<unsigned char*>(mParent->mElement.getData()));
+
     mOffset         = 10;
     mSampleCount    = 10;
     mStreamPosition = 0.0f;

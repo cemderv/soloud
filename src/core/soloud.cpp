@@ -64,7 +64,7 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Soloud::Soloud()
+Engine::Engine()
 {
 #ifdef FLOATING_POINT_DEBUG
     unsigned int u;
@@ -114,7 +114,7 @@ Soloud::Soloud()
     mHighestVoice    = 0;
 }
 
-Soloud::~Soloud()
+Engine::~Engine()
 {
     // let's stop all sounds before deinit, so we don't mess up our mutexes
     stopAll();
@@ -129,7 +129,7 @@ Soloud::~Soloud()
     delete[] mVoiceGroup;
 }
 
-void Soloud::deinit()
+void Engine::deinit()
 {
     // Make sure no audio operation is currently pending
     lockAudioMutex_internal();
@@ -144,7 +144,7 @@ void Soloud::deinit()
     mAudioThreadMutex = nullptr;
 }
 
-void Soloud::init(Flags                       aFlags,
+void Engine::init(Flags                       aFlags,
                   std::optional<unsigned int> aSamplerate,
                   std::optional<unsigned int> aBufferSize,
                   unsigned int                aChannels)
@@ -226,20 +226,20 @@ void Soloud::init(Flags                       aFlags,
 #endif
 }
 
-void Soloud::pause()
+void Engine::pause()
 {
     if (mBackendPauseFunc)
         mBackendPauseFunc(this);
 }
 
-void Soloud::resume()
+void Engine::resume()
 {
     if (mBackendResumeFunc)
         mBackendResumeFunc(this);
 }
 
 
-void Soloud::postinit_internal(unsigned int aSamplerate,
+void Engine::postinit_internal(unsigned int aSamplerate,
                                unsigned int aBufferSize,
                                Flags        aFlags,
                                unsigned int aChannels)
@@ -336,7 +336,7 @@ void Soloud::postinit_internal(unsigned int aSamplerate,
     }
 }
 
-float* Soloud::getWave()
+float* Engine::getWave()
 {
     lockAudioMutex_internal();
     for (int i = 0; i < 256; i++)
@@ -345,7 +345,7 @@ float* Soloud::getWave()
     return mWaveData.data();
 }
 
-float Soloud::getApproximateVolume(unsigned int aChannel)
+float Engine::getApproximateVolume(unsigned int aChannel)
 {
     if (aChannel > mChannels)
         return 0;
@@ -357,7 +357,7 @@ float Soloud::getApproximateVolume(unsigned int aChannel)
 }
 
 
-float* Soloud::calcFFT()
+float* Engine::calcFFT()
 {
     lockAudioMutex_internal();
     float temp[1024];
@@ -502,7 +502,7 @@ void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
     }
 }
 #else // fallback code
-void Soloud::clip_internal(AlignedFloatBuffer& aBuffer,
+void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
                            AlignedFloatBuffer& aDestBuffer,
                            unsigned int        aSamples,
                            float               aVolume0,
@@ -1253,7 +1253,7 @@ void panAndExpand(AudioSourceInstance* aVoice,
         aVoice->mCurrentChannelVolume[k] = pand[k];
 }
 
-void Soloud::mixBus_internal(float*       aBuffer,
+void Engine::mixBus_internal(float*       aBuffer,
                              unsigned int aSamplesToRead,
                              unsigned int aBufferSize,
                              float*       aScratch,
@@ -1599,7 +1599,7 @@ void Soloud::mixBus_internal(float*       aBuffer,
     }
 }
 
-void Soloud::mapResampleBuffers_internal()
+void Engine::mapResampleBuffers_internal()
 {
     assert(mMaxActiveVoices < 256);
     std::array<char, 256> live{};
@@ -1654,7 +1654,7 @@ void Soloud::mapResampleBuffers_internal()
     }
 }
 
-void Soloud::calcActiveVoices_internal()
+void Engine::calcActiveVoices_internal()
 {
     // TODO: consider whether we need to re-evaluate the active voices all the time.
     // It is a must when new voices are started, but otherwise we could get away
@@ -1754,7 +1754,7 @@ void Soloud::calcActiveVoices_internal()
     mapResampleBuffers_internal();
 }
 
-void Soloud::mix_internal(unsigned int aSamples, unsigned int aStride)
+void Engine::mix_internal(unsigned int aSamples, unsigned int aStride)
 {
 #ifdef FLOATING_POINT_DEBUG
     // This needs to be done in the audio thread as well..
@@ -1967,14 +1967,14 @@ void Soloud::mix_internal(unsigned int aSamples, unsigned int aStride)
     }
 }
 
-void Soloud::mix(float* aBuffer, unsigned int aSamples)
+void Engine::mix(float* aBuffer, unsigned int aSamples)
 {
     unsigned int stride = (aSamples + 15) & ~0xf;
     mix_internal(aSamples, stride);
     interlace_samples_float(mScratch.mData, aBuffer, aSamples, mChannels, stride);
 }
 
-void Soloud::mixSigned16(short* aBuffer, unsigned int aSamples)
+void Engine::mixSigned16(short* aBuffer, unsigned int aSamples)
 {
     unsigned int stride = (aSamples + 15) & ~0xf;
     mix_internal(aSamples, stride);
@@ -2020,7 +2020,7 @@ void interlace_samples_s16(const float* aSourceBuffer,
     }
 }
 
-void Soloud::lockAudioMutex_internal()
+void Engine::lockAudioMutex_internal()
 {
     if (mAudioThreadMutex)
     {
@@ -2030,7 +2030,7 @@ void Soloud::lockAudioMutex_internal()
     mInsideAudioThreadMutex = true;
 }
 
-void Soloud::unlockAudioMutex_internal()
+void Engine::unlockAudioMutex_internal()
 {
     assert(mInsideAudioThreadMutex);
     mInsideAudioThreadMutex = false;

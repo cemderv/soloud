@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 // Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
-handle Soloud::createVoiceGroup()
+handle Engine::createVoiceGroup()
 {
     lockAudioMutex_internal();
 
@@ -95,7 +95,7 @@ handle Soloud::createVoiceGroup()
 }
 
 // Destroy a voice group.
-void Soloud::destroyVoiceGroup(handle aVoiceGroupHandle)
+void Engine::destroyVoiceGroup(handle aVoiceGroupHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
         return;
@@ -109,7 +109,7 @@ void Soloud::destroyVoiceGroup(handle aVoiceGroupHandle)
 }
 
 // Add a voice handle to a voice group
-void Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
+void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
         return;
@@ -158,7 +158,7 @@ void Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 }
 
 // Is this handle a valid voice group?
-bool Soloud::isVoiceGroup(handle aVoiceGroupHandle)
+bool Engine::isVoiceGroup(handle aVoiceGroupHandle)
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
         return 0;
@@ -174,7 +174,7 @@ bool Soloud::isVoiceGroup(handle aVoiceGroupHandle)
 }
 
 // Is this voice group empty?
-bool Soloud::isVoiceGroupEmpty(handle aVoiceGroupHandle)
+bool Engine::isVoiceGroupEmpty(handle aVoiceGroupHandle)
 {
     // If not a voice group, yeah, we're empty alright..
     if (!isVoiceGroup(aVoiceGroupHandle))
@@ -190,7 +190,7 @@ bool Soloud::isVoiceGroupEmpty(handle aVoiceGroupHandle)
 }
 
 // Remove all non-active voices from group
-void Soloud::trimVoiceGroup_internal(handle aVoiceGroupHandle)
+void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
         return;
@@ -244,7 +244,7 @@ void Soloud::trimVoiceGroup_internal(handle aVoiceGroupHandle)
     unlockAudioMutex_internal();
 }
 
-handle* Soloud::voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const
+handle* Engine::voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
         return nullptr;

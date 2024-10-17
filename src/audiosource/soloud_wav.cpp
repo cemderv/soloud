@@ -50,6 +50,7 @@ unsigned int WavInstance::getAudio(float*       aBuffer,
 
     unsigned int dataleft = mParent->mSampleCount - mOffset;
     unsigned int copylen  = dataleft;
+
     if (copylen > aSamplesToRead)
         copylen = aSamplesToRead;
 
@@ -73,11 +74,7 @@ bool WavInstance::rewind()
 
 bool WavInstance::hasEnded()
 {
-    if (!testFlag(mFlags, AudioSourceInstanceFlags::Looping) && mOffset >= mParent->mSampleCount)
-    {
-        return true;
-    }
-    return false;
+    return !testFlag(mFlags, AudioSourceInstanceFlags::Looping) && mOffset >= mParent->mSampleCount;
 }
 
 Wav::Wav(std::span<const std::byte> data)

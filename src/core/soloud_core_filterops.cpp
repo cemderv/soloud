@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-void Soloud::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
+void Engine::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
@@ -45,7 +45,7 @@ void Soloud::setGlobalFilter(unsigned int aFilterId, Filter* aFilter)
     unlockAudioMutex_internal();
 }
 
-std::optional<float> Soloud::getFilterParameter(handle       aVoiceHandle,
+std::optional<float> Engine::getFilterParameter(handle       aVoiceHandle,
                                                 unsigned int aFilterId,
                                                 unsigned int aAttributeId)
 {
@@ -81,7 +81,7 @@ std::optional<float> Soloud::getFilterParameter(handle       aVoiceHandle,
     return ret;
 }
 
-void Soloud::setFilterParameter(handle       aVoiceHandle,
+void Engine::setFilterParameter(handle       aVoiceHandle,
                                 unsigned int aFilterId,
                                 unsigned int aAttributeId,
                                 float        aValue)
@@ -108,7 +108,7 @@ void Soloud::setFilterParameter(handle       aVoiceHandle,
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::fadeFilterParameter(
+void Engine::fadeFilterParameter(
     handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aTo, double aTime)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
@@ -133,7 +133,7 @@ void Soloud::fadeFilterParameter(
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::oscillateFilterParameter(handle       aVoiceHandle,
+void Engine::oscillateFilterParameter(handle       aVoiceHandle,
                                       unsigned int aFilterId,
                                       unsigned int aAttributeId,
                                       float        aFrom,

@@ -1,6 +1,6 @@
 #include "klatt.h"
 #include "darray.h"
-#include "resonator.h"
+#include "resonator.hpp"
 #include <cmath>
 #include <cstdlib>
 
@@ -336,44 +336,7 @@ klatt_frame::klatt_frame()
     , mParallelNasalPoleAmpdb(0)
     , mBypassFricationAmpdb(0)
     , mPalallelVoicingAmpdb(0)
-    , mOverallGaindb(62) {};
-
-
-klatt::klatt()
-    : mBaseF0(1330)
-    , mBaseSpeed(10.0f)
-    , mBaseDeclination(0.5f)
-    , mBaseWaveform(KW_SAW)
-    , mF0Flutter(0)
-    , mSampleRate(0)
-    , mNspFr(0)
-    , mF0FundamentalFreq(0)
-    , mVoicingAmpdb(0)
-    , mSkewnessOfAlternatePeriods(0)
-    , mTimeCount(0)
-    , mNPer(0)
-    , mT0(0)
-    , mNOpen(0)
-    , mNMod(0)
-    , mAmpVoice(0)
-    , mAmpBypas(0)
-    , mAmpAspir(0)
-    , mAmpFrica(0)
-    , mAmpBreth(0)
-    , mSkew(0)
-    , mVLast(0)
-    , mNLast(0)
-    , mGlotLast(0)
-    , mDecay(0)
-    , mOneMd(0)
-    , mSeed(5)
-    , mElementCount(0)
-    , mElement(0)
-    , mElementIndex(0)
-    , mLastElement(0)
-    , mTStress(0)
-    , mNTStress(0)
-    , mTop(0)
+    , mOverallGaindb(62)
 {
 }
 
@@ -1127,7 +1090,7 @@ int klatt::synth(int /* aSampleCount */, short* aSamplePointer)
 }
 
 
-void klatt::init(int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
+klatt::klatt(int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
 {
     mBaseF0          = aBaseFrequency;
     mBaseSpeed       = aBaseSpeed;

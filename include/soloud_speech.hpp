@@ -27,25 +27,12 @@ freely, subject to the following restrictions:
 #include "../src/audiosource/darray.h"
 #include "../src/audiosource/klatt.h"
 #include "soloud_audiosource.hpp"
+#include <memory>
 
 namespace SoLoud
 {
-class Speech;
-
 class Speech : public AudioSource
 {
-    // copy of the enum in klatt.h for codegen purposes
-    enum KLATT_WAVEFORM
-    {
-        KW_SAW,
-        KW_TRIANGLE,
-        KW_SIN,
-        KW_SQUARE,
-        KW_PULSE,
-        KW_NOISE,
-        KW_WARBLE
-    };
-
   public:
     int    mBaseFrequency;
     float  mBaseSpeed;
@@ -55,29 +42,35 @@ class Speech : public AudioSource
     darray mElement;
     Speech();
     void setText(const char* aText);
+
     void setParams(unsigned int aBaseFrequency   = 1330,
                    float        aBaseSpeed       = 10.0f,
                    float        aBaseDeclination = 0.5f,
                    int          aBaseWaveform    = KW_TRIANGLE);
+
     ~Speech() override;
+
     AudioSourceInstance* createInstance() override;
 };
 
 class SpeechInstance : public AudioSourceInstance
 {
-    klatt   mSynth;
-    Speech* mParent;
-    short*  mSample;
-    int     mSampleCount;
-    int     mOffset;
-
   public:
     explicit SpeechInstance(Speech* aParent);
-    ~SpeechInstance() override;
+
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    bool         rewind() override;
-    bool         hasEnded() override;
+
+    bool rewind() override;
+
+    bool hasEnded() override;
+
+  private:
+    Speech*                  mParent = nullptr;
+    klatt                    mSynth;
+    std::unique_ptr<short[]> mSample;
+    size_t                   mSampleCount = 0;
+    size_t                   mOffset      = 0;
 };
 }; // namespace SoLoud

@@ -42,7 +42,7 @@ class AudioCollider
     virtual ~AudioCollider() noexcept = default;
 
     // Calculate volume multiplier. Assumed to return value between 0 and 1.
-    virtual float collide(Soloud*                    aSoloud,
+    virtual float collide(Engine*                    aSoloud,
                           AudioSourceInstance3dData& aAudioInstance3dData,
                           int                        aUserData) = 0;
 };
@@ -287,7 +287,7 @@ static inline bool testFlag(AudioSourceInstanceFlags value, AudioSourceInstanceF
     return (int(value) & int(toTest)) == int(toTest);
 }
 
-class Soloud;
+class Engine;
 
 // Base class for audio sources
 class AudioSource
@@ -416,7 +416,7 @@ class AudioSource
     std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
 
     // Pointer to the Soloud object. Needed to stop all instances in dtor.
-    Soloud* mSoloud = nullptr;
+    Engine* mSoloud = nullptr;
 
     // Pointer to a custom audio collider object
     AudioCollider* mCollider = nullptr;

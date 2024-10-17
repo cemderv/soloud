@@ -59,25 +59,6 @@ void WaveShaperFilterInstance::filterChannel(float*       aBuffer,
     }
 }
 
-WaveShaperFilterInstance::~WaveShaperFilterInstance()
-{
-}
-
-void WaveShaperFilter::setParams(float aAmount)
-{
-    assert(aAmount >= -1 && aAmount <= 1);
-    mAmount = aAmount;
-}
-
-WaveShaperFilter::WaveShaperFilter()
-{
-    mAmount = 0.0f;
-}
-
-WaveShaperFilter::~WaveShaperFilter()
-{
-}
-
 WaveShaperFilterInstance* WaveShaperFilter::createInstance()
 {
     return new WaveShaperFilterInstance(this);

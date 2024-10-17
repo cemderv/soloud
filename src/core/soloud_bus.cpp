@@ -50,7 +50,7 @@ unsigned int BusInstance::getAudio(float*       aBuffer,
         return aSamplesToRead;
     }
 
-    Soloud* s = mParent->mSoloud;
+    Engine* s = mParent->mSoloud;
 
     s->mixBus_internal(aBuffer,
                        aSamplesToRead,
@@ -111,7 +111,7 @@ bool BusInstance::hasEnded()
 
 BusInstance::~BusInstance() noexcept
 {
-    Soloud* s = mParent->mSoloud;
+    Engine* s = mParent->mSoloud;
     int     i;
     for (i = 0; i < (signed)s->mHighestVoice; i++)
     {

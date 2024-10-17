@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, unsigned int aBus)
+handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, unsigned int aBus)
 {
     if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
     {
@@ -107,7 +107,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
     return getHandleFromVoice_internal(ch);
 }
 
-handle Soloud::playClocked(
+handle Engine::playClocked(
     time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, aPan, 1, aBus);
@@ -129,14 +129,14 @@ handle Soloud::playClocked(
     return h;
 }
 
-handle Soloud::playBackground(AudioSource& aSound, float aVolume, bool aPaused, unsigned int aBus)
+handle Engine::playBackground(AudioSource& aSound, float aVolume, bool aPaused, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
     setPanAbsolute(h, 1.0f, 1.0f);
     return h;
 }
 
-bool Soloud::seek(handle aVoiceHandle, time_t aSeconds)
+bool Engine::seek(handle aVoiceHandle, time_t aSeconds)
 {
     bool res = true;
     FOR_ALL_VOICES_PRE
@@ -148,14 +148,14 @@ bool Soloud::seek(handle aVoiceHandle, time_t aSeconds)
 }
 
 
-void Soloud::stop(handle aVoiceHandle)
+void Engine::stop(handle aVoiceHandle)
 {
     FOR_ALL_VOICES_PRE
     stopVoice_internal(ch);
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::stopAudioSource(AudioSource& aSound)
+void Engine::stopAudioSource(AudioSource& aSound)
 {
     if (aSound.mAudioSourceID)
     {
@@ -173,7 +173,7 @@ void Soloud::stopAudioSource(AudioSource& aSound)
     }
 }
 
-void Soloud::stopAll()
+void Engine::stopAll()
 {
     int i;
     lockAudioMutex_internal();
@@ -184,7 +184,7 @@ void Soloud::stopAll()
     unlockAudioMutex_internal();
 }
 
-int Soloud::countAudioSource(AudioSource& aSound)
+int Engine::countAudioSource(AudioSource& aSound)
 {
     int count = 0;
     if (aSound.mAudioSourceID)

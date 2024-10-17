@@ -74,10 +74,10 @@ static constexpr size_t MAX_CHANNELS = 8;
 // includes depend on them.
 namespace SoLoud
 {
-class Soloud;
+class Engine;
 typedef void (*mutexCallFunction)(void* aMutexPtr);
-typedef void (*soloudCallFunction)(Soloud* aSoloud);
-typedef bool (*soloudResultFunction)(Soloud* aSoloud);
+typedef void (*soloudCallFunction)(Engine* aSoloud);
+typedef bool (*soloudResultFunction)(Engine* aSoloud);
 typedef unsigned int handle;
 typedef double       time_t;
 

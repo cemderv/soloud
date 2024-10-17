@@ -35,4 +35,3 @@ under ZLib/LibPNG license.
 
 -- Jari Komppa
    2013
-   

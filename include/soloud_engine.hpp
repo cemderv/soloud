@@ -14,7 +14,7 @@ class AudioSourceInstance;
 class Filter;
 
 // Soloud core class.
-class Soloud
+class Engine
 {
   public:
     // Back-end data; content is up to the back-end implementation.
@@ -33,9 +33,9 @@ class Soloud
     soloudResultFunction mBackendResumeFunc;
 
     // CTor
-    Soloud();
+    Engine();
     // DTor
-    ~Soloud();
+    ~Engine();
 
     // Initialize SoLoud. Must be called before SoLoud can be used.
     void init(Flags                       aFlags      = Flags::ClipRoundoff,

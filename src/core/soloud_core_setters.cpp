@@ -28,23 +28,23 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-void Soloud::setPostClipScaler(float aScaler)
+void Engine::setPostClipScaler(float aScaler)
 {
     mPostClipScaler = aScaler;
 }
 
-void Soloud::setMainResampler(Resampler aResampler)
+void Engine::setMainResampler(Resampler aResampler)
 {
     mResampler = aResampler;
 }
 
-void Soloud::setGlobalVolume(float aVolume)
+void Engine::setGlobalVolume(float aVolume)
 {
     mGlobalVolumeFader.mActive = 0;
     mGlobalVolume              = aVolume;
 }
 
-void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
+void Engine::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
@@ -52,7 +52,7 @@ void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
+void Engine::setSamplerate(handle aVoiceHandle, float aSamplerate)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mBaseSamplerate = aSamplerate;
@@ -60,14 +60,14 @@ void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setPause(handle aVoiceHandle, bool aPause)
+void Engine::setPause(handle aVoiceHandle, bool aPause)
 {
     FOR_ALL_VOICES_PRE
     setVoicePause_internal(ch, aPause);
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
+void Engine::setMaxActiveVoiceCount(unsigned int aVoiceCount)
 {
     assert(aVoiceCount > 0);
     assert(aVoiceCount <= VOICE_COUNT);
@@ -90,7 +90,7 @@ void Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
     unlockAudioMutex_internal();
 }
 
-void Soloud::setPauseAll(bool aPause)
+void Engine::setPauseAll(bool aPause)
 {
     lockAudioMutex_internal();
     int ch;
@@ -101,7 +101,7 @@ void Soloud::setPauseAll(bool aPause)
     unlockAudioMutex_internal();
 }
 
-void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
+void Engine::setProtectVoice(handle aVoiceHandle, bool aProtect)
 {
     FOR_ALL_VOICES_PRE
     if (aProtect)
@@ -115,14 +115,14 @@ void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setPan(handle aVoiceHandle, float aPan)
+void Engine::setPan(handle aVoiceHandle, float aPan)
 {
     FOR_ALL_VOICES_PRE
     setVoicePan_internal(ch, aPan);
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume)
+void Engine::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume)
 {
     FOR_ALL_VOICES_PRE
     if (mVoice[ch]->mChannels > aChannel)
@@ -132,7 +132,7 @@ void Soloud::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float 
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
+void Engine::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mPanFader.mActive = 0;
@@ -162,7 +162,7 @@ void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill)
+void Engine::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mFlags &=
@@ -178,14 +178,14 @@ void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKil
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setLoopPoint(handle aVoiceHandle, time_t aLoopPoint)
+void Engine::setLoopPoint(handle aVoiceHandle, time_t aLoopPoint)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mLoopPoint = aLoopPoint;
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setLooping(handle aVoiceHandle, bool aLooping)
+void Engine::setLooping(handle aVoiceHandle, bool aLooping)
 {
     FOR_ALL_VOICES_PRE
     if (aLooping)
@@ -199,7 +199,7 @@ void Soloud::setLooping(handle aVoiceHandle, bool aLooping)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setAutoStop(handle aVoiceHandle, bool aAutoStop)
+void Engine::setAutoStop(handle aVoiceHandle, bool aAutoStop)
 {
     FOR_ALL_VOICES_PRE
     if (aAutoStop)
@@ -213,7 +213,7 @@ void Soloud::setAutoStop(handle aVoiceHandle, bool aAutoStop)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setVolume(handle aVoiceHandle, float aVolume)
+void Engine::setVolume(handle aVoiceHandle, float aVolume)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mVolumeFader.mActive = 0;
@@ -221,14 +221,14 @@ void Soloud::setVolume(handle aVoiceHandle, float aVolume)
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setDelaySamples(handle aVoiceHandle, unsigned int aSamples)
+void Engine::setDelaySamples(handle aVoiceHandle, unsigned int aSamples)
 {
     FOR_ALL_VOICES_PRE
     mVoice[ch]->mDelaySamples = aSamples;
     FOR_ALL_VOICES_POST
 }
 
-void Soloud::setVisualizationEnable(bool aEnable)
+void Engine::setVisualizationEnable(bool aEnable)
 {
     if (aEnable)
     {
@@ -240,7 +240,7 @@ void Soloud::setVisualizationEnable(bool aEnable)
     }
 }
 
-void Soloud::setSpeakerPosition(unsigned int aChannel, vec3 value)
+void Engine::setSpeakerPosition(unsigned int aChannel, vec3 value)
 {
     m3dSpeakerPosition.at(aChannel) = value;
 }

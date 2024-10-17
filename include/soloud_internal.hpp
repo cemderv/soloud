@@ -29,56 +29,56 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 // SDL2 "non-dynamic" back-end initialization call
-void sdl2static_init(Soloud*      aSoloud,
+void sdl2static_init(Engine*      aSoloud,
                      Flags        aFlags      = Flags::ClipRoundoff,
                      unsigned int aSamplerate = 44100,
                      unsigned int aBuffer     = 2048,
                      unsigned int aChannels   = 2);
 
 // Core Audio driver back-end initialization call
-void coreaudio_init(Soloud*      aSoloud,
+void coreaudio_init(Engine*      aSoloud,
                     Flags        aFlags      = Flags::ClipRoundoff,
                     unsigned int aSamplerate = 44100,
                     unsigned int aBuffer     = 2048,
                     unsigned int aChannels   = 2);
 
 // OpenSL ES back-end initialization call
-void opensles_init(Soloud*      aSoloud,
+void opensles_init(Engine*      aSoloud,
                    Flags        aFlags      = Flags::ClipRoundoff,
                    unsigned int aSamplerate = 44100,
                    unsigned int aBuffer     = 2048,
                    unsigned int aChannels   = 2);
 
 // WinMM back-end initialization call
-void winmm_init(Soloud*      aSoloud,
+void winmm_init(Engine*      aSoloud,
                 Flags        aFlags      = Flags::ClipRoundoff,
                 unsigned int aSamplerate = 44100,
                 unsigned int aBuffer     = 4096,
                 unsigned int aChannels   = 2);
 
 // XAudio2 back-end initialization call
-void xaudio2_init(Soloud*      aSoloud,
+void xaudio2_init(Engine*      aSoloud,
                   Flags        aFlags      = Flags::ClipRoundoff,
                   unsigned int aSamplerate = 44100,
                   unsigned int aBuffer     = 2048,
                   unsigned int aChannels   = 2);
 
 // WASAPI back-end initialization call
-void wasapi_init(Soloud*      aSoloud,
+void wasapi_init(Engine*      aSoloud,
                  Flags        aFlags      = Flags::ClipRoundoff,
                  unsigned int aSamplerate = 44100,
                  unsigned int aBuffer     = 4096,
                  unsigned int aChannels   = 2);
 
 // PS Vita homebrew back-end initialization call
-void vita_homebrew_init(Soloud*      aSoloud,
+void vita_homebrew_init(Engine*      aSoloud,
                         Flags        aFlags      = Flags::ClipRoundoff,
                         unsigned int aSamplerate = 44100,
                         unsigned int aBuffer     = 2048,
                         unsigned int aChannels   = 2);
 
 // ALSA back-end initialization call
-void alsa_init(Soloud*      aSoloud,
+void alsa_init(Engine*      aSoloud,
                Flags        aFlags      = Flags::ClipRoundoff,
                unsigned int aSamplerate = 44100,
                unsigned int aBuffer     = 2048,

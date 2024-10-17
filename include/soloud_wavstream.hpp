@@ -55,30 +55,30 @@ class WavStreamInstance : public AudioSourceInstance
     size_t  mOggFrameOffset = 0;
     float** mOggOutputs     = nullptr;
 
-public:
-    explicit     WavStreamInstance(WavStream* aParent);
+  public:
+    explicit WavStreamInstance(WavStream* aParent);
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    bool seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
-    bool rewind() override;
-    bool hasEnded() override;
+    bool         seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
+    bool         rewind() override;
+    bool         hasEnded() override;
     ~WavStreamInstance() override;
 };
 
 enum WAVSTREAM_FILETYPE
 {
-    WAVSTREAM_WAV = 0,
-    WAVSTREAM_OGG = 1,
+    WAVSTREAM_WAV  = 0,
+    WAVSTREAM_OGG  = 1,
     WAVSTREAM_FLAC = 2,
-    WAVSTREAM_MP3 = 3
+    WAVSTREAM_MP3  = 3
 };
 
 class WavStream : public AudioSource
 {
     friend WavStreamInstance;
 
-public:
+  public:
     int          mFiletype = WAVSTREAM_WAV;
     MemoryFile   mFile;
     bool         mIsStream    = false;
@@ -91,7 +91,7 @@ public:
     AudioSourceInstance* createInstance() override;
     time_t               getLength() const;
 
-private:
+  private:
     void loadwav(MemoryFile& fp);
     void loadogg(MemoryFile& fp);
     void loadflac(MemoryFile& fp);

@@ -1,4 +1,4 @@
-#include "resonator.h"
+#include "resonator.hpp"
 #include <math.h>
 
 #ifndef PI
@@ -56,15 +56,6 @@ float resonator::antiresonate(float input)
     mP2     = mP1;
     mP1     = input;
     return x;
-}
-
-resonator::resonator()
-{
-    mA = mB = mC = mP1 = mP2 = 0;
-}
-
-resonator::~resonator()
-{
 }
 
 void resonator::setGain(float aG)
