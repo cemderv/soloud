@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_vic.h"
+#include "soloud_vic.hpp"
 
 namespace SoLoud
 {

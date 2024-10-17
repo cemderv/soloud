@@ -24,9 +24,9 @@ freely, subject to the following restrictions:
 
 #include <cstring>
 #include <cmath>
-#include "soloud_monotone.h"
-#include "soloud_file.h"
-#include "soloud_misc.h"
+#include "soloud_monotone.hpp"
+#include "soloud_file.hpp"
+#include "soloud_misc.hpp"
 
 namespace SoLoud
 {

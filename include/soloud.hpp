@@ -142,12 +142,12 @@ namespace SoLoud
 	};
 };
 
-#include "soloud_filter.h"
-#include "soloud_fader.h"
-#include "soloud_audiosource.h"
-#include "soloud_bus.h"
-#include "soloud_queue.h"
-#include "soloud_error.h"
+#include "soloud_filter.hpp"
+#include "soloud_fader.hpp"
+#include "soloud_audiosource.hpp"
+#include "soloud_bus.hpp"
+#include "soloud_queue.hpp"
+#include "soloud_error.hpp"
 
 namespace SoLoud
 {

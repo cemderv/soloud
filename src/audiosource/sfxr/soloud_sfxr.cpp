@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 
 #include <cstdlib>
 #include <cmath>
-#include "soloud_sfxr.h"
-#include "soloud_file.h"
+#include "soloud_sfxr.hpp"
+#include "soloud_file.hpp"
 
 namespace SoLoud
 {

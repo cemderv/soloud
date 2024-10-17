@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2020 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,45 +24,32 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
-#include "soloud_filter.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	class RobotizeFilter;
+	class DCRemovalFilter;
 
-	class RobotizeFilterInstance : public FilterInstance
+	class DCRemovalFilterInstance : public FilterInstance
 	{
-		enum FILTERATTRIBUTE
-		{
-			WET = 0,
-			FREQ,
-			WAVE
-		};
-		RobotizeFilter *mParent;
+		float *mBuffer;
+		float *mTotals;
+		int mBufferLength;
+		DCRemovalFilter *mParent;
+		int mOffset;
+
 	public:
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		RobotizeFilterInstance(RobotizeFilter *aParent);
+		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
+		virtual ~DCRemovalFilterInstance();
+		DCRemovalFilterInstance(DCRemovalFilter *aParent);
 	};
 
-	class RobotizeFilter : public Filter
+	class DCRemovalFilter : public Filter
 	{
 	public:
-		enum FILTERATTRIBUTE
-		{
-			WET = 0,
-			FREQ,
-			WAVE
-		};
-		float mFreq;
-		int mWave;
-		virtual int getParamCount();
-		virtual const char* getParamName(unsigned int aParamIndex);
-		virtual unsigned int getParamType(unsigned int aParamIndex);
-		virtual float getParamMax(unsigned int aParamIndex);
-		virtual float getParamMin(unsigned int aParamIndex);
-		void setParams(float aFreq, int aWaveform);
+		float mLength;
 		virtual FilterInstance *createInstance();
-		RobotizeFilter();
+		DCRemovalFilter();
+		result setParams(float aLength = 0.1f);
 	};
 }

@@ -4,7 +4,7 @@ project(SoLoud LANGUAGES CXX)
 
 file(GLOB
   HeaderFiles
-    "include/*.h"
+    "include/*.hpp"
 )
 
 file(GLOB
@@ -20,7 +20,7 @@ target_compile_features(SoLoud PRIVATE cxx_std_20)
 target_include_directories(SoLoud PUBLIC include)
 
 target_precompile_headers(SoLoud PRIVATE
-  "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/include/soloud.h>"
+  include/soloud.hpp
 )
 
 if (WIN32)

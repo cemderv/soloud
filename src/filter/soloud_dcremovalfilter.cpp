@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
-#include "soloud_dcremovalfilter.h"
+#include "soloud.hpp"
+#include "soloud_dcremovalfilter.hpp"
 
 namespace SoLoud
 {

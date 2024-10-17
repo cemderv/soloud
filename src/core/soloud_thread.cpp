@@ -31,8 +31,8 @@ freely, subject to the following restrictions:
 #include <ctime>
 #endif
 
-#include "soloud.h"
-#include "soloud_thread.h"
+#include "soloud.hpp"
+#include "soloud_thread.hpp"
 
 namespace SoLoud
 {

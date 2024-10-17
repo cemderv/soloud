@@ -24,42 +24,40 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
-#include "soloud_fftfilter.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	class BassboostFilter;
+	class FFTFilter;
 
-	class BassboostFilterInstance : public FFTFilterInstance
+	class FFTFilterInstance : public FilterInstance
 	{
-		enum FILTERATTRIBUTE
-		{
-			WET = 0,
-			BOOST = 1
-		};
-		BassboostFilter *mParent;
+		float *mTemp;
+		float *mInputBuffer;
+		float *mMixBuffer;
+		float *mLastPhase;
+		float *mSumPhase;
+		unsigned int mInputOffset[MAX_CHANNELS];
+		unsigned int mMixOffset[MAX_CHANNELS];
+		unsigned int mReadOffset[MAX_CHANNELS];
+		FFTFilter *mParent;
 	public:
 		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		BassboostFilterInstance(BassboostFilter *aParent);
+		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
+		virtual ~FFTFilterInstance();
+		FFTFilterInstance(FFTFilter *aParent);
+		FFTFilterInstance();
+		void comp2MagPhase(float* aFFTBuffer, unsigned int aSamples);
+		void magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
+		void magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
+		void magPhase2Comp(float* aFFTBuffer, unsigned int aSamples);
+		void init();
 	};
 
-	class BassboostFilter : public FFTFilter
+	class FFTFilter : public Filter
 	{
 	public:
-		enum FILTERATTRIBUTE
-		{
-			WET = 0,
-			BOOST = 1
-		};
-		virtual int getParamCount();
-		virtual const char* getParamName(unsigned int aParamIndex);
-		virtual unsigned int getParamType(unsigned int aParamIndex);
-		virtual float getParamMax(unsigned int aParamIndex);
-		virtual float getParamMin(unsigned int aParamIndex);
-		float mBoost;
-		result setParams(float aBoost);
 		virtual FilterInstance *createInstance();
-		BassboostFilter();
+		FFTFilter();
 	};
 }

@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,40 +24,54 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	class FFTFilter;
+	class LofiFilter;
 
-	class FFTFilterInstance : public FilterInstance
+	struct LofiChannelData
 	{
-		float *mTemp;
-		float *mInputBuffer;
-		float *mMixBuffer;
-		float *mLastPhase;
-		float *mSumPhase;
-		unsigned int mInputOffset[MAX_CHANNELS];
-		unsigned int mMixOffset[MAX_CHANNELS];
-		unsigned int mReadOffset[MAX_CHANNELS];
-		FFTFilter *mParent;
-	public:
-		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~FFTFilterInstance();
-		FFTFilterInstance(FFTFilter *aParent);
-		FFTFilterInstance();
-		void comp2MagPhase(float* aFFTBuffer, unsigned int aSamples);
-		void magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
-		void magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
-		void magPhase2Comp(float* aFFTBuffer, unsigned int aSamples);
-		void init();
+		float mSample;
+		float mSamplesToSkip;
 	};
 
-	class FFTFilter : public Filter
+	class LofiFilterInstance : public FilterInstance
+	{
+		enum FILTERPARAMS
+		{
+			WET,
+			SAMPLERATE,
+			BITDEPTH
+		};
+		LofiChannelData mChannelData[2];
+		
+		LofiFilter *mParent;
+	public:
+		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
+		virtual ~LofiFilterInstance();
+		LofiFilterInstance(LofiFilter *aParent);
+	};
+
+	class LofiFilter : public Filter
 	{
 	public:
-		virtual FilterInstance *createInstance();
-		FFTFilter();
+		enum FILTERPARAMS
+		{
+			WET,
+			SAMPLERATE,
+			BITDEPTH
+		};
+		float mSampleRate;
+		float mBitdepth;
+		virtual LofiFilterInstance *createInstance();
+		virtual int getParamCount();
+		virtual const char* getParamName(unsigned int aParamIndex);
+		virtual unsigned int getParamType(unsigned int aParamIndex);
+		virtual float getParamMax(unsigned int aParamIndex);
+		virtual float getParamMin(unsigned int aParamIndex);
+		LofiFilter();
+		result setParams(float aSampleRate, float aBitdepth);
+		virtual ~LofiFilter();
 	};
 }

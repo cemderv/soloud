@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,37 +24,42 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
+#include "soloud_fftfilter.hpp"
 
 namespace SoLoud
 {
-	class WaveShaperFilter;
+	class BassboostFilter;
 
-	class WaveShaperFilterInstance : public FilterInstance
-	{	
-		WaveShaperFilter *mParent;
+	class BassboostFilterInstance : public FFTFilterInstance
+	{
+		enum FILTERATTRIBUTE
+		{
+			WET = 0,
+			BOOST = 1
+		};
+		BassboostFilter *mParent;
 	public:
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~WaveShaperFilterInstance();
-		WaveShaperFilterInstance(WaveShaperFilter *aParent);
+		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
+		BassboostFilterInstance(BassboostFilter *aParent);
 	};
 
-	class WaveShaperFilter : public Filter
+	class BassboostFilter : public FFTFilter
 	{
 	public:
-		enum FILTERPARAMS {
+		enum FILTERATTRIBUTE
+		{
 			WET = 0,
-			AMOUNT
+			BOOST = 1
 		};
-		float mAmount;
-		virtual WaveShaperFilterInstance *createInstance();
-		result setParams(float aAmount);
-		WaveShaperFilter();
-		virtual ~WaveShaperFilter();
 		virtual int getParamCount();
 		virtual const char* getParamName(unsigned int aParamIndex);
 		virtual unsigned int getParamType(unsigned int aParamIndex);
 		virtual float getParamMax(unsigned int aParamIndex);
 		virtual float getParamMin(unsigned int aParamIndex);
+		float mBoost;
+		result setParams(float aBoost);
+		virtual FilterInstance *createInstance();
+		BassboostFilter();
 	};
 }

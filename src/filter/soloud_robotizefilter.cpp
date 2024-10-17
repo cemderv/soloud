@@ -22,9 +22,9 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
-#include "soloud_misc.h"
-#include "soloud_robotizefilter.h"
+#include "soloud.hpp"
+#include "soloud_misc.hpp"
+#include "soloud_robotizefilter.hpp"
 
 namespace SoLoud
 {

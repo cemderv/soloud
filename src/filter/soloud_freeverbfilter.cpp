@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include <cstring>
-#include "soloud.h"
-#include "soloud_freeverbfilter.h"
+#include "soloud.hpp"
+#include "soloud_freeverbfilter.hpp"
 
 
 namespace SoLoud

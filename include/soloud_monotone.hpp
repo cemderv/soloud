@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {

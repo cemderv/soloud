@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include <cstdio>
-#include "soloud.h"
+#include "soloud.hpp"
 
 struct stb_vorbis;
 #ifndef dr_flac_h

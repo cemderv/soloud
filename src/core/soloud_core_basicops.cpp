@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include <cstring>
-#include "soloud_internal.h"
+#include "soloud_internal.hpp"
 
 // Core "basic" operations - play, stop, etc
 

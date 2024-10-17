@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include <cstring>
-#include "soloud.h"
-#include "soloud_eqfilter.h"
+#include "soloud.hpp"
+#include "soloud_eqfilter.hpp"
 
 
 namespace SoLoud

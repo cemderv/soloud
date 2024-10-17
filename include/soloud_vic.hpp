@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 /*
 A very bare bones emulator for Commodore VIC-20 sound chip. Supports both PAL and NTSC models.

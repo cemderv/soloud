@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include <cmath>
-#include "soloud.h"
-#include "soloud_waveshaperfilter.h"
+#include "soloud.hpp"
+#include "soloud_waveshaperfilter.hpp"
 
 namespace SoLoud
 {

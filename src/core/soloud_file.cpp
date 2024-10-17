@@ -27,8 +27,8 @@ distribution.
 
 #include <cstdio>
 #include <cstring>
-#include "soloud.h"
-#include "soloud_file.h"
+#include "soloud.hpp"
+#include "soloud_file.hpp"
 
 namespace SoLoud
 {

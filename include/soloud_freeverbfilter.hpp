@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,68 +24,57 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	class BiquadResonantFilter;
-
-	struct BQRStateData
+	class FreeverbFilter;
+	namespace FreeverbImpl
 	{
-		float mY1, mY2, mX1, mX2;
+		class Revmodel;
+	}
+
+	class FreeverbFilterInstance : public FilterInstance
+	{
+		enum FILTERPARAM {
+			WET = 0,
+			FREEZE,
+			ROOMSIZE,
+			DAMP,
+			WIDTH
+		};		
+
+		FreeverbFilter *mParent;
+		FreeverbImpl::Revmodel *mModel;
+	public:
+		virtual void filter(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
+		virtual ~FreeverbFilterInstance();
+		FreeverbFilterInstance(FreeverbFilter *aParent);
 	};
 
-	class BiquadResonantFilterInstance : public FilterInstance
-	{
-		enum FILTERATTRIBUTE
-		{
-			WET = 0,
-			TYPE,
-			FREQUENCY,
-			RESONANCE
-		};
-
-		BQRStateData mState[8];
-		float mA0, mA1, mA2, mB1, mB2;
-		int mDirty;
-		float mSamplerate;
-
-		BiquadResonantFilter *mParent;
-		void calcBQRParams();
-	public:
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~BiquadResonantFilterInstance();
-		BiquadResonantFilterInstance(BiquadResonantFilter *aParent);
-	};
-
-	class BiquadResonantFilter : public Filter
+	class FreeverbFilter : public Filter
 	{
 	public:
-		enum FILTERTYPE
-		{
-			LOWPASS = 0,
-			HIGHPASS = 1,
-			BANDPASS = 2
-		};
-		enum FILTERATTRIBUTE
-		{
+		enum FILTERPARAM {
 			WET = 0,
-			TYPE,
-			FREQUENCY,
-			RESONANCE
+			FREEZE,
+			ROOMSIZE,
+			DAMP,
+			WIDTH
 		};
-		int mFilterType;
-		float mFrequency;
-		float mResonance;
 		virtual int getParamCount();
 		virtual const char* getParamName(unsigned int aParamIndex);
 		virtual unsigned int getParamType(unsigned int aParamIndex);
 		virtual float getParamMax(unsigned int aParamIndex);
 		virtual float getParamMin(unsigned int aParamIndex);
 
-		virtual BiquadResonantFilterInstance *createInstance();
-		BiquadResonantFilter();
-		result setParams(int aType, float aFrequency, float aResonance);
-		virtual ~BiquadResonantFilter();
+		float mMode;
+		float mRoomSize;
+		float mDamp;
+		float mWidth;
+		virtual FreeverbFilterInstance *createInstance();
+		FreeverbFilter();
+		result setParams(float aMode, float aRoomSize, float aDamp, float aWidth);
+		virtual ~FreeverbFilter();
 	};
 }

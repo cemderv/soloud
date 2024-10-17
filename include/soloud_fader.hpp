@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2020 Jari Komppa
+Copyright (c) 2013-2014 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,48 +24,37 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
-#include "soloud_misc.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	class Noise;
-
-	class NoiseInstance : public AudioSourceInstance
+	// Helper class to process faders
+	class Fader
 	{
 	public:
-		NoiseInstance(Noise *aParent);
-		~NoiseInstance();
-
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
-		virtual bool hasEnded();
-
-	public:
-		float mOctaveScale[10];
-	    Misc::Prg mPrg;
-	};
-
-	class Noise : public AudioSource
-	{
-	public:
-
-		enum NOISETYPES
-		{
-			WHITE = 0,
-			PINK,
-			BROWNISH,
-			BLUEISH
-		};
-
-		Noise();
-
-		void setOctaveScale(float aOct0, float aOct1, float aOct2, float aOct3, float aOct4, float aOct5, float aOct6, float aOct7, float aOct8, float aOct9);
-		void setType(int aType);
-
-		virtual ~Noise();
-		
-	public:
-		virtual AudioSourceInstance *createInstance();
-		float mOctaveScale[10];
-	};
+		// Value to fade from
+		float mFrom;
+		// Value to fade to
+		float mTo;
+		// Delta between from and to
+		float mDelta;
+		// Total time to fade
+		time mTime;
+		// Time fading started
+		time mStartTime;
+		// Time fading will end
+		time mEndTime;
+		// Current value. Used in case time rolls over.
+		float mCurrent;
+		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
+		int mActive;
+		// Ctor
+		Fader();
+		// Set up LFO
+		void setLFO(float aFrom, float aTo, time aTime, time aStartTime);
+		// Set up fader
+		void set(float aFrom, float aTo, time aTime, time aStartTime);
+		// Get the current fading value
+		float get(time aCurrentTime);
+	}; 
 };

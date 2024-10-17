@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2020 Jari Komppa
+Copyright (c) 2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,54 +24,45 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
-	class LofiFilter;
+	class RobotizeFilter;
 
-	struct LofiChannelData
+	class RobotizeFilterInstance : public FilterInstance
 	{
-		float mSample;
-		float mSamplesToSkip;
-	};
-
-	class LofiFilterInstance : public FilterInstance
-	{
-		enum FILTERPARAMS
+		enum FILTERATTRIBUTE
 		{
-			WET,
-			SAMPLERATE,
-			BITDEPTH
+			WET = 0,
+			FREQ,
+			WAVE
 		};
-		LofiChannelData mChannelData[2];
-		
-		LofiFilter *mParent;
+		RobotizeFilter *mParent;
 	public:
 		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~LofiFilterInstance();
-		LofiFilterInstance(LofiFilter *aParent);
+		RobotizeFilterInstance(RobotizeFilter *aParent);
 	};
 
-	class LofiFilter : public Filter
+	class RobotizeFilter : public Filter
 	{
 	public:
-		enum FILTERPARAMS
+		enum FILTERATTRIBUTE
 		{
-			WET,
-			SAMPLERATE,
-			BITDEPTH
+			WET = 0,
+			FREQ,
+			WAVE
 		};
-		float mSampleRate;
-		float mBitdepth;
-		virtual LofiFilterInstance *createInstance();
+		float mFreq;
+		int mWave;
 		virtual int getParamCount();
 		virtual const char* getParamName(unsigned int aParamIndex);
 		virtual unsigned int getParamType(unsigned int aParamIndex);
 		virtual float getParamMax(unsigned int aParamIndex);
 		virtual float getParamMin(unsigned int aParamIndex);
-		LofiFilter();
-		result setParams(float aSampleRate, float aBitdepth);
-		virtual ~LofiFilter();
+		void setParams(float aFreq, int aWaveform);
+		virtual FilterInstance *createInstance();
+		RobotizeFilter();
 	};
 }

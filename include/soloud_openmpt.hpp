@@ -1,6 +1,6 @@
 /*
-SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Openmpt module for SoLoud audio engine
+Copyright (c) 2016 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,37 +24,36 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {
-	// Helper class to process faders
-	class Fader
+	class Openmpt;
+	class File;
+
+	class OpenmptInstance : public AudioSourceInstance
+	{
+		Openmpt *mParent;
+		void *mModfile;
+		int mPlaying;
+
+	public:
+		OpenmptInstance(Openmpt *aParent);
+		virtual ~OpenmptInstance();
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
+		virtual bool hasEnded();
+	};
+
+	class Openmpt : public AudioSource
 	{
 	public:
-		// Value to fade from
-		float mFrom;
-		// Value to fade to
-		float mTo;
-		// Delta between from and to
-		float mDelta;
-		// Total time to fade
-		time mTime;
-		// Time fading started
-		time mStartTime;
-		// Time fading will end
-		time mEndTime;
-		// Current value. Used in case time rolls over.
-		float mCurrent;
-		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
-		int mActive;
-		// Ctor
-		Fader();
-		// Set up LFO
-		void setLFO(float aFrom, float aTo, time aTime, time aStartTime);
-		// Set up fader
-		void set(float aFrom, float aTo, time aTime, time aStartTime);
-		// Get the current fading value
-		float get(time aCurrentTime);
-	}; 
+		char *mData;
+		unsigned int mDataLen;
+		Openmpt();
+		virtual ~Openmpt();
+		result load(const char* aFilename);
+		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+		result loadFile(File *aFile);
+		virtual AudioSourceInstance *createInstance();
+	};
 };

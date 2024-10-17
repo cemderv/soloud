@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include <cstring>
-#include "soloud.h"
-#include "soloud_speech.h"
+#include "soloud.hpp"
+#include "soloud_speech.hpp"
 #include "../src/audiosource/speech/tts.h"
 
 namespace SoLoud

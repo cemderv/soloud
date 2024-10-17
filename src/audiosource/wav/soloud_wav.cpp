@@ -23,9 +23,9 @@ freely, subject to the following restrictions:
 */
 
 #include <cstring>
-#include "soloud.h"
-#include "soloud_wav.h"
-#include "soloud_file.h"
+#include "soloud.hpp"
+#include "soloud_wav.hpp"
+#include "soloud_file.hpp"
 #include "stb_vorbis.h"
 #include "dr_mp3.h"
 #include "dr_wav.h"

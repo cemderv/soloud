@@ -1,6 +1,6 @@
 /*
-Openmpt module for SoLoud audio engine
-Copyright (c) 2016 Jari Komppa
+SoLoud audio engine
+Copyright (c) 2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -24,36 +24,48 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
+#include "soloud_misc.hpp"
 
 namespace SoLoud
 {
-	class Openmpt;
-	class File;
+	class Noise;
 
-	class OpenmptInstance : public AudioSourceInstance
+	class NoiseInstance : public AudioSourceInstance
 	{
-		Openmpt *mParent;
-		void *mModfile;
-		int mPlaying;
-
 	public:
-		OpenmptInstance(Openmpt *aParent);
-		virtual ~OpenmptInstance();
+		NoiseInstance(Noise *aParent);
+		~NoiseInstance();
+
 		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual bool hasEnded();
+
+	public:
+		float mOctaveScale[10];
+	    Misc::Prg mPrg;
 	};
 
-	class Openmpt : public AudioSource
+	class Noise : public AudioSource
 	{
 	public:
-		char *mData;
-		unsigned int mDataLen;
-		Openmpt();
-		virtual ~Openmpt();
-		result load(const char* aFilename);
-		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
-		result loadFile(File *aFile);
+
+		enum NOISETYPES
+		{
+			WHITE = 0,
+			PINK,
+			BROWNISH,
+			BLUEISH
+		};
+
+		Noise();
+
+		void setOctaveScale(float aOct0, float aOct1, float aOct2, float aOct3, float aOct4, float aOct5, float aOct6, float aOct7, float aOct8, float aOct9);
+		void setType(int aType);
+
+		virtual ~Noise();
+		
+	public:
 		virtual AudioSourceInstance *createInstance();
+		float mOctaveScale[10];
 	};
 };

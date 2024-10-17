@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
-#include "soloud_echofilter.h"
+#include "soloud.hpp"
+#include "soloud_echofilter.hpp"
 
 namespace SoLoud
 {

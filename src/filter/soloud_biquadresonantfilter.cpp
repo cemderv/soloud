@@ -29,8 +29,8 @@ Phil Burk, Game Programming Gems 3, p. 606
 
 #include <cmath>
 #include <cstring>
-#include "soloud.h"
-#include "soloud_biquadresonantfilter.h"
+#include "soloud.hpp"
+#include "soloud_biquadresonantfilter.hpp"
 
 namespace SoLoud
 {

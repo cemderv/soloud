@@ -24,45 +24,56 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
+#include "soloud_fftfilter.hpp"
 
 namespace SoLoud
 {
-	class EchoFilter;
+	class EqFilter;
 
-	class EchoFilterInstance : public FilterInstance
+	class EqFilterInstance : public FFTFilterInstance
 	{
-		float *mBuffer;
-		int mBufferLength;
-		int mBufferMaxLength;
-		int mOffset;
-
+		enum FILTERATTRIBUTE
+		{
+			WET = 0,
+			BAND1 = 1,
+			BAND2 = 2,
+			BAND3 = 3,
+			BAND4 = 4,
+			BAND5 = 5,
+			BAND6 = 6,
+			BAND7 = 7,
+			BAND8 = 8
+		};
+		EqFilter *mParent;
 	public:
-		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
-		virtual ~EchoFilterInstance();
-		EchoFilterInstance(EchoFilter *aParent);
+		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
+		EqFilterInstance(EqFilter *aParent);
 	};
 
-	class EchoFilter : public Filter
+	class EqFilter : public FFTFilter
 	{
 	public:
 		enum FILTERATTRIBUTE
 		{
 			WET = 0,
-			DELAY,
-			DECAY,
-			FILTER
+			BAND1 = 1,
+			BAND2 = 2,
+			BAND3 = 3,
+			BAND4 = 4,
+			BAND5 = 5,
+			BAND6 = 6,
+			BAND7 = 7,
+			BAND8 = 8
 		};
-		float mDelay;
-		float mDecay;
-		float mFilter;
 		virtual int getParamCount();
 		virtual const char* getParamName(unsigned int aParamIndex);
 		virtual unsigned int getParamType(unsigned int aParamIndex);
 		virtual float getParamMax(unsigned int aParamIndex);
 		virtual float getParamMin(unsigned int aParamIndex);
+		float mVolume[8];
+		result setParam(unsigned int aBand, float aVolume);
 		virtual FilterInstance *createInstance();
-		EchoFilter();
-		result setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
+		EqFilter();
 	};
 }

@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 
 #pragma once
 
-#include "soloud_fader.h"
-#include "soloud_filter.h"
+#include "soloud_fader.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {

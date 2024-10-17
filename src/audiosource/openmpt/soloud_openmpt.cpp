@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include <cstdio>
-#include "soloud_openmpt.h"
-#include "soloud_file.h"
+#include "soloud_openmpt.hpp"
+#include "soloud_file.hpp"
 
 extern "C"
 {

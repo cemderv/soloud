@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include <cstdio>
-#include "soloud.h"
+#include "soloud.hpp"
 
 typedef void* Soloud_Filehack;
 

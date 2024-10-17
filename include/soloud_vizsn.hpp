@@ -12,7 +12,7 @@ released under same license.
 
 #pragma once
 
-#include "soloud.h"
+#include "soloud.hpp"
 
 namespace SoLoud
 {

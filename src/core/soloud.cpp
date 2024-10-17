@@ -26,9 +26,9 @@ freely, subject to the following restrictions:
 #include <cstdlib>
 #include <cmath> // sin
 #include <cfloat> // _controlfp
-#include "soloud_internal.h"
-#include "soloud_thread.h"
-#include "soloud_fft.h"
+#include "soloud_internal.hpp"
+#include "soloud_thread.hpp"
+#include "soloud_fft.hpp"
 
 
 #ifdef SOLOUD_SSE_INTRINSICS
