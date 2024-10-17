@@ -39,9 +39,8 @@ class NoiseInstance : public AudioSourceInstance
     size_t getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize) override;
     bool   hasEnded() override;
 
-  public:
-    float     mOctaveScale[10];
-    Misc::Prg mPrg;
+    float mOctaveScale[10];
+    Prg   mPrg;
 };
 
 class Noise : public AudioSource

@@ -31,14 +31,14 @@ namespace SoLoud
 {
 AudioSourceInstance3dData::AudioSourceInstance3dData(AudioSource& aSource)
 {
-    m3dAttenuationModel   = aSource.m3dAttenuationModel;
-    m3dAttenuationRolloff = aSource.m3dAttenuationRolloff;
-    m3dDopplerFactor      = aSource.m3dDopplerFactor;
-    m3dMaxDistance        = aSource.m3dMaxDistance;
-    m3dMinDistance        = aSource.m3dMinDistance;
-    mCollider             = aSource.mCollider;
-    mColliderData         = aSource.mColliderData;
-    mAttenuator           = aSource.mAttenuator;
+    m3dAttenuationModel   = aSource.attenuation_model_3d;
+    m3dAttenuationRolloff = aSource.attenuation_rolloff_3d;
+    m3dDopplerFactor      = aSource.doppler_factor_3d;
+    m3dMaxDistance        = aSource.max_distance_3d;
+    m3dMinDistance        = aSource.min_distance_3d;
+    mCollider             = aSource.collider;
+    mColliderData         = aSource.collider_data;
+    mAttenuator           = aSource.attenuator;
     m3dVolume             = 1.0f;
     mDopplerValue         = 1.0f;
 }
@@ -46,47 +46,42 @@ AudioSourceInstance3dData::AudioSourceInstance3dData(AudioSource& aSource)
 AudioSourceInstance::AudioSourceInstance()
 {
     // Default all volumes to 1.0 so sound behind N mix busses isn't super quiet.
-    std::fill(mChannelVolume.begin(), mChannelVolume.end(), 1.0f);
-}
-
-bool AudioSourceInstance::hasFlag(AudioSourceInstanceFlags flag) const
-{
-    return testFlag(mFlags, flag);
+    std::ranges::fill(mChannelVolume, 1.0f);
 }
 
 void AudioSourceInstance::init(AudioSource& aSource, int aPlayIndex)
 {
     mPlayIndex      = aPlayIndex;
-    mBaseSamplerate = aSource.mBaseSamplerate;
+    mBaseSamplerate = aSource.base_sample_rate;
     mSamplerate     = mBaseSamplerate;
-    mChannels       = aSource.mChannels;
+    mChannels       = aSource.channel_count;
     mStreamTime     = 0.0f;
     mStreamPosition = 0.0f;
-    mLoopPoint      = aSource.mLoopPoint;
+    mLoopPoint      = aSource.loop_point;
 
-    if (aSource.mFlags & AudioSource::SHOULD_LOOP)
+    if (aSource.should_loop)
     {
-        mFlags |= AudioSourceInstanceFlags::Looping;
+        mFlags.Looping = true;
     }
-    if (aSource.mFlags & AudioSource::PROCESS_3D)
+    if (aSource.process_3d)
     {
-        mFlags |= AudioSourceInstanceFlags::Process3D;
+        mFlags.Process3D = true;
     }
-    if (aSource.mFlags & AudioSource::LISTENER_RELATIVE)
+    if (aSource.listener_relative)
     {
-        mFlags |= AudioSourceInstanceFlags::ListenerRelative;
+        mFlags.ListenerRelative = true;
     }
-    if (aSource.mFlags & AudioSource::INAUDIBLE_KILL)
+    if (aSource.inaudible_kill)
     {
-        mFlags |= AudioSourceInstanceFlags::InaudibleKill;
+        mFlags.InaudibleKill = true;
     }
-    if (aSource.mFlags & AudioSource::INAUDIBLE_TICK)
+    if (aSource.inaudible_tick)
     {
-        mFlags |= AudioSourceInstanceFlags::InaudibleTick;
+        mFlags.InaudibleTick = true;
     }
-    if (aSource.mFlags & AudioSource::DISABLE_AUTOSTOP)
+    if (aSource.disable_autostop)
     {
-        mFlags |= AudioSourceInstanceFlags::DisableAutostop;
+        mFlags.DisableAutostop = true;
     }
 }
 
@@ -128,144 +123,24 @@ AudioSource::~AudioSource() noexcept
     stop();
 }
 
-void AudioSource::setVolume(float aVolume)
-{
-    mVolume = aVolume;
-}
-
-void AudioSource::setLoopPoint(time_t aLoopPoint)
-{
-    mLoopPoint = aLoopPoint;
-}
-
-time_t AudioSource::getLoopPoint()
-{
-    return mLoopPoint;
-}
-
-void AudioSource::setLooping(bool aLoop)
-{
-    if (aLoop)
-    {
-        mFlags |= SHOULD_LOOP;
-    }
-    else
-    {
-        mFlags &= ~SHOULD_LOOP;
-    }
-}
-
-void AudioSource::setSingleInstance(bool aSingleInstance)
-{
-    if (aSingleInstance)
-    {
-        mFlags |= SINGLE_INSTANCE;
-    }
-    else
-    {
-        mFlags &= ~SINGLE_INSTANCE;
-    }
-}
-
-void AudioSource::setAutoStop(bool aAutoStop)
-{
-    if (aAutoStop)
-    {
-        mFlags &= ~DISABLE_AUTOSTOP;
-    }
-    else
-    {
-        mFlags |= DISABLE_AUTOSTOP;
-    }
-}
-
 void AudioSource::setFilter(size_t aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
 
-    mFilter[aFilterId] = aFilter;
+    filter[aFilterId] = aFilter;
 }
 
 void AudioSource::stop()
 {
-    if (mSoloud)
+    if (engine)
     {
-        mSoloud->stopAudioSource(*this);
+        engine->stopAudioSource(*this);
     }
 }
-
-void AudioSource::set3dMinMaxDistance(float aMinDistance, float aMaxDistance)
-{
-    m3dMinDistance = aMinDistance;
-    m3dMaxDistance = aMaxDistance;
-}
-
-void AudioSource::set3dAttenuation(size_t aAttenuationModel, float aAttenuationRolloffFactor)
-{
-    m3dAttenuationModel   = aAttenuationModel;
-    m3dAttenuationRolloff = aAttenuationRolloffFactor;
-}
-
-void AudioSource::set3dDopplerFactor(float aDopplerFactor)
-{
-    m3dDopplerFactor = aDopplerFactor;
-}
-
-void AudioSource::set3dListenerRelative(bool aListenerRelative)
-{
-    if (aListenerRelative)
-    {
-        mFlags |= LISTENER_RELATIVE;
-    }
-    else
-    {
-        mFlags &= ~LISTENER_RELATIVE;
-    }
-}
-
-
-void AudioSource::set3dDistanceDelay(bool aDistanceDelay)
-{
-    if (aDistanceDelay)
-    {
-        mFlags |= DISTANCE_DELAY;
-    }
-    else
-    {
-        mFlags &= ~DISTANCE_DELAY;
-    }
-}
-
-void AudioSource::set3dCollider(AudioCollider* aCollider, int aUserData)
-{
-    mCollider     = aCollider;
-    mColliderData = aUserData;
-}
-
-void AudioSource::set3dAttenuator(AudioAttenuator* aAttenuator)
-{
-    mAttenuator = aAttenuator;
-}
-
-void AudioSource::setInaudibleBehavior(bool aMustTick, bool aKill)
-{
-    mFlags &= ~(AudioSource::INAUDIBLE_KILL | AudioSource::INAUDIBLE_TICK);
-    if (aMustTick)
-    {
-        mFlags |= AudioSource::INAUDIBLE_TICK;
-    }
-    if (aKill)
-    {
-        mFlags |= AudioSource::INAUDIBLE_KILL;
-    }
-}
-
 
 float AudioSourceInstance::getInfo(size_t /*aInfoKey*/)
 {
     return 0;
 }
-
-
 }; // namespace SoLoud

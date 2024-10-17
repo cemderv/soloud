@@ -108,7 +108,7 @@ void Noise::setType(int aType)
 
 Noise::Noise()
 {
-    mBaseSamplerate = 44100;
+    base_sample_rate = 44100;
     setType(WHITE);
 }
 

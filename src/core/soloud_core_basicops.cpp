@@ -30,7 +30,7 @@ namespace SoLoud
 {
 handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, size_t aBus)
 {
-    if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
+    if (aSound.single_instance)
     {
         // Only one instance allowed, stop others
         aSound.stop();
@@ -38,8 +38,8 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     // Creation of an audio instance may take significant amount of time,
     // so let's not do it inside the audio thread mutex.
-    aSound.mSoloud = this;
-    auto instance  = aSound.createInstance();
+    aSound.engine = this;
+    auto instance = aSound.createInstance();
 
     lockAudioMutex_internal();
     int ch = findFreeVoice_internal();
@@ -48,13 +48,13 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
         unlockAudioMutex_internal();
         return 7; // TODO: this was "UNKNOWN_ERROR"
     }
-    if (!aSound.mAudioSourceID)
+    if (!aSound.audio_source_id)
     {
-        aSound.mAudioSourceID = mAudioSourceID;
+        aSound.audio_source_id = mAudioSourceID;
         mAudioSourceID++;
     }
     mVoice[ch]                 = instance;
-    mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
+    mVoice[ch]->mAudioSourceID = aSound.audio_source_id;
     mVoice[ch]->mBusHandle     = aBus;
     mVoice[ch]->init(aSound, mPlayIndex);
     m3dData[ch] = AudioSourceInstance3dData{aSound};
@@ -69,13 +69,13 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     if (aPaused)
     {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::Paused;
+        mVoice[ch]->mFlags.Paused = true;
     }
 
     setVoicePan_internal(ch, aPan);
     if (aVolume < 0)
     {
-        setVoiceVolume_internal(ch, aSound.mVolume);
+        setVoiceVolume_internal(ch, aSound.volume);
     }
     else
     {
@@ -93,9 +93,9 @@ handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     for (int i = 0; i < FILTERS_PER_STREAM; ++i)
     {
-        if (aSound.mFilter[i])
+        if (aSound.filter[i])
         {
-            mVoice[ch]->mFilter[i] = aSound.mFilter[i]->createInstance();
+            mVoice[ch]->mFilter[i] = aSound.filter[i]->createInstance();
         }
     }
 
@@ -156,14 +156,14 @@ void Engine::stop(handle aVoiceHandle)
 
 void Engine::stopAudioSource(AudioSource& aSound)
 {
-    if (aSound.mAudioSourceID)
+    if (aSound.audio_source_id)
     {
         lockAudioMutex_internal();
 
         int i;
         for (i = 0; i < (signed)mHighestVoice; ++i)
         {
-            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
+            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
             {
                 stopVoice_internal(i);
             }
@@ -186,14 +186,14 @@ void Engine::stopAll()
 int Engine::countAudioSource(AudioSource& aSound)
 {
     int count = 0;
-    if (aSound.mAudioSourceID)
+    if (aSound.audio_source_id)
     {
         lockAudioMutex_internal();
 
         int i;
         for (i = 0; i < (signed)mHighestVoice; ++i)
         {
-            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
+            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
             {
                 count++;
             }

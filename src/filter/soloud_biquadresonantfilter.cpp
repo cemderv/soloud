@@ -27,7 +27,7 @@ Based on "Using the Biquad Resonant Filter",
 Phil Burk, Game Programming Gems 3, p. 606
 */
 
-#include "soloud_biquadresonantfilter.hpp"
+#include "soloud_filter.hpp"
 #include <cmath>
 
 namespace SoLoud
@@ -116,14 +116,14 @@ void BiquadResonantFilterInstance::filterChannel(float* aBuffer,
 
     int c = 0;
 
-    for (size_t i = 0; i < aSamples; i += 2, c++)
+    for (size_t i = 0; i < aSamples; i += 2, ++c)
     {
         // Generate outputs by filtering inputs.
         const float x = aBuffer[c];
         s.mY2         = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
         aBuffer[c] += (s.mY2 - aBuffer[c]) * mParam[Wet];
 
-        c++;
+        ++c;
 
         // Permute filter operations to reduce data movement.
         // Just substitute variables instead of doing mX1=x, etc.

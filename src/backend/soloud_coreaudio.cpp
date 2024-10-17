@@ -36,13 +36,13 @@ static AudioQueueRef audioQueue = 0;
 
 namespace SoLoud
 {
-void soloud_coreaudio_deinit(Engine* aSoloud)
+void soloud_coreaudio_deinit(Engine* engine)
 {
     AudioQueueStop(audioQueue, true);
     AudioQueueDispose(audioQueue, false);
 }
 
-bool soloud_coreaudio_pause(Engine* aSoloud)
+bool soloud_coreaudio_pause(Engine* engine)
 {
     if (!audioQueue)
         return false;
@@ -52,7 +52,7 @@ bool soloud_coreaudio_pause(Engine* aSoloud)
     return true;
 }
 
-bool soloud_coreaudio_resume(Engine* aSoloud)
+bool soloud_coreaudio_resume(Engine* engine)
 {
     if (!audioQueue)
         return false;
@@ -64,18 +64,18 @@ bool soloud_coreaudio_resume(Engine* aSoloud)
 
 static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueueBufferRef buffer)
 {
-    auto aSoloud = static_cast<Engine*>(context);
-    aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
+    auto engine = static_cast<Engine*>(context);
+    engine->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
 }
 
 void coreaudio_init(
-    Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* engine, EngineFlags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
-    aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
-    aSoloud->mBackendCleanupFunc = soloud_coreaudio_deinit;
-    aSoloud->mBackendPauseFunc   = soloud_coreaudio_pause;
-    aSoloud->mBackendResumeFunc  = soloud_coreaudio_resume;
+    engine->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
+    engine->mBackendCleanupFunc = soloud_coreaudio_deinit;
+    engine->mBackendPauseFunc   = soloud_coreaudio_pause;
+    engine->mBackendResumeFunc  = soloud_coreaudio_resume;
 
     AudioStreamBasicDescription audioFormat;
     audioFormat.mSampleRate       = aSamplerate;
@@ -91,7 +91,7 @@ void coreaudio_init(
     // create the audio queue
     OSStatus result = AudioQueueNewOutput(&audioFormat,
                                           coreaudio_fill_buffer,
-                                          aSoloud,
+                                          engine,
                                           nullptr,
                                           nullptr,
                                           0,

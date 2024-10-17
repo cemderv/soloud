@@ -35,9 +35,9 @@ freely, subject to the following restrictions:
  * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
  */
 
-#include "soloud_fftfilter.hpp"
 #include "soloud.hpp"
 #include "soloud_fft.hpp"
+#include "soloud_filter.hpp"
 #include <cstring>
 
 namespace SoLoud
@@ -179,8 +179,8 @@ void FFTFilterInstance::magPhase2MagFreq(float* aFFTBuffer,
     float freqPerBin = aSamplerate / aSamples;
     for (size_t i = 0; i < aSamples; ++i)
     {
-        float mag = aFFTBuffer[i * 2];
-        float pha = aFFTBuffer[i * 2 + 1];
+        float       mag = aFFTBuffer[i * 2];
+        const float pha = aFFTBuffer[i * 2 + 1];
 
         /* compute phase difference */
         float freq = pha - mLastPhase[i + aChannel * STFT_WINDOW_SIZE];
@@ -198,7 +198,7 @@ void FFTFilterInstance::magPhase2MagFreq(float* aFFTBuffer,
         freq -= float(M_PI) * float(qpd);
 
         /* get deviation from bin frequency from the +/- Pi interval */
-        freq = aSamples * freq / (2.0f * (float)M_PI);
+        freq = aSamples * freq / (2.0f * float(M_PI));
 
         /* compute the k-th partials' true frequency */
         freq = float(i) * freqPerBin + freq * freqPerBin;
@@ -213,9 +213,10 @@ void FFTFilterInstance::magFreq2MagPhase(float* aFFTBuffer,
                                          float  aSamplerate,
                                          size_t aChannel)
 {
-    float stepsize   = aSamples / aSamplerate;
-    float expct      = (stepsize / aSamples) * 2.0f * (float)M_PI;
-    float freqPerBin = aSamplerate / aSamples;
+    const float stepsize   = aSamples / aSamplerate;
+    const float expct      = (stepsize / aSamples) * 2.0f * float(M_PI);
+    const float freqPerBin = aSamplerate / aSamples;
+
     for (size_t i = 0; i < aSamples; ++i)
     {
         /* get magnitude and true frequency from synthesis arrays */
@@ -268,8 +269,7 @@ void FFTFilterInstance::fftFilterChannel(float* aFFTBuffer,
 
     for (size_t i = 0; i < aSamples / 4; ++i)
     {
-        size_t d = i * 2;
-        if (d < aSamples / 4)
+        if (const size_t d = i * 2; d < aSamples / 4)
         {
             aFFTBuffer[d * 2] += t[i * 2];
             aFFTBuffer[d * 2 + 1] = t[i * 2 + 1] * 2;

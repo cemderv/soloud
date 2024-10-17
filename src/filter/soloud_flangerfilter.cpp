@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include "soloud_flangerfilter.hpp"
+#include "soloud_filter.hpp"
 #include <cstring>
 
 namespace SoLoud
@@ -33,7 +33,7 @@ FlangerFilterInstance::FlangerFilterInstance(FlangerFilter* aParent)
     mBufferLength = 0;
     mOffset       = 0;
     mIndex        = 0;
-    initParams(3);
+    FilterInstance::initParams(3);
     mParam[FlangerFilter::WET]   = 1;
     mParam[FlangerFilter::FREQ]  = mParent->mFreq;
     mParam[FlangerFilter::DELAY] = mParent->mDelay;
@@ -54,7 +54,7 @@ void FlangerFilterInstance::filter(float* aBuffer,
         mBuffer       = std::make_unique<float[]>(mBufferLength * aChannels);
     }
 
-    const int    maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
+    const int    maxsamples = int(ceil(mParam[FlangerFilter::DELAY] * aSamplerate));
     const double inc        = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
     for (size_t i = 0; i < aChannels; ++i)
     {
@@ -62,7 +62,7 @@ void FlangerFilterInstance::filter(float* aBuffer,
         auto       abofs = i * aBufferSize;
         for (size_t j = 0; j < aSamples; ++j, ++abofs)
         {
-            auto delay = int(floor(maxsamples * (1 + cos(mIndex)))) / 2;
+            const auto delay = int(floor(maxsamples * (1 + cos(mIndex)))) / 2;
             mIndex += inc;
             mBuffer[mbofs + mOffset % mBufferLength] = aBuffer[abofs];
             const auto n =

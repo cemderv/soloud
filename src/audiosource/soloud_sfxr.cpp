@@ -68,7 +68,7 @@ size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aB
             fperiod = fmaxperiod;
             if (mParams.p_freq_limit > 0.0f)
             {
-                if (hasFlag(AudioSourceInstanceFlags::Looping))
+                if (mFlags.Looping)
                 {
                     resetSample(false);
                 }
@@ -101,7 +101,7 @@ size_t SfxrInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t /*aB
             env_stage++;
             if (env_stage == 3)
             {
-                if (testFlag(mFlags, AudioSourceInstanceFlags::Looping))
+                if (mFlags.Looping)
                 {
                     resetSample(false);
                 }

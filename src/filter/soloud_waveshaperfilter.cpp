@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_waveshaperfilter.hpp"
+#include "soloud_filter.hpp"
 #include <cmath>
 
 namespace SoLoud
@@ -43,7 +43,7 @@ void WaveShaperFilterInstance::filterChannel(float* aBuffer,
 {
     updateParams(aTime);
 
-    auto  k = 0.0f;
+    auto k = 0.0f;
 
     if (mParam[1] == 1)
     {

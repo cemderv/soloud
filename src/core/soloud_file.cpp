@@ -22,9 +22,6 @@ misrepresented as being the original software.
 distribution.
 */
 
-#undef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "soloud_file.hpp"
 #include <cstdio>
 #include <cstring>

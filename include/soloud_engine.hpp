@@ -4,8 +4,8 @@
 #include "soloud_audiosource.hpp"
 #include "soloud_misc.hpp"
 #include "soloud_vec3.hpp"
-#include <optional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace SoLoud
@@ -13,6 +13,13 @@ namespace SoLoud
 class AudioSource;
 class AudioSourceInstance;
 class Filter;
+
+struct EngineFlags
+{
+    bool ClipRoundoff : 1        = true;
+    bool EnableVisualization : 1 = false;
+    bool NoFpuRegisterChange : 1 = false;
+};
 
 // Soloud core class.
 class Engine
@@ -33,10 +40,10 @@ class Engine
     soloudResultFunction mBackendPauseFunc  = nullptr;
     soloudResultFunction mBackendResumeFunc = nullptr;
 
-    Engine(Flags                 aFlags      = Flags::ClipRoundoff,
-           std::optional<size_t> aSamplerate = std::nullopt,
-           std::optional<size_t> aBufferSize = std::nullopt,
-           size_t                aChannels   = 2);
+    explicit Engine(EngineFlags           flags       = {},
+                    std::optional<size_t> aSamplerate = std::nullopt,
+                    std::optional<size_t> aBufferSize = std::nullopt,
+                    size_t                aChannels   = 2);
 
     ~Engine() noexcept;
 
@@ -286,9 +293,9 @@ class Engine
     // Set 3d audio source min/max distance (distance < min means max volume)
     void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
     // Set 3d audio source attenuation parameters
-    void set3dSourceAttenuation(handle aVoiceHandle,
-                                size_t aAttenuationModel,
-                                float  aAttenuationRolloffFactor);
+    void set3dSourceAttenuation(handle           aVoiceHandle,
+                                AttenuationModel aAttenuationModel,
+                                float            aAttenuationRolloffFactor);
     // Set 3d audio source doppler factor to reduce or enhance doppler effect. Default = 1.0
     void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
 
@@ -305,7 +312,10 @@ class Engine
     void mix_internal(size_t aSamples, size_t aStride);
 
     // Handle rest of initialization (called from backend)
-    void postinit_internal(size_t aSamplerate, size_t aBufferSize, Flags aFlags, size_t aChannels);
+    void postinit_internal(size_t      aSamplerate,
+                           size_t      aBufferSize,
+                           EngineFlags aFlags,
+                           size_t      aChannels);
 
     // Update list of active voices
     void calcActiveVoices_internal();
@@ -400,8 +410,7 @@ class Engine
     // Maximum size of output buffer; used to calculate needed scratch.
     size_t mBufferSize = 0;
 
-    // Flags; see Soloud::FLAGS
-    Flags mFlags = Flags::None;
+    EngineFlags mFlags;
 
     // Global volume. Applied before clipping.
     float mGlobalVolume = 0.0f;

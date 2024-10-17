@@ -182,30 +182,30 @@ struct soloud_thread_data
 
 static void* threadfunc(void* d)
 {
-    soloud_thread_data* p = (soloud_thread_data*)d;
+    auto* p = (soloud_thread_data*)d;
     p->mFunc(p->mParam);
     delete p;
-    return 0;
+    return nullptr;
 }
 
 ThreadHandle createThread(threadFunction aThreadFunction, void* aParameter)
 {
-    soloud_thread_data* d = new soloud_thread_data;
-    d->mFunc              = aThreadFunction;
-    d->mParam             = aParameter;
+    auto* d   = new soloud_thread_data;
+    d->mFunc  = aThreadFunction;
+    d->mParam = aParameter;
 
-    ThreadHandleData* threadHandle = new ThreadHandleData;
-    pthread_create(&threadHandle->thread, nullptr, threadfunc, (void*)d);
+    auto* threadHandle = new ThreadHandleData;
+    pthread_create(&threadHandle->thread, nullptr, threadfunc, d);
     return threadHandle;
 }
 
 void sleep(int aMSec)
 {
     // usleep(aMSec * 1000);
-    struct timespec req = {0};
-    req.tv_sec          = 0;
-    req.tv_nsec         = aMSec * 1000000L;
-    nanosleep(&req, (struct timespec*)nullptr);
+    timespec req = {};
+    req.tv_sec   = 0;
+    req.tv_nsec  = aMSec * 1000000L;
+    nanosleep(&req, nullptr);
 }
 
 void wait(ThreadHandle aThreadHandle)
@@ -220,7 +220,7 @@ void release(ThreadHandle aThreadHandle)
 
 int getTimeMillis()
 {
-    struct timespec spec;
+    timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     return spec.tv_sec * 1000 + (int)(spec.tv_nsec / 1.0e6);
 }
@@ -228,7 +228,7 @@ int getTimeMillis()
 
 static void poolWorker(void* aParam)
 {
-    Pool* myPool = (Pool*)aParam;
+    auto* myPool = static_cast<Pool*>(aParam);
     while (myPool->mRunning)
     {
         PoolTask* t = myPool->getWork();
@@ -251,8 +251,11 @@ Pool::Pool()
     mWorkMutex   = 0;
     mRobin       = 0;
     mMaxTask     = 0;
+
     for (int i = 0; i < MAX_THREADPOOL_TASKS; ++i)
-        mTaskArray[i] = 0;
+    {
+        mTaskArray[i] = nullptr;
+    }
 }
 
 Pool::~Pool()
@@ -264,9 +267,12 @@ Pool::~Pool()
         wait(mThread[i]);
         release(mThread[i]);
     }
+
     delete[] mThread;
     if (mWorkMutex)
+    {
         destroyMutex(mWorkMutex);
+    }
 }
 
 void Pool::init(int aThreadCount)
@@ -316,19 +322,25 @@ void Pool::addWork(PoolTask* aTask)
 
 PoolTask* Pool::getWork()
 {
-    PoolTask* t = 0;
+    PoolTask* t = nullptr;
     if (mWorkMutex)
+    {
         lockMutex(mWorkMutex);
+    }
+
     if (mMaxTask > 0)
     {
-        int r = mRobin % mMaxTask;
+        const int r = mRobin % mMaxTask;
         mRobin++;
         t             = mTaskArray[r];
         mTaskArray[r] = mTaskArray[mMaxTask - 1];
         mMaxTask--;
     }
+
     if (mWorkMutex)
+    {
         unlockMutex(mWorkMutex);
+    }
     return t;
 }
 } // namespace Thread

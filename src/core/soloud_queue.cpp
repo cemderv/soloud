@@ -29,8 +29,8 @@ namespace SoLoud
 {
 QueueInstance::QueueInstance(Queue* aParent)
 {
-    mParent = aParent;
-    mFlags |= AudioSourceInstanceFlags::Protected;
+    mParent          = aParent;
+    mFlags.Protected = true;
 }
 
 size_t QueueInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t aBufferSize)
@@ -78,73 +78,73 @@ std::shared_ptr<AudioSourceInstance> Queue::createInstance()
 void Queue::findQueueHandle()
 {
     // Find the channel the queue is playing on to calculate handle..
-    for (int i = 0; mQueueHandle == 0 && i < (signed)mSoloud->mHighestVoice; ++i)
+    for (int i = 0; mQueueHandle == 0 && i < (signed)engine->mHighestVoice; ++i)
     {
-        if (mSoloud->mVoice[i] == mInstance)
+        if (engine->mVoice[i] == mInstance)
         {
-            mQueueHandle = mSoloud->getHandleFromVoice_internal(i);
+            mQueueHandle = engine->getHandleFromVoice_internal(i);
         }
     }
 }
 
 void Queue::play(AudioSource& aSound)
 {
-    assert(mSoloud != nullptr);
+    assert(engine != nullptr);
 
     findQueueHandle();
 
     assert(mQueueHandle != 0);
     assert(mCount < SOLOUD_QUEUE_MAX);
 
-    if (!aSound.mAudioSourceID)
+    if (!aSound.audio_source_id)
     {
-        aSound.mAudioSourceID = mSoloud->mAudioSourceID;
-        mSoloud->mAudioSourceID++;
+        aSound.audio_source_id = engine->mAudioSourceID;
+        engine->mAudioSourceID++;
     }
 
     auto instance = aSound.createInstance();
 
     instance->init(aSound, 0);
-    instance->mAudioSourceID = aSound.mAudioSourceID;
+    instance->mAudioSourceID = aSound.audio_source_id;
 
-    mSoloud->lockAudioMutex_internal();
+    engine->lockAudioMutex_internal();
     mSource[mWriteIndex] = instance;
     mWriteIndex          = (mWriteIndex + 1) % SOLOUD_QUEUE_MAX;
     mCount++;
-    mSoloud->unlockAudioMutex_internal();
+    engine->unlockAudioMutex_internal();
 }
 
 
 size_t Queue::getQueueCount() const
 {
-    if (!mSoloud)
+    if (!engine)
     {
         return 0;
     }
 
-    mSoloud->lockAudioMutex_internal();
+    engine->lockAudioMutex_internal();
     size_t count = mCount;
-    mSoloud->unlockAudioMutex_internal();
+    engine->unlockAudioMutex_internal();
     return count;
 }
 
 bool Queue::isCurrentlyPlaying(const AudioSource& aSound) const
 {
-    if (mSoloud == nullptr || mCount == 0 || aSound.mAudioSourceID == 0)
+    if (engine == nullptr || mCount == 0 || aSound.audio_source_id == 0)
     {
         return false;
     }
 
-    mSoloud->lockAudioMutex_internal();
-    const bool res = mSource[mReadIndex]->mAudioSourceID == aSound.mAudioSourceID;
-    mSoloud->unlockAudioMutex_internal();
+    engine->lockAudioMutex_internal();
+    const bool res = mSource[mReadIndex]->mAudioSourceID == aSound.audio_source_id;
+    engine->unlockAudioMutex_internal();
     return res;
 }
 
 void Queue::setParamsFromAudioSource(const AudioSource& aSound)
 {
-    mChannels       = aSound.mChannels;
-    mBaseSamplerate = aSound.mBaseSamplerate;
+    channel_count    = aSound.channel_count;
+    base_sample_rate = aSound.base_sample_rate;
 }
 
 void Queue::setParams(float aSamplerate, size_t aChannels)
@@ -152,7 +152,7 @@ void Queue::setParams(float aSamplerate, size_t aChannels)
     assert(aChannels >= 1);
     assert(aChannels <= MAX_CHANNELS);
 
-    mChannels       = aChannels;
-    mBaseSamplerate = aSamplerate;
+    channel_count    = aChannels;
+    base_sample_rate = aSamplerate;
 }
 }; // namespace SoLoud

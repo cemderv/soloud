@@ -67,7 +67,7 @@ struct MonotoneHardwareChannel
     float mSamplePosInc;
 };
 
-class MonotoneInstance : public AudioSourceInstance
+class MonotoneInstance final : public AudioSourceInstance
 {
     Monotone* mParent;
 
@@ -86,7 +86,7 @@ class MonotoneInstance : public AudioSourceInstance
     bool   hasEnded() override;
 };
 
-class Monotone : public AudioSource
+class Monotone final : public AudioSource
 {
   public:
     int          mNotesHz[800];

@@ -32,6 +32,18 @@ namespace SoLoud
 class Fader
 {
   public:
+    // Ctor
+    Fader();
+
+    // Set up LFO
+    void setLFO(float aFrom, float aTo, time_t aTime, time_t aStartTime);
+
+    // Set up fader
+    void set(float aFrom, float aTo, time_t aTime, time_t aStartTime);
+
+    // Get the current fading value
+    float get(time_t aCurrentTime);
+
     // Value to fade from
     float mFrom;
 
@@ -55,17 +67,5 @@ class Fader
 
     // Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
     int mActive;
-
-    // Ctor
-    Fader();
-
-    // Set up LFO
-    void setLFO(float aFrom, float aTo, time_t aTime, time_t aStartTime);
-
-    // Set up fader
-    void set(float aFrom, float aTo, time_t aTime, time_t aStartTime);
-
-    // Get the current fading value
-    float get(time_t aCurrentTime);
 };
 }; // namespace SoLoud

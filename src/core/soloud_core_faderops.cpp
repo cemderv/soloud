@@ -68,7 +68,8 @@ void Engine::fadeVolume(handle aVoiceHandle, float aTo, time_t aTime)
 
 void Engine::fadePan(handle aVoiceHandle, float aTo, time_t aTime)
 {
-    float from = getPan(aVoiceHandle);
+    const float from = getPan(aVoiceHandle);
+
     if (aTime <= 0 || aTo == from)
     {
         setPan(aVoiceHandle, aTo);
@@ -82,7 +83,7 @@ void Engine::fadePan(handle aVoiceHandle, float aTo, time_t aTime)
 
 void Engine::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time_t aTime)
 {
-    float from = getRelativePlaySpeed(aVoiceHandle);
+    const float from = getRelativePlaySpeed(aVoiceHandle);
     if (aTime <= 0 || aTo == from)
     {
         setRelativePlaySpeed(aVoiceHandle, aTo);
@@ -95,7 +96,7 @@ void Engine::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time_t aTime)
 
 void Engine::fadeGlobalVolume(float aTo, time_t aTime)
 {
-    float from = getGlobalVolume();
+    const float from = getGlobalVolume();
     if (aTime <= 0 || aTo == from)
     {
         setGlobalVolume(aTo);
@@ -151,6 +152,7 @@ void Engine::oscillateGlobalVolume(float aFrom, float aTo, time_t aTime)
         setGlobalVolume(aTo);
         return;
     }
+
     mGlobalVolumeFader.setLFO(aFrom, aTo, aTime, mStreamTime);
 }
 } // namespace SoLoud

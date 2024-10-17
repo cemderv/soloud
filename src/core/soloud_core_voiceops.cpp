@@ -50,15 +50,7 @@ void Engine::setVoicePause_internal(size_t aVoice, int aPause)
     if (mVoice[aVoice])
     {
         mVoice[aVoice]->mPauseScheduler.mActive = 0;
-
-        if (aPause)
-        {
-            mVoice[aVoice]->mFlags |= AudioSourceInstanceFlags::Paused;
-        }
-        else
-        {
-            mVoice[aVoice]->mFlags &= ~AudioSourceInstanceFlags::Paused;
-        }
+        mVoice[aVoice]->mFlags.Paused           = aPause;
     }
 }
 
@@ -69,8 +61,8 @@ void Engine::setVoicePan_internal(size_t aVoice, float aPan)
     if (mVoice[aVoice])
     {
         mVoice[aVoice]->mPan              = aPan;
-        float l                           = float(std::cos((aPan + 1) * M_PI / 4));
-        float r                           = float(std::sin((aPan + 1) * M_PI / 4));
+        const auto l                      = float(std::cos((aPan + 1) * M_PI / 4));
+        const auto r                      = float(std::sin((aPan + 1) * M_PI / 4));
         mVoice[aVoice]->mChannelVolume[0] = l;
         mVoice[aVoice]->mChannelVolume[1] = r;
         if (mVoice[aVoice]->mChannels == 4)
@@ -145,10 +137,9 @@ void Engine::updateVoiceVolume_internal(size_t aVoice)
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
     mVoice[aVoice]->mOverallVolume = mVoice[aVoice]->mSetVolume * m3dData[aVoice].m3dVolume;
-    if (testFlag(mVoice[aVoice]->mFlags, AudioSourceInstanceFlags::Paused))
+    if (mVoice[aVoice]->mFlags.Paused)
     {
-        int i;
-        for (i = 0; i < MAX_CHANNELS; ++i)
+        for (size_t i = 0; i < MAX_CHANNELS; ++i)
         {
             mVoice[aVoice]->mCurrentChannelVolume[i] =
                 mVoice[aVoice]->mChannelVolume[i] * mVoice[aVoice]->mOverallVolume;

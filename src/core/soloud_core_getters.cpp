@@ -45,29 +45,35 @@ float Engine::getGlobalVolume() const
 
 handle Engine::getHandleFromVoice_internal(size_t aVoice) const
 {
-    if (mVoice[aVoice] == 0)
+    if (mVoice[aVoice] == nullptr)
+    {
         return 0;
+    }
+
     return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 }
 
 int Engine::getVoiceFromHandle_internal(handle aVoiceHandle) const
 {
     // If this is a voice group handle, pick the first handle from the group
-    handle* h = voiceGroupHandleToArray_internal(aVoiceHandle);
-    if (h != nullptr)
+    if (const auto* h = voiceGroupHandleToArray_internal(aVoiceHandle); h != nullptr)
+    {
         aVoiceHandle = *h;
+    }
 
     if (aVoiceHandle == 0)
     {
         return -1;
     }
 
-    int    ch  = (aVoiceHandle & 0xfff) - 1;
-    size_t idx = aVoiceHandle >> 12;
-    if (mVoice[ch] && (mVoice[ch]->mPlayIndex & 0xfffff) == idx)
+    const int    ch  = (aVoiceHandle & 0xfff) - 1;
+    const size_t idx = aVoiceHandle >> 12;
+
+    if (mVoice[ch] != nullptr && (mVoice[ch]->mPlayIndex & 0xfffff) == idx)
     {
         return ch;
     }
+
     return -1;
 }
 
@@ -80,22 +86,24 @@ size_t Engine::getActiveVoiceCount()
 {
     lockAudioMutex_internal();
     if (mActiveVoiceDirty)
+    {
         calcActiveVoices_internal();
-    size_t c = mActiveVoiceCount;
+    }
+    const size_t c = mActiveVoiceCount;
     unlockAudioMutex_internal();
+
     return c;
 }
 
 size_t Engine::getVoiceCount()
 {
     lockAudioMutex_internal();
-    int i;
     int c = 0;
-    for (i = 0; i < (signed)mHighestVoice; ++i)
+    for (size_t i = 0; i < mHighestVoice; ++i)
     {
         if (mVoice[i])
         {
-            c++;
+            ++c;
         }
     }
     unlockAudioMutex_internal();
@@ -106,7 +114,9 @@ bool Engine::isValidVoiceHandle(handle aVoiceHandle)
 {
     // voice groups are not valid voice handles
     if ((aVoiceHandle & 0xfffff000) == 0xfffff000)
+    {
         return false;
+    }
 
     lockAudioMutex_internal();
     if (getVoiceFromHandle_internal(aVoiceHandle) != -1)
@@ -136,13 +146,13 @@ time_t Engine::getLoopPoint(handle aVoiceHandle)
 bool Engine::getLooping(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
-    int ch = getVoiceFromHandle_internal(aVoiceHandle);
+    const int ch = getVoiceFromHandle_internal(aVoiceHandle);
     if (ch == -1)
     {
         unlockAudioMutex_internal();
         return 0;
     }
-    const bool v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Looping);
+    const bool v = mVoice[ch]->mFlags.Looping;
     unlockAudioMutex_internal();
     return v;
 }
@@ -156,7 +166,7 @@ bool Engine::getAutoStop(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::DisableAutostop);
+    const auto v = mVoice[ch]->mFlags.DisableAutostop;
     unlockAudioMutex_internal();
     return !v;
 }
@@ -282,7 +292,7 @@ bool Engine::getPause(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Paused);
+    const auto v = mVoice[ch]->mFlags.Paused;
     unlockAudioMutex_internal();
     return v;
 }
@@ -296,7 +306,7 @@ bool Engine::getProtectVoice(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Protected);
+    const auto v = mVoice[ch]->mFlags.Protected;
     unlockAudioMutex_internal();
     return v;
 }
@@ -308,7 +318,9 @@ int Engine::findFreeVoice_internal()
 
     // (slowly) drag the highest active voice index down
     if (mHighestVoice > 0 && mVoice[mHighestVoice - 1] == nullptr)
+    {
         mHighestVoice--;
+    }
 
     for (int i = 0; i < VOICE_COUNT; ++i)
     {
@@ -320,8 +332,8 @@ int Engine::findFreeVoice_internal()
             }
             return i;
         }
-        if (testFlag(mVoice[i]->mFlags, AudioSourceInstanceFlags::Protected) == 0 &&
-            mVoice[i]->mPlayIndex < lowest_play_index_value)
+
+        if (!mVoice[i]->mFlags.Protected && mVoice[i]->mPlayIndex < lowest_play_index_value)
         {
             lowest_play_index_value = mVoice[i]->mPlayIndex;
             lowest_play_index       = i;
@@ -334,13 +346,13 @@ int Engine::findFreeVoice_internal()
 size_t Engine::getLoopCount(handle aVoiceHandle)
 {
     lockAudioMutex_internal();
-    int ch = getVoiceFromHandle_internal(aVoiceHandle);
+    const int ch = getVoiceFromHandle_internal(aVoiceHandle);
     if (ch == -1)
     {
         unlockAudioMutex_internal();
         return 0;
     }
-    int v = mVoice[ch]->mLoopCount;
+    const int v = mVoice[ch]->mLoopCount;
     unlockAudioMutex_internal();
     return v;
 }

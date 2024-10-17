@@ -47,10 +47,12 @@ class MemoryFile final
     {
         return mData.data();
     }
+
     const unsigned char* data_uc() const
     {
         return reinterpret_cast<const unsigned char*>(data());
     }
+
     size_t size() const
     {
         return mData.size();

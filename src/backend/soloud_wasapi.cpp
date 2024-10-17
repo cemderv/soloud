@@ -260,13 +260,13 @@ static void wasapiThread(LPVOID aParam)
     }
 }
 
-static void wasapiCleanup(Engine* aSoloud)
+static void wasapiCleanup(Engine* engine)
 {
-    if (0 == aSoloud->mBackendData)
+    if (0 == engine->mBackendData)
     {
         return;
     }
-    WASAPIData* data = static_cast<WASAPIData*>(aSoloud->mBackendData);
+    WASAPIData* data = static_cast<WASAPIData*>(engine->mBackendData);
     SetEvent(data->audioProcessingDoneEvent);
     SetEvent(data->bufferEndEvent);
     if (data->thread)
@@ -290,18 +290,18 @@ static void wasapiCleanup(Engine* aSoloud)
     SAFE_RELEASE(data->device);
     SAFE_RELEASE(data->deviceEnumerator);
     delete data;
-    aSoloud->mBackendData = 0;
+    engine->mBackendData = 0;
     CoUninitialize();
 }
 
 result wasapi_init(
-    Engine* aSoloud, size_t aFlags, size_t /*aSamplerate*/, size_t aBuffer, size_t /*aChannels*/)
+    Engine* engine, size_t aFlags, size_t /*aSamplerate*/, size_t aBuffer, size_t /*aChannels*/)
 {
     CoInitializeEx(0, COINIT_MULTITHREADED);
     WASAPIData* data = new WASAPIData;
     ZeroMemory(data, sizeof(WASAPIData));
-    aSoloud->mBackendData        = data;
-    aSoloud->mBackendCleanupFunc = wasapiCleanup;
+    engine->mBackendData        = data;
+    engine->mBackendCleanupFunc = wasapiCleanup;
 
     data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
     if (0 == data->bufferEndEvent)
@@ -388,17 +388,17 @@ result wasapi_init(
     data->duration   = dur;
     data->sampleRate = format.nSamplesPerSec;
     data->channels   = format.nChannels;
-    data->soloud     = aSoloud;
-    aSoloud->postinit_internal(format.nSamplesPerSec,
-                               data->bufferFrames * format.nChannels,
-                               aFlags,
-                               2);
+    data->soloud     = engine;
+    engine->postinit_internal(format.nSamplesPerSec,
+                              data->bufferFrames * format.nChannels,
+                              aFlags,
+                              2);
     data->thread = Thread::createThread(wasapiThread, data);
     if (0 == data->thread)
     {
         return UNKNOWN_ERROR;
     }
-    aSoloud->mBackendString = "WASAPI";
+    engine->mBackendString = "WASAPI";
     return 0;
 }
 }; // namespace SoLoud

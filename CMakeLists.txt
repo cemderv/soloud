@@ -17,7 +17,15 @@ file(GLOB
 add_library(SoLoud STATIC ${HeaderFiles} ${SourceFiles})
 
 target_compile_features(SoLoud PRIVATE cxx_std_20)
+
 target_include_directories(SoLoud PUBLIC include)
+
+target_include_directories(SoLoud PRIVATE
+  src/audiosource
+  src/backend
+  src/core
+  src/filter
+)
 
 target_compile_definitions(SoLoud PRIVATE
   -DSTB_VORBIS_NO_STDIO
@@ -35,6 +43,9 @@ target_precompile_headers(SoLoud PRIVATE
   <vector>
   <string>
   include/soloud.hpp
+  include/soloud_audiosource.hpp
+  include/soloud_filter.hpp
+  include/soloud_vec3.hpp
 )
 
 if (WIN32)

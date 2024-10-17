@@ -79,7 +79,7 @@ class SfxrInstance : public AudioSourceInstance
 {
     Sfxr* mParent;
 
-    Misc::Prg  mRand;
+    Prg        mRand;
     SfxrParams mParams;
 
     bool                    playing_sample;
@@ -154,6 +154,6 @@ class Sfxr : public AudioSource
 
   private:
     SfxrParams mParams;
-    Misc::Prg  mRand;
+    Prg        mRand;
 };
 }; // namespace SoLoud

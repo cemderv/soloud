@@ -115,16 +115,16 @@ struct BackendData
     SLDataLocator_AndroidSimpleBufferQueue inLocator;
 };
 
-void soloud_opensles_deinit(Engine* aSoloud)
+void soloud_opensles_deinit(Engine* engine)
 {
-    BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
+    BackendData* data = static_cast<BackendData*>(engine->mBackendData);
     delete data;
-    aSoloud->mBackendData = nullptr;
+    engine->mBackendData = nullptr;
 }
 
-static void opensles_iterate(Engine* aSoloud)
+static void opensles_iterate(Engine* engine)
 {
-    BackendData* data = static_cast<BackendData*>(aSoloud->mBackendData);
+    BackendData* data = static_cast<BackendData*>(engine->mBackendData);
 
     // If we have no buffered queued, queue one up for playback.
     if (data->buffersQueued == 0)
@@ -139,7 +139,7 @@ static void opensles_iterate(Engine* aSoloud)
         (*data->playerBufferQueue)->Enqueue(data->playerBufferQueue, outputBuffer, bufferSizeBytes);
         ++data->buffersQueued;
 
-        aSoloud->mixSigned16(nextBuffer, data->bufferSize);
+        engine->mixSigned16(nextBuffer, data->bufferSize);
     }
 }
 
@@ -170,7 +170,7 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
 }
 
 result opensles_init(
-    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* engine, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     BackendData* data = new BackendData();
 
@@ -279,21 +279,21 @@ result opensles_init(
                            &data->playerBufferQueue);
     }
 
-    aSoloud->mBackendData = data; // Must be set before callback
+    engine->mBackendData = data; // Must be set before callback
 
     // Register callback
-    (*data->player)->RegisterCallback(data->player, soloud_opensles_play_callback, aSoloud);
+    (*data->player)->RegisterCallback(data->player, soloud_opensles_play_callback, engine);
     (*data->player)->SetCallbackEventsMask(data->player, SL_PLAYEVENT_HEADATEND);
     (*data->player)->SetPlayState(data->player, SL_PLAYSTATE_PLAYING);
 
     //
-    aSoloud->postinit_internal(aSamplerate, data->bufferSize, aFlags, 2);
-    aSoloud->mBackendCleanupFunc = soloud_opensles_deinit;
+    engine->postinit_internal(aSamplerate, data->bufferSize, aFlags, 2);
+    engine->mBackendCleanupFunc = soloud_opensles_deinit;
 
     LOG_INFO("Creating audio thread.");
-    Thread::createThread(opensles_thread, (void*)aSoloud);
+    Thread::createThread(opensles_thread, (void*)engine);
 
-    aSoloud->mBackendString = "OpenSL ES";
+    engine->mBackendString = "OpenSL ES";
     return SO_NO_ERROR;
 }
 }; // namespace SoLoud

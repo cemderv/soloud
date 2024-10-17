@@ -2519,10 +2519,12 @@ void fft(float* aBuffer, size_t aBufferLength)
 
 void ifft(float* aBuffer, size_t aBufferLength)
 {
-    size_t i;
     fftimpl::cftfsub(aBufferLength, aBuffer);
-    for (i = 0; i < aBufferLength; ++i)
+
+    for (size_t i = 0; i < aBufferLength; ++i)
+    {
         aBuffer[i] *= 1.0f / float(aBufferLength / 2);
+    }
 }
 }; // namespace FFT
 }; // namespace SoLoud

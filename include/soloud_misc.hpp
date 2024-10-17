@@ -62,8 +62,6 @@ class TinyAlignedFloatBuffer
     TinyAlignedFloatBuffer();
 };
 
-namespace Misc
-{
 // Generate a waveform.
 float generateWaveform(Waveform aWaveform, float p);
 
@@ -79,6 +77,4 @@ class Prg
     float  rand_float();
     void   srand(int aSeed);
 };
-
-}; // namespace Misc
 }; // namespace SoLoud

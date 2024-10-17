@@ -93,8 +93,7 @@ void Engine::setMaxActiveVoiceCount(size_t aVoiceCount)
 void Engine::setPauseAll(bool aPause)
 {
     lockAudioMutex_internal();
-    int ch;
-    for (ch = 0; ch < (signed)mHighestVoice; ch++)
+    for (size_t ch = 0; ch < mHighestVoice; ++ch)
     {
         setVoicePause_internal(ch, aPause);
     }
@@ -104,14 +103,7 @@ void Engine::setPauseAll(bool aPause)
 void Engine::setProtectVoice(handle aVoiceHandle, bool aProtect)
 {
     FOR_ALL_VOICES_PRE
-    if (aProtect)
-    {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::Protected;
-    }
-    else
-    {
-        mVoice[ch]->mFlags &= ~AudioSourceInstanceFlags::Protected;
-    }
+    mVoice[ch]->mFlags.Protected = aProtect;
     FOR_ALL_VOICES_POST
 }
 
@@ -165,16 +157,8 @@ void Engine::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 void Engine::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill)
 {
     FOR_ALL_VOICES_PRE
-    mVoice[ch]->mFlags &=
-        ~(AudioSourceInstanceFlags::InaudibleKill | AudioSourceInstanceFlags::InaudibleTick);
-    if (aMustTick)
-    {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::InaudibleTick;
-    }
-    if (aKill)
-    {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::InaudibleKill;
-    }
+    mVoice[ch]->mFlags.InaudibleKill = aKill;
+    mVoice[ch]->mFlags.InaudibleTick = aMustTick;
     FOR_ALL_VOICES_POST
 }
 
@@ -188,28 +172,14 @@ void Engine::setLoopPoint(handle aVoiceHandle, time_t aLoopPoint)
 void Engine::setLooping(handle aVoiceHandle, bool aLooping)
 {
     FOR_ALL_VOICES_PRE
-    if (aLooping)
-    {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::Looping;
-    }
-    else
-    {
-        mVoice[ch]->mFlags &= ~AudioSourceInstanceFlags::Looping;
-    }
+    mVoice[ch]->mFlags.Looping = aLooping;
     FOR_ALL_VOICES_POST
 }
 
 void Engine::setAutoStop(handle aVoiceHandle, bool aAutoStop)
 {
     FOR_ALL_VOICES_PRE
-    if (aAutoStop)
-    {
-        mVoice[ch]->mFlags &= ~AudioSourceInstanceFlags::DisableAutostop;
-    }
-    else
-    {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::DisableAutostop;
-    }
+    mVoice[ch]->mFlags.DisableAutostop = !aAutoStop;
     FOR_ALL_VOICES_POST
 }
 
@@ -230,14 +200,7 @@ void Engine::setDelaySamples(handle aVoiceHandle, size_t aSamples)
 
 void Engine::setVisualizationEnable(bool aEnable)
 {
-    if (aEnable)
-    {
-        mFlags |= Flags::EnableVisualization;
-    }
-    else
-    {
-        mFlags &= ~Flags::EnableVisualization;
-    }
+    mFlags.EnableVisualization = aEnable;
 }
 
 void Engine::setSpeakerPosition(size_t aChannel, vec3 value)

@@ -22,18 +22,17 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_lofifilter.hpp"
+#include "soloud_filter.hpp"
 #include <cmath>
 
 namespace SoLoud
 {
-
 LofiFilterInstance::LofiFilterInstance(LofiFilter* aParent)
 {
     mParent = aParent;
     FilterInstance::initParams(3);
-    mParam[SAMPLERATE]             = aParent->mSampleRate;
-    mParam[BITDEPTH]               = aParent->mBitdepth;
+    mParam[SAMPLERATE] = aParent->mSampleRate;
+    mParam[BITDEPTH]   = aParent->mBitdepth;
 }
 
 void LofiFilterInstance::filterChannel(float* aBuffer,
@@ -51,8 +50,10 @@ void LofiFilterInstance::filterChannel(float* aBuffer,
         if (mChannelData[aChannel].mSamplesToSkip <= 0)
         {
             mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mParam[SAMPLERATE]) - 1;
-            float q                        = (float)pow(2, mParam[BITDEPTH]);
-            mChannelData[aChannel].mSample = (float)floor(q * aBuffer[i]) / q;
+
+            const auto q = float(pow(2, mParam[BITDEPTH]));
+
+            mChannelData[aChannel].mSample = floor(q * aBuffer[i]) / q;
         }
         else
         {

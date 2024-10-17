@@ -22,13 +22,12 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_echofilter.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {
 EchoFilterInstance::EchoFilterInstance(EchoFilter* aParent)
 {
-    mBuffer          = 0;
     mBufferLength    = 0;
     mBufferMaxLength = 0;
     mOffset          = 0;
@@ -46,16 +45,18 @@ void EchoFilterInstance::filter(float* aBuffer,
                                 double aTime)
 {
     updateParams(aTime);
-    if (mBuffer == 0)
+    if (mBuffer == nullptr)
     {
         // We only know channels and sample rate at this point.. not really optimal
-        mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
+        mBufferMaxLength = int(ceil(mParam[EchoFilter::DELAY] * aSamplerate));
         mBuffer          = std::make_unique<float[]>(mBufferMaxLength * aChannels);
     }
 
-    mBufferLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
+    mBufferLength = int(ceil(mParam[EchoFilter::DELAY] * aSamplerate));
     if (mBufferLength > mBufferMaxLength)
+    {
         mBufferLength = mBufferMaxLength;
+    }
 
     size_t i, j;
     int    prevofs = (mOffset + mBufferLength - 1) % mBufferLength;

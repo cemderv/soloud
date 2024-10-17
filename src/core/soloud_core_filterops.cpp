@@ -31,7 +31,9 @@ namespace SoLoud
 void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
+    {
         return;
+    }
 
     lockAudioMutex_internal();
 
@@ -40,6 +42,7 @@ void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
     {
         mFilterInstance[aFilterId] = mFilter[aFilterId]->createInstance();
     }
+
     unlockAudioMutex_internal();
 }
 
@@ -48,7 +51,9 @@ std::optional<float> Engine::getFilterParameter(handle aVoiceHandle,
                                                 size_t aAttributeId)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
+    {
         return {};
+    }
 
     auto ret = std::optional<float>{};
 
@@ -85,7 +90,9 @@ void Engine::setFilterParameter(handle aVoiceHandle,
                                 float  aValue)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
+    {
         return;
+    }
 
     if (aVoiceHandle == 0)
     {
@@ -110,7 +117,9 @@ void Engine::fadeFilterParameter(
     handle aVoiceHandle, size_t aFilterId, size_t aAttributeId, float aTo, double aTime)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
+    {
         return;
+    }
 
     if (aVoiceHandle == 0)
     {
@@ -139,7 +148,9 @@ void Engine::oscillateFilterParameter(handle aVoiceHandle,
                                       double aTime)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
+    {
         return;
+    }
 
     if (aVoiceHandle == 0)
     {
@@ -167,5 +178,4 @@ void Engine::oscillateFilterParameter(handle aVoiceHandle,
     }
     FOR_ALL_VOICES_POST
 }
-
 } // namespace SoLoud

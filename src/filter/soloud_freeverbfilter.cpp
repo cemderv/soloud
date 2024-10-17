@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_freeverbfilter.hpp"
+#include "soloud_filter.hpp"
 
 namespace SoLoud
 {

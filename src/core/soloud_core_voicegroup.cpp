@@ -120,12 +120,11 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 
     trimVoiceGroup_internal(aVoiceGroupHandle);
 
-    int    c = aVoiceGroupHandle & 0xfff;
-    size_t i;
+    const int c = aVoiceGroupHandle & 0xfff;
 
     lockAudioMutex_internal();
 
-    for (i = 1; i < mVoiceGroup[c][0]; ++i)
+    for (size_t i = 1; i < mVoiceGroup[c][0]; ++i)
     {
         if (mVoiceGroup[c][i] == aVoiceHandle)
         {
@@ -146,8 +145,10 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
     // Full group, allocate more memory
     const auto n = new size_t[mVoiceGroup[c][0] * 2 + 1];
 
-    for (i = 0; i < mVoiceGroup[c][0]; ++i)
+    for (size_t i = 0; i < mVoiceGroup[c][0]; ++i)
+    {
         n[i] = mVoiceGroup[c][i];
+    }
 
     n[n[0]]     = aVoiceHandle;
     n[n[0] + 1] = 0;
@@ -161,13 +162,18 @@ void Engine::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
 bool Engine::isVoiceGroup(handle aVoiceGroupHandle)
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
-        return 0;
-    size_t c = aVoiceGroupHandle & 0xfff;
+    {
+        return false;
+    }
+
+    const size_t c = aVoiceGroupHandle & 0xfff;
     if (c >= mVoiceGroupCount)
-        return 0;
+    {
+        return false;
+    }
 
     lockAudioMutex_internal();
-    bool res = mVoiceGroup[c] != nullptr;
+    const bool res = mVoiceGroup[c] != nullptr;
     unlockAudioMutex_internal();
 
     return res;
@@ -178,12 +184,15 @@ bool Engine::isVoiceGroupEmpty(handle aVoiceGroupHandle)
 {
     // If not a voice group, yeah, we're empty alright..
     if (!isVoiceGroup(aVoiceGroupHandle))
-        return 1;
+    {
+        return true;
+    }
+
     trimVoiceGroup_internal(aVoiceGroupHandle);
-    int c = aVoiceGroupHandle & 0xfff;
+    const int c = aVoiceGroupHandle & 0xfff;
 
     lockAudioMutex_internal();
-    bool res = mVoiceGroup[c][1] == 0;
+    const bool res = mVoiceGroup[c][1] == 0;
     unlockAudioMutex_internal();
 
     return res;
@@ -193,10 +202,14 @@ bool Engine::isVoiceGroupEmpty(handle aVoiceGroupHandle)
 void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
 {
     if (!isVoiceGroup(aVoiceGroupHandle))
+    {
         return;
-    int c = aVoiceGroupHandle & 0xfff;
+    }
+
+    const int c = aVoiceGroupHandle & 0xfff;
 
     lockAudioMutex_internal();
+
     // empty group
     if (mVoiceGroup[c][1] == 0)
     {
@@ -204,9 +217,8 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
         return;
     }
 
-    size_t i;
     // first item in voice group is number of allocated indices
-    for (i = 1; i < mVoiceGroup[c][0]; ++i)
+    for (size_t i = 1; i < mVoiceGroup[c][0]; ++i)
     {
         // If we hit a voice in the group that's not set, we're done
         if (mVoiceGroup[c][i] == 0)
@@ -247,12 +259,21 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
 handle* Engine::voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const
 {
     if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
+    {
         return nullptr;
-    size_t c = aVoiceGroupHandle & 0xfff;
+    }
+
+    const size_t c = aVoiceGroupHandle & 0xfff;
     if (c >= mVoiceGroupCount)
+    {
         return nullptr;
+    }
+
     if (mVoiceGroup[c] == nullptr)
+    {
         return nullptr;
+    }
+
     return mVoiceGroup[c] + 1;
 }
 

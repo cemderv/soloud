@@ -21,7 +21,7 @@ int main()
     auto engine = SoLoud::Engine{};
 
     auto wav = SoLoud::Wav{file_data_span};
-    wav.setLooping(true);
+    wav.should_loop=true;
 
     engine.play(wav);
 

@@ -65,13 +65,13 @@ static void alsaThread(void* aParam)
     }
 }
 
-static void alsaCleanup(Engine* aSoloud)
+static void alsaCleanup(Engine* engine)
 {
-    if (0 == aSoloud->mBackendData)
+    if (0 == engine->mBackendData)
     {
         return;
     }
-    ALSAData* data            = static_cast<ALSAData*>(aSoloud->mBackendData);
+    ALSAData* data            = static_cast<ALSAData*>(engine->mBackendData);
     data->audioProcessingDone = true;
     if (data->threadHandle)
     {
@@ -89,18 +89,18 @@ static void alsaCleanup(Engine* aSoloud)
         delete[] data->buffer;
     }
     delete data;
-    aSoloud->mBackendData = 0;
+    engine->mBackendData = 0;
 }
 
-void alsa_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+void alsa_init(Engine* engine, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));
-    aSoloud->mBackendData        = data;
-    aSoloud->mBackendCleanupFunc = alsaCleanup;
-    data->samples                = aBuffer;
-    data->channels               = 2;
-    data->soloud                 = aSoloud;
+    engine->mBackendData        = data;
+    engine->mBackendCleanupFunc = alsaCleanup;
+    data->samples               = aBuffer;
+    data->channels              = 2;
+    data->soloud                = engine;
 
     int        rc;
     snd_pcm_t* handle;
@@ -142,7 +142,7 @@ void alsa_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer
 
     data->buffer       = new float[data->samples * data->channels];
     data->sampleBuffer = new short[data->samples * data->channels];
-    aSoloud->postinit_internal(aSamplerate, data->samples * data->channels, aFlags, 2);
+    engine->postinit_internal(aSamplerate, data->samples * data->channels, aFlags, 2);
     data->threadHandle = Thread::createThread(alsaThread, data);
 
     if (0 == data->threadHandle)

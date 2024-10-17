@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_eqfilter.hpp"
 #include "soloud.hpp"
+#include "soloud_filter.hpp"
 #include <cstring>
 
 namespace SoLoud
@@ -84,7 +84,7 @@ void EqFilterInstance::fftFilterChannel(float* aFFTBuffer,
 
 EqFilter::EqFilter()
 {
-    std::fill(mVolume.begin(), mVolume.end(), 1.0f);
+    std::ranges::fill(mVolume, 1.0f);
 }
 
 std::shared_ptr<FilterInstance> EqFilter::createInstance()

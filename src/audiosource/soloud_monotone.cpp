@@ -277,9 +277,7 @@ size_t MonotoneInstance::getAudio(float* aBuffer, size_t aSamplesToRead, size_t 
             {
                 float bleh            = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
                 mOutput[j].mSamplePos = bleh - (long)bleh;
-                aBuffer[i] +=
-                    SoLoud::Misc::generateWaveform(mParent->mWaveform, mOutput[j].mSamplePos) *
-                    0.5f;
+                aBuffer[i] += generateWaveform(mParent->mWaveform, mOutput[j].mSamplePos) * 0.5f;
             }
         }
 
@@ -330,8 +328,8 @@ Monotone::Monotone()
     mSong.mComment     = 0;
     mSong.mPatternData = 0;
 
-    mBaseSamplerate = 44100;
-    mChannels       = 1;
+    base_sample_rate = 44100;
+    channel_count    = 1;
 
     mHardwareChannels = 1;
     mWaveform         = Waveform::Square;

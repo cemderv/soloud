@@ -138,13 +138,13 @@ static void xaudio2Thread(LPVOID aParam)
     }
 }
 
-static void xaudio2Cleanup(Engine* aSoloud)
+static void xaudio2Cleanup(Engine* engine)
 {
-    if (0 == aSoloud->mBackendData)
+    if (0 == engine->mBackendData)
     {
         return;
     }
-    XAudio2Data* data = static_cast<XAudio2Data*>(aSoloud->mBackendData);
+    XAudio2Data* data = static_cast<XAudio2Data*>(engine->mBackendData);
     SetEvent(data->audioProcessingDoneEvent);
     SetEvent(data->bufferEndEvent);
     Thread::wait(data->thread);
@@ -184,12 +184,12 @@ static void xaudio2Cleanup(Engine* aSoloud)
     CloseHandle(data->bufferEndEvent);
     CloseHandle(data->audioProcessingDoneEvent);
     delete data;
-    aSoloud->mBackendData = 0;
+    engine->mBackendData = 0;
     CoUninitialize();
 }
 
 result xaudio2_init(
-    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* engine, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
     {
@@ -197,9 +197,9 @@ result xaudio2_init(
     }
     XAudio2Data* data = new XAudio2Data;
     ZeroMemory(data, sizeof(XAudio2Data));
-    aSoloud->mBackendData        = data;
-    aSoloud->mBackendCleanupFunc = xaudio2Cleanup;
-    data->bufferEndEvent         = CreateEvent(0, FALSE, FALSE, 0);
+    engine->mBackendData        = data;
+    engine->mBackendCleanupFunc = xaudio2Cleanup;
+    data->bufferEndEvent        = CreateEvent(0, FALSE, FALSE, 0);
     if (0 == data->bufferEndEvent)
     {
         return UNKNOWN_ERROR;
@@ -242,15 +242,15 @@ result xaudio2_init(
         data->buffer[i] = new float[aBuffer * format.nChannels];
     }
     data->samples = aBuffer;
-    data->soloud  = aSoloud;
-    aSoloud->postinit_internal(aSamplerate, aBuffer * format.nChannels, aFlags, 2);
+    data->soloud  = engine;
+    engine->postinit_internal(aSamplerate, aBuffer * format.nChannels, aFlags, 2);
     data->thread = Thread::createThread(xaudio2Thread, data);
     if (0 == data->thread)
     {
         return UNKNOWN_ERROR;
     }
     data->sourceVoice->Start();
-    aSoloud->mBackendString = "XAudio2";
+    engine->mBackendString = "XAudio2";
     return 0;
 }
 }; // namespace SoLoud

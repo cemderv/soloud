@@ -428,15 +428,15 @@ void WavStream::loadwav(MemoryFile& fp)
         throw std::runtime_error{"Failed to load WAV file"};
     }
 
-    mChannels = decoder.channels;
-    if (mChannels > MAX_CHANNELS)
+    channel_count = decoder.channels;
+    if (channel_count > MAX_CHANNELS)
     {
-        mChannels = MAX_CHANNELS;
+        channel_count = MAX_CHANNELS;
     }
 
-    mBaseSamplerate = float(decoder.sampleRate);
-    mSampleCount    = (size_t)decoder.totalPCMFrameCount;
-    mFiletype       = WAVSTREAM_WAV;
+    base_sample_rate = float(decoder.sampleRate);
+    mSampleCount     = (size_t)decoder.totalPCMFrameCount;
+    mFiletype        = WAVSTREAM_WAV;
     drwav_uninit(&decoder);
 }
 
@@ -453,13 +453,13 @@ void WavStream::loadogg(MemoryFile& fp)
     }
 
     stb_vorbis_info info = stb_vorbis_get_info(v);
-    mChannels            = info.channels;
+    channel_count        = info.channels;
     if (info.channels > MAX_CHANNELS)
     {
-        mChannels = MAX_CHANNELS;
+        channel_count = MAX_CHANNELS;
     }
-    mBaseSamplerate = (float)info.sample_rate;
-    int samples     = stb_vorbis_stream_length_in_samples(v);
+    base_sample_rate = (float)info.sample_rate;
+    int samples      = stb_vorbis_stream_length_in_samples(v);
     stb_vorbis_close(v);
     mFiletype = WAVSTREAM_OGG;
 
@@ -476,15 +476,15 @@ void WavStream::loadflac(MemoryFile& fp)
         throw std::runtime_error{"Failed to load FLAC file"};
     }
 
-    mChannels = decoder->channels;
-    if (mChannels > MAX_CHANNELS)
+    channel_count = decoder->channels;
+    if (channel_count > MAX_CHANNELS)
     {
-        mChannels = MAX_CHANNELS;
+        channel_count = MAX_CHANNELS;
     }
 
-    mBaseSamplerate = (float)decoder->sampleRate;
-    mSampleCount    = (size_t)decoder->totalPCMFrameCount;
-    mFiletype       = WAVSTREAM_FLAC;
+    base_sample_rate = (float)decoder->sampleRate;
+    mSampleCount     = (size_t)decoder->totalPCMFrameCount;
+    mFiletype        = WAVSTREAM_FLAC;
     drflac_close(decoder);
 }
 
@@ -498,17 +498,17 @@ void WavStream::loadmp3(MemoryFile& fp)
         throw std::runtime_error{"Failed to load MP3 file"};
     }
 
-    mChannels = decoder.channels;
-    if (mChannels > MAX_CHANNELS)
+    channel_count = decoder.channels;
+    if (channel_count > MAX_CHANNELS)
     {
-        mChannels = MAX_CHANNELS;
+        channel_count = MAX_CHANNELS;
     }
 
     drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
 
-    mBaseSamplerate = float(decoder.sampleRate);
-    mSampleCount    = (size_t)samples;
-    mFiletype       = WAVSTREAM_MP3;
+    base_sample_rate = float(decoder.sampleRate);
+    mSampleCount     = (size_t)samples;
+    mFiletype        = WAVSTREAM_MP3;
     drmp3_uninit(&decoder);
 }
 
@@ -519,6 +519,6 @@ std::shared_ptr<AudioSourceInstance> WavStream::createInstance()
 
 double WavStream::getLength() const
 {
-    return mBaseSamplerate == 0 ? 0 : mSampleCount / mBaseSamplerate;
+    return base_sample_rate == 0 ? 0 : mSampleCount / base_sample_rate;
 }
 }; // namespace SoLoud

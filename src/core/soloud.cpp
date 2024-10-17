@@ -62,10 +62,11 @@ TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
     mData                  = reinterpret_cast<float*>(size_t(basePtr) + 15 & ~15);
 }
 
-Engine::Engine(Flags                 aFlags,
+Engine::Engine(EngineFlags           aFlags,
                std::optional<size_t> aSamplerate,
                std::optional<size_t> aBufferSize,
                size_t                aChannels)
+    : mFlags(aFlags)
 {
     assert(aChannels != 3 && aChannels != 5 && aChannels != 7);
     assert(aChannels <= MAX_CHANNELS);
@@ -178,10 +179,10 @@ void Engine::resume()
 }
 
 
-void Engine::postinit_internal(size_t aSamplerate,
-                               size_t aBufferSize,
-                               Flags  aFlags,
-                               size_t aChannels)
+void Engine::postinit_internal(size_t      aSamplerate,
+                               size_t      aBufferSize,
+                               EngineFlags aFlags,
+                               size_t      aChannels)
 {
     mGlobalVolume = 1;
     mChannels     = aChannels;
@@ -324,7 +325,7 @@ float* Engine::calcFFT()
         const float real = temp[i * 2];
         const float imag = temp[i * 2 + 1];
 
-        mFFTData[i]      = std::sqrt(real * real + imag * imag);
+        mFFTData[i] = std::sqrt(real * real + imag * imag);
     }
 
     return mFFTData.data();
@@ -373,7 +374,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
 
             for (i = 0; i < samplequads; ++i)
             {
-                // float f1 = origdata[c] * v;	c++; v += vd;
+                // float f1 = origdata[c] * v;	++c; v += vd;
                 __m128 f = _mm_load_ps(&aBuffer.mData[c]);
                 c += 4;
                 f   = _mm_mul_ps(f, vol);
@@ -430,7 +431,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
             __m128 vol = _mm_load_ps(volumes.mData);
             for (i = 0; i < samplequads; ++i)
             {
-                // float f1 = aBuffer.mData[c] * v; c++; v += vd;
+                // float f1 = aBuffer.mData[c] * v; ++c; v += vd;
                 __m128 f = _mm_load_ps(&aBuffer.mData[c]);
                 c += 4;
                 f   = _mm_mul_ps(f, vol);
@@ -455,11 +456,11 @@ void Engine::clip_internal(const AlignedFloatBuffer& aBuffer,
                            float                     aVolume0,
                            float                     aVolume1)
 {
-    const float  vd = (aVolume1 - aVolume0) / aSamples;
-    const auto samplequads = (aSamples + 3) / 4; // rounded up
+    const float vd          = (aVolume1 - aVolume0) / aSamples;
+    const auto  samplequads = (aSamples + 3) / 4; // rounded up
 
     // Clip
-    if (testFlag(mFlags, Flags::ClipRoundoff))
+    if (mFlags.ClipRoundoff)
     {
         auto c = size_t(0);
         auto d = size_t(0);
@@ -470,33 +471,33 @@ void Engine::clip_internal(const AlignedFloatBuffer& aBuffer,
             for (size_t i = 0; i < samplequads; ++i)
             {
                 float f1 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f2 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f3 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f4 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 f1 = f1 <= -1.65f  ? -0.9862875f
                      : f1 >= 1.65f ? 0.9862875f
-                                     : 0.87f * f1 - 0.1f * f1 * f1 * f1;
+                                   : 0.87f * f1 - 0.1f * f1 * f1 * f1;
                 f2 = f2 <= -1.65f  ? -0.9862875f
                      : f2 >= 1.65f ? 0.9862875f
-                                     : 0.87f * f2 - 0.1f * f2 * f2 * f2;
+                                   : 0.87f * f2 - 0.1f * f2 * f2 * f2;
                 f3 = f3 <= -1.65f  ? -0.9862875f
                      : f3 >= 1.65f ? 0.9862875f
-                                     : 0.87f * f3 - 0.1f * f3 * f3 * f3;
+                                   : 0.87f * f3 - 0.1f * f3 * f3 * f3;
                 f4 = f4 <= -1.65f  ? -0.9862875f
                      : f4 >= 1.65f ? 0.9862875f
-                                     : 0.87f * f4 - 0.1f * f4 * f4 * f4;
+                                   : 0.87f * f4 - 0.1f * f4 * f4 * f4;
 
                 aDestBuffer.mData[d] = f1 * mPostClipScaler;
                 d++;
@@ -524,19 +525,19 @@ void Engine::clip_internal(const AlignedFloatBuffer& aBuffer,
             for (size_t i = 0; i < samplequads; ++i)
             {
                 float f1 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f2 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f3 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 float f4 = aBuffer.mData[c] * v;
-                c++;
+                ++c;
                 v += vd;
 
                 f1 = f1 <= -1 ? -1 : f1 >= 1 ? 1 : f1;
@@ -561,9 +562,9 @@ void Engine::clip_internal(const AlignedFloatBuffer& aBuffer,
 }
 #endif
 
-static constexpr auto FIXPOINT_FRAC_BITS =20;
-static constexpr auto FIXPOINT_FRAC_MUL  =1 << FIXPOINT_FRAC_BITS;
-static constexpr auto FIXPOINT_FRAC_MASK =(1 << FIXPOINT_FRAC_BITS) - 1;
+static constexpr auto FIXPOINT_FRAC_BITS = 20;
+static constexpr auto FIXPOINT_FRAC_MUL  = 1 << FIXPOINT_FRAC_BITS;
+static constexpr auto FIXPOINT_FRAC_MASK = (1 << FIXPOINT_FRAC_BITS) - 1;
 
 static float catmullrom(float t, float p0, float p1, float p2, float p3)
 {
@@ -571,9 +572,12 @@ static float catmullrom(float t, float p0, float p1, float p2, float p3)
                    (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 }
 
-static void resample_catmullrom(
-    const float* aSrc,
-    const float* aSrc1, float* aDst, int aSrcOffset, int aDstSampleCount, int aStepFixed)
+static void resample_catmullrom(const float* aSrc,
+                                const float* aSrc1,
+                                float*       aDst,
+                                int          aSrcOffset,
+                                int          aDstSampleCount,
+                                int          aStepFixed)
 {
     int pos = aSrcOffset;
 
@@ -582,7 +586,7 @@ static void resample_catmullrom(
         const int p = pos >> FIXPOINT_FRAC_BITS;
         const int f = pos & FIXPOINT_FRAC_MASK;
 
-        auto s3=0.0f;
+        auto s3 = 0.0f;
 
         if (p < 3)
         {
@@ -593,7 +597,7 @@ static void resample_catmullrom(
             s3 = aSrc[p - 3];
         }
 
-        auto s2=0.0f;
+        auto s2 = 0.0f;
 
         if (p < 2)
         {
@@ -604,7 +608,7 @@ static void resample_catmullrom(
             s2 = aSrc[p - 2];
         }
 
-        auto s1=0.0f;
+        auto s1 = 0.0f;
 
         if (p < 1)
         {
@@ -621,18 +625,21 @@ static void resample_catmullrom(
     }
 }
 
-static void resample_linear(
-    const float* aSrc,
-    const float* aSrc1, float* aDst, int aSrcOffset, int aDstSampleCount, int aStepFixed)
+static void resample_linear(const float* aSrc,
+                            const float* aSrc1,
+                            float*       aDst,
+                            int          aSrcOffset,
+                            int          aDstSampleCount,
+                            int          aStepFixed)
 {
     int pos = aSrcOffset;
 
     for (int i = 0; i < aDstSampleCount; ++i, pos += aStepFixed)
     {
-        int       p = pos >> FIXPOINT_FRAC_BITS;
-        const int f = pos & FIXPOINT_FRAC_MASK;
-        float s1 = aSrc1[SAMPLE_GRANULARITY - 1];
-        float s2 = aSrc[p];
+        int       p  = pos >> FIXPOINT_FRAC_BITS;
+        const int f  = pos & FIXPOINT_FRAC_MASK;
+        float     s1 = aSrc1[SAMPLE_GRANULARITY - 1];
+        float     s2 = aSrc[p];
         if (p != 0)
         {
             s1 = aSrc[p - 1];
@@ -641,14 +648,18 @@ static void resample_linear(
     }
 }
 
-static void resample_point(
-    const float* aSrc, const float* aSrc1, float* aDst, int aSrcOffset, int aDstSampleCount, int aStepFixed)
+static void resample_point(const float* aSrc,
+                           const float* aSrc1,
+                           float*       aDst,
+                           int          aSrcOffset,
+                           int          aDstSampleCount,
+                           int          aStepFixed)
 {
     int pos = aSrcOffset;
 
     for (int i = 0; i < aDstSampleCount; ++i, pos += aStepFixed)
     {
-        const int p   = pos >> FIXPOINT_FRAC_BITS;
+        const int p = pos >> FIXPOINT_FRAC_BITS;
 
         aDst[i] = aSrc[p];
     }
@@ -668,9 +679,9 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
     assert(((size_t)aBufferSize & 0xf) == 0);
 #endif
 
-    float  pan[MAX_CHANNELS]; // current speaker volume
-    std::array<float,MAX_CHANNELS>  pand{}; // destination speaker volume
-    std::array<float, MAX_CHANNELS>  pani{}; // speaker volume increment per sample
+    float                           pan[MAX_CHANNELS]; // current speaker volume
+    std::array<float, MAX_CHANNELS> pand{}; // destination speaker volume
+    std::array<float, MAX_CHANNELS> pani{}; // speaker volume increment per sample
 
     for (size_t k = 0; k < aChannels; k++)
     {
@@ -1237,9 +1248,8 @@ void Engine::mixBus_internal(float*    aBuffer,
     {
         auto& voice = mVoice[mActiveVoice[i]];
 
-        if (voice!=nullptr && voice->mBusHandle == aBus &&
-            !testFlag(voice->mFlags, AudioSourceInstanceFlags::Paused) &&
-            !testFlag(voice->mFlags, AudioSourceInstanceFlags::Inaudible))
+        if (voice != nullptr && voice->mBusHandle == aBus && !voice->mFlags.Paused &&
+            !voice->mFlags.Inaudible)
         {
             float step = voice->mSamplerate / aSamplerate;
 
@@ -1284,15 +1294,14 @@ void Engine::mixBus_internal(float*    aBuffer,
                     // Get a block of source data
 
                     int readcount = 0;
-                    if (!voice->hasEnded() ||
-                        testFlag(voice->mFlags, AudioSourceInstanceFlags::Looping))
+                    if (!voice->hasEnded() || voice->mFlags.Looping)
                     {
                         readcount = voice->getAudio(voice->mResampleData[0],
                                                     SAMPLE_GRANULARITY,
                                                     SAMPLE_GRANULARITY);
                         if (readcount < SAMPLE_GRANULARITY)
                         {
-                            if (testFlag(voice->mFlags, AudioSourceInstanceFlags::Looping))
+                            if (voice->mFlags.Looping)
                             {
                                 while (readcount < SAMPLE_GRANULARITY &&
                                        voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize))
@@ -1434,23 +1443,19 @@ void Engine::mixBus_internal(float*    aBuffer,
             panAndExpand(voice, aBuffer, aSamplesToRead, aBufferSize, aScratch, aChannels);
 
             // clear voice if the sound is over
-            if (!testFlag(voice->mFlags,
-                          AudioSourceInstanceFlags::Looping |
-                              AudioSourceInstanceFlags::DisableAutostop) &&
-                voice->hasEnded())
+            // TODO: check this condition some day
+            if (!voice->mFlags.Looping && !voice->mFlags.DisableAutostop && voice->hasEnded())
             {
                 stopVoice_internal(mActiveVoice[i]);
             }
         }
-        else if (voice && voice->mBusHandle == aBus &&
-                 !voice->hasFlag(AudioSourceInstanceFlags::Paused) &&
-                 voice->hasFlag(AudioSourceInstanceFlags::Inaudible) &&
-                 voice->hasFlag(AudioSourceInstanceFlags::InaudibleTick))
+        else if (voice && voice->mBusHandle == aBus && !voice->mFlags.Paused &&
+                 voice->mFlags.Inaudible && voice->mFlags.InaudibleTick)
         {
             // Inaudible but needs ticking. Do minimal work (keep counters up to date and ask
             // audiosource for data)
-            auto   step       = voice->mSamplerate / aSamplerate;
-            auto   step_fixed = int(floor(step * FIXPOINT_FRAC_MUL));
+            auto step       = voice->mSamplerate / aSamplerate;
+            auto step_fixed = int(floor(step * FIXPOINT_FRAC_MUL));
             auto outofs     = size_t(0);
 
             if (voice->mDelaySamples)
@@ -1478,15 +1483,14 @@ void Engine::mixBus_internal(float*    aBuffer,
 
                     // Get a block of source data
 
-                    int readcount = 0;
-                    if (!voice->hasEnded() || voice->hasFlag(AudioSourceInstanceFlags::Looping))
+                    if (!voice->hasEnded() || voice->mFlags.Looping)
                     {
-                        readcount = voice->getAudio(voice->mResampleData[0],
-                                                    SAMPLE_GRANULARITY,
-                                                    SAMPLE_GRANULARITY);
+                        auto readcount = voice->getAudio(voice->mResampleData[0],
+                                                         SAMPLE_GRANULARITY,
+                                                         SAMPLE_GRANULARITY);
                         if (readcount < SAMPLE_GRANULARITY)
                         {
-                            if (voice->hasFlag(AudioSourceInstanceFlags::Looping))
+                            if (voice->mFlags.Looping)
                             {
                                 while (readcount < SAMPLE_GRANULARITY &&
                                        voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize))
@@ -1554,8 +1558,8 @@ void Engine::mixBus_internal(float*    aBuffer,
             }
 
             // clear voice if the sound is over
-            if (voice->hasEnded() && !voice->hasFlag(AudioSourceInstanceFlags::Looping |
-                                                     AudioSourceInstanceFlags::DisableAutostop))
+            // TODO: check this condition some day
+            if (!voice->mFlags.Looping && !voice->mFlags.DisableAutostop && voice->hasEnded())
             {
                 stopVoice_internal(mActiveVoice[i]);
             }
@@ -1645,13 +1649,12 @@ void Engine::calcActiveVoices_internal()
             continue;
         }
 
-        if (!voice->hasFlag(AudioSourceInstanceFlags::Inaudible |
-                            AudioSourceInstanceFlags::Paused) ||
-            voice->hasFlag(AudioSourceInstanceFlags::InaudibleTick))
+        // TODO: check this some day
+        if ((!voice->mFlags.Inaudible && !voice->mFlags.Paused) || voice->mFlags.InaudibleTick)
         {
             mActiveVoice[candidates] = i;
             candidates++;
-            if (testFlag(mVoice[i]->mFlags, AudioSourceInstanceFlags::InaudibleTick))
+            if (mVoice[i]->mFlags.InaudibleTick)
             {
                 mActiveVoice[candidates - 1] = mActiveVoice[mustlive];
                 mActiveVoice[mustlive]       = i;
@@ -1688,7 +1691,7 @@ void Engine::calcActiveVoices_internal()
     int       len  = candidates - mustlive;
     size_t*   data = mActiveVoice.data() + mustlive;
     const int k    = mActiveVoiceCount;
-    while(true)
+    while (true)
     {
         for (; left + 1 < len; len++)
         {
@@ -1697,7 +1700,7 @@ void Engine::calcActiveVoices_internal()
                 len = stack[pos = 0];
             }
 
-            const int         pivot    = data[left];
+            const int   pivot    = data[left];
             const float pivotvol = mVoice[pivot]->mOverallVolume;
             stack[pos++]         = len;
 
@@ -1786,8 +1789,8 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
     }
 #endif
 
-    const auto          buffertime = aSamples / float(mSamplerate);
-    auto globalVolume = std::array<float, 2>{};
+    const auto buffertime   = aSamples / float(mSamplerate);
+    auto       globalVolume = std::array<float, 2>{};
 
     mStreamTime += buffertime;
     mLastClockedTime = 0;
@@ -1806,9 +1809,9 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
     // Process faders. May change scratch size.
     for (size_t i = 0; i < mHighestVoice; ++i)
     {
-        if (mVoice[i] && !mVoice[i]->hasFlag(AudioSourceInstanceFlags::Paused))
+        if (mVoice[i] != nullptr && !mVoice[i]->mFlags.Paused)
         {
-            auto volume=std::array<float,2>{};
+            auto volume = std::array<float, 2>{};
 
             mVoice[i]->mActiveFader = 0;
 
@@ -1821,7 +1824,8 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
             mVoice[i]->mStreamPosition +=
                 double(buffertime) * double(mVoice[i]->mOverallRelativePlaySpeed);
 
-            // TODO: this is actually unstable, because mStreamTime depends on the relative play speed.
+            // TODO: this is actually unstable, because mStreamTime depends on the relative play
+            // speed.
             if (mVoice[i]->mRelativePlaySpeedFader.mActive > 0)
             {
                 float speed = mVoice[i]->mRelativePlaySpeedFader.get(mVoice[i]->mStreamTime);
@@ -1903,7 +1907,7 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
     // unneccessary work.
     clip_internal(mOutputScratch, mScratch, aStride, globalVolume[0], globalVolume[1]);
 
-    if (testFlag(mFlags, Flags::EnableVisualization))
+    if (mFlags.EnableVisualization)
     {
         for (size_t i = 0; i < MAX_CHANNELS; ++i)
         {
@@ -1917,7 +1921,7 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
                 mVisualizationWaveData[i] = 0;
                 for (size_t j = 0; j < mChannels; ++j)
                 {
-                    const auto       sample = mScratch.mData[i + j * aStride];
+                    const auto sample = mScratch.mData[i + j * aStride];
                     const auto absvol = fabs(sample);
 
                     if (mVisualizationChannelVolume[j] < absvol)
@@ -1982,7 +1986,7 @@ void interlace_samples_float(const float* aSourceBuffer,
         for (i = j; i < aSamples * aChannels; i += aChannels)
         {
             aDestBuffer[i] = aSourceBuffer[c];
-            c++;
+            ++c;
         }
     }
 }

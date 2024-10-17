@@ -90,13 +90,13 @@ static void winMMThread(LPVOID aParam)
     }
 }
 
-static void winMMCleanup(Engine* aSoloud)
+static void winMMCleanup(Engine* engine)
 {
-    if (0 == aSoloud->mBackendData)
+    if (0 == engine->mBackendData)
     {
         return;
     }
-    SoLoudWinMMData* data = static_cast<SoLoudWinMMData*>(aSoloud->mBackendData);
+    SoLoudWinMMData* data = static_cast<SoLoudWinMMData*>(engine->mBackendData);
     if (data->audioProcessingDoneEvent)
     {
         SetEvent(data->audioProcessingDoneEvent);
@@ -133,26 +133,26 @@ static void winMMCleanup(Engine* aSoloud)
         CloseHandle(data->bufferEndEvent);
     }
     delete data;
-    aSoloud->mBackendData = 0;
+    engine->mBackendData = 0;
 }
 
-void winmm_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+void winmm_init(Engine* engine, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
-    SoLoudWinMMData* data        = new SoLoudWinMMData;
-    aSoloud->mBackendData        = data;
-    aSoloud->mBackendCleanupFunc = winMMCleanup;
-    data->samples                = aBuffer;
-    data->soloud                 = aSoloud;
-    data->bufferEndEvent         = CreateEvent(0, FALSE, FALSE, 0);
+    SoLoudWinMMData* data       = new SoLoudWinMMData;
+    engine->mBackendData        = data;
+    engine->mBackendCleanupFunc = winMMCleanup;
+    data->samples               = aBuffer;
+    data->soloud                = engine;
+    data->bufferEndEvent        = CreateEvent(0, FALSE, FALSE, 0);
     if (0 == data->bufferEndEvent)
     {
-        winMMCleanup(aSoloud);
+        winMMCleanup(engine);
         throw std::runtime_error{"Failed to initialize winMM"};
     }
     data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
     if (0 == data->audioProcessingDoneEvent)
     {
-        winMMCleanup(aSoloud);
+        winMMCleanup(engine);
         throw std::runtime_error{"Failed to initialize winMM"};
     }
     WAVEFORMATEX format;
@@ -170,7 +170,7 @@ void winmm_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffe
                                         0,
                                         CALLBACK_EVENT))
     {
-        winMMCleanup(aSoloud);
+        winMMCleanup(engine);
         throw std::runtime_error{"Failed to initialize winMM"};
     }
     data->buffer = AlignedFloatBuffer{size_t(data->samples * format.nChannels)};
@@ -183,15 +183,15 @@ void winmm_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffe
         if (MMSYSERR_NOERROR !=
             waveOutPrepareHeader(data->waveOut, &data->header[i], sizeof(WAVEHDR)))
         {
-            winMMCleanup(aSoloud);
+            winMMCleanup(engine);
             throw std::runtime_error{"Failed to initialize winMM"};
         }
     }
-    aSoloud->postinit_internal(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
+    engine->postinit_internal(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
     data->threadHandle = Thread::createThread(winMMThread, data);
     if (0 == data->threadHandle)
     {
-        winMMCleanup(aSoloud);
+        winMMCleanup(engine);
         throw std::runtime_error{"Failed to initialize winMM"};
     }
 }

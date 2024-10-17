@@ -50,13 +50,13 @@ void soloud_sdl2static_audiomixer(void* userdata, Uint8* stream, int len)
     }
 }
 
-static void soloud_sdl2static_deinit(Engine* aSoloud)
+static void soloud_sdl2static_deinit(Engine* engine)
 {
     SDL_CloseAudioDevice(gAudioDeviceID);
 }
 
 result sdl2static_init(
-    Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+    Engine* engine, size_t aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     if (!SDL_WasInit(SDL_INIT_AUDIO))
     {
@@ -72,7 +72,7 @@ result sdl2static_init(
     as.channels = aChannels;
     as.samples  = aBuffer;
     as.callback = soloud_sdl2static_audiomixer;
-    as.userdata = (void*)aSoloud;
+    as.userdata = (void*)engine;
 
     gAudioDeviceID =
         SDL_OpenAudioDevice(nullptr,
@@ -97,15 +97,15 @@ result sdl2static_init(
         }
     }
 
-    aSoloud->postinit_internal(gActiveAudioSpec.freq,
-                               gActiveAudioSpec.samples,
-                               aFlags,
-                               gActiveAudioSpec.channels);
+    engine->postinit_internal(gActiveAudioSpec.freq,
+                              gActiveAudioSpec.samples,
+                              aFlags,
+                              gActiveAudioSpec.channels);
 
-    aSoloud->mBackendCleanupFunc = soloud_sdl2static_deinit;
+    engine->mBackendCleanupFunc = soloud_sdl2static_deinit;
 
     SDL_PauseAudioDevice(gAudioDeviceID, 0);
-    aSoloud->mBackendString = "SDL2 (static)";
+    engine->mBackendString = "SDL2 (static)";
     return 0;
 }
 }; // namespace SoLoud

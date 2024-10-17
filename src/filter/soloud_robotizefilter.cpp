@@ -22,8 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_robotizefilter.hpp"
 #include "soloud.hpp"
+#include "soloud_filter.hpp"
 #include "soloud_misc.hpp"
 
 namespace SoLoud
@@ -43,14 +43,14 @@ void RobotizeFilterInstance::filterChannel(float* aBuffer,
                                            size_t aChannel,
                                            size_t aChannels)
 {
-    const auto    period = int(aSamplerate / mParam[FREQ]);
-    const auto    start  = int(aTime * aSamplerate) % period;
+    const auto period = int(aSamplerate / mParam[FREQ]);
+    const auto start  = int(aTime * aSamplerate) % period;
 
     for (size_t i = 0; i < aSamples; ++i)
     {
         float s    = aBuffer[i];
         float wpos = ((start + i) % period) / (float)period;
-        s *= Misc::generateWaveform(Waveform(int(mParam[WAVE])), wpos) + 0.5f;
+        s *= generateWaveform(Waveform(int(mParam[WAVE])), wpos) + 0.5f;
         aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
     }
 }

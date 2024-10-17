@@ -52,51 +52,10 @@ static constexpr size_t MAX_CHANNELS = 8;
 
 class Engine;
 typedef void (*mutexCallFunction)(void* aMutexPtr);
-typedef void (*soloudCallFunction)(Engine* aSoloud);
-typedef bool (*soloudResultFunction)(Engine* aSoloud);
+typedef void (*soloudCallFunction)(Engine* engine);
+typedef bool (*soloudResultFunction)(Engine* engine);
 typedef size_t handle;
 typedef double time_t;
-
-enum class Flags
-{
-    // Use round-off clipper
-    None                = 0,
-    ClipRoundoff        = 1,
-    EnableVisualization = 2,
-    NoFpuRegisterChange = 4
-};
-
-static inline Flags operator&(Flags lhs, Flags rhs)
-{
-    return Flags(int(lhs) & int(rhs));
-}
-
-static inline Flags operator|(Flags lhs, Flags rhs)
-{
-    return Flags(int(lhs) | int(rhs));
-}
-
-static inline Flags operator~(Flags value)
-{
-    return Flags(~int(value));
-}
-
-static inline Flags& operator&=(Flags& lhs, Flags rhs)
-{
-    lhs = lhs & rhs;
-    return lhs;
-}
-
-static inline Flags& operator|=(Flags& lhs, Flags rhs)
-{
-    lhs = lhs | rhs;
-    return lhs;
-}
-
-static inline bool testFlag(Flags value, Flags toTest)
-{
-    return (int(value) & int(toTest)) == int(toTest);
-}
 
 enum class Waveform
 {
@@ -116,6 +75,18 @@ enum class Resampler
     Point,
     Linear,
     CatmullRom
+};
+
+enum class AttenuationModel
+{
+    // No attenuation
+    NoAttenuation = 0,
+    // Inverse distance attenuation model
+    InverseDistance = 1,
+    // Linear distance attenuation model
+    LinearDistance = 2,
+    // Exponential distance attenuation model
+    ExponentialDistance = 3
 };
 
 // Default resampler for both main and bus mixers

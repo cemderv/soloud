@@ -127,7 +127,7 @@ void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
         auto       pos = v.m3dPosition;
         const auto vel = v.m3dVelocity;
 
-        if (!testFlag(v.mFlags, AudioSourceInstanceFlags::ListenerRelative))
+        if (!v.mFlags.ListenerRelative)
         {
             pos = pos - lpos;
         }
@@ -147,19 +147,19 @@ void Engine::update3dVoices_internal(size_t* aVoiceArray, size_t aVoiceCount)
         {
             switch (v.m3dAttenuationModel)
             {
-                case AudioSource::INVERSE_DISTANCE:
+                case AttenuationModel::InverseDistance:
                     vol *= attenuateInvDistance(dist,
                                                 v.m3dMinDistance,
                                                 v.m3dMaxDistance,
                                                 v.m3dAttenuationRolloff);
                     break;
-                case AudioSource::LINEAR_DISTANCE:
+                case AttenuationModel::LinearDistance:
                     vol *= attenuateLinearDistance(dist,
                                                    v.m3dMinDistance,
                                                    v.m3dMaxDistance,
                                                    v.m3dAttenuationRolloff);
                     break;
-                case AudioSource::EXPONENTIAL_DISTANCE:
+                case AttenuationModel::ExponentialDistance:
                     vol *= attenuateExponentialDistance(dist,
                                                         v.m3dMinDistance,
                                                         v.m3dMaxDistance,
@@ -205,10 +205,9 @@ void Engine::update3dAudio()
 
     // Step 1 - find voices that need 3d processing
     lockAudioMutex_internal();
-    int i;
-    for (i = 0; i < (signed)mHighestVoice; ++i)
+    for (size_t i = 0; i < mHighestVoice; ++i)
     {
-        if (mVoice[i] && mVoice[i]->hasFlag(AudioSourceInstanceFlags::Process3D))
+        if (mVoice[i] && mVoice[i]->mFlags.Process3D)
         {
             voices[voicecount] = i;
             voicecount++;
@@ -224,33 +223,32 @@ void Engine::update3dAudio()
     // Step 3 - update SoLoud voices
 
     lockAudioMutex_internal();
-    for (i = 0; i < (int)voicecount; ++i)
+    for (size_t i = 0; i < voicecount; ++i)
     {
-        AudioSourceInstance3dData* v  = &m3dData[voices[i]];
-        auto&                      vi = mVoice[voices[i]];
-        if (vi)
+        auto& v = m3dData[voices[i]];
+
+        if (const auto& vi = mVoice[voices[i]])
         {
             updateVoiceRelativePlaySpeed_internal(voices[i]);
             updateVoiceVolume_internal(voices[i]);
-            int j;
-            for (j = 0; j < MAX_CHANNELS; ++j)
+            for (size_t j = 0; j < MAX_CHANNELS; ++j)
             {
-                vi->mChannelVolume[j] = v->mChannelVolume[j];
+                vi->mChannelVolume[j] = v.mChannelVolume[j];
             }
 
             if (vi->mOverallVolume < 0.001f)
             {
                 // Inaudible.
-                vi->mFlags |= AudioSourceInstanceFlags::Inaudible;
+                vi->mFlags.Inaudible = true;
 
-                if (testFlag(vi->mFlags, AudioSourceInstanceFlags::InaudibleKill))
+                if (vi->mFlags.InaudibleKill)
                 {
                     stopVoice_internal(voices[i]);
                 }
             }
             else
             {
-                vi->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
+                vi->mFlags.Inaudible = false;
             }
         }
     }
@@ -263,33 +261,34 @@ void Engine::update3dAudio()
 handle Engine::play3d(
     AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, size_t aBus)
 {
-    handle h = play(aSound, aVolume, 0, 1, aBus);
+    const handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
-    int v = getVoiceFromHandle_internal(h);
+    auto v = getVoiceFromHandle_internal(h);
+
     if (v < 0)
     {
         unlockAudioMutex_internal();
         return h;
     }
-    m3dData[v].mHandle = h;
-    mVoice[v]->mFlags |= AudioSourceInstanceFlags::Process3D;
+
+    m3dData[v].mHandle          = h;
+    mVoice[v]->mFlags.Process3D = true;
+
     set3dSourceParameters(h, aPos, aVel);
 
     int samples = 0;
-    if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
+    if (aSound.distance_delay)
     {
-        const auto pos = testFlag(mVoice[v]->mFlags, AudioSourceInstanceFlags::ListenerRelative)
-                             ? aPos
-                             : aPos - m3dPosition;
+        const auto pos = mVoice[v]->mFlags.ListenerRelative ? aPos : aPos - m3dPosition;
 
         const float dist = pos.mag();
         samples += int(floor(dist / m3dSoundSpeed * float(mSamplerate)));
     }
 
-    update3dVoices_internal((size_t*)&v, 1);
+    update3dVoices_internal(reinterpret_cast<size_t*>(&v), 1);
     updateVoiceRelativePlaySpeed_internal(v);
-    int j;
-    for (j = 0; j < MAX_CHANNELS; ++j)
+
+    for (size_t j = 0; j < MAX_CHANNELS; ++j)
     {
         mVoice[v]->mChannelVolume[j] = m3dData[v].mChannelVolume[j];
     }
@@ -297,8 +296,7 @@ handle Engine::play3d(
     updateVoiceVolume_internal(v);
 
     // Fix initial voice volume ramp up
-    int i;
-    for (i = 0; i < MAX_CHANNELS; ++i)
+    for (size_t i = 0; i < MAX_CHANNELS; ++i)
     {
         mVoice[v]->mCurrentChannelVolume[i] =
             mVoice[v]->mChannelVolume[i] * mVoice[v]->mOverallVolume;
@@ -307,29 +305,31 @@ handle Engine::play3d(
     if (mVoice[v]->mOverallVolume < 0.01f)
     {
         // Inaudible.
-        mVoice[v]->mFlags |= AudioSourceInstanceFlags::Inaudible;
+        mVoice[v]->mFlags.Inaudible = true;
 
-        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::InaudibleKill))
+        if (mVoice[v]->mFlags.InaudibleKill)
         {
             stopVoice_internal(v);
         }
     }
     else
     {
-        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
+        mVoice[v]->mFlags.Inaudible = false;
     }
+
     mActiveVoiceDirty = true;
 
     unlockAudioMutex_internal();
     setDelaySamples(h, samples);
     setPause(h, aPaused);
+
     return h;
 }
 
 handle Engine::play3dClocked(
     time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, size_t aBus)
 {
-    handle h = play(aSound, aVolume, 0, 1, aBus);
+    const handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
     int v = getVoiceFromHandle_internal(h);
     if (v < 0)
@@ -337,8 +337,8 @@ handle Engine::play3dClocked(
         unlockAudioMutex_internal();
         return h;
     }
-    m3dData[v].mHandle = h;
-    mVoice[v]->mFlags |= AudioSourceInstanceFlags::Process3D;
+    m3dData[v].mHandle          = h;
+    mVoice[v]->mFlags.Process3D = true;
     set3dSourceParameters(h, aPos, aVel);
     time_t lasttime = mLastClockedTime;
     if (lasttime == 0)
@@ -348,12 +348,15 @@ handle Engine::play3dClocked(
     }
     unlockAudioMutex_internal();
 
-    int samples = int(floor((aSoundTime - lasttime) * mSamplerate));
+    auto samples = int(floor((aSoundTime - lasttime) * mSamplerate));
+
     // Make sure we don't delay too much (or overflow)
     if (samples < 0 || samples > 2048)
+    {
         samples = 0;
+    }
 
-    if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
+    if (aSound.distance_delay)
     {
         const float dist = aPos.mag();
         samples += int(floor((dist / m3dSoundSpeed) * mSamplerate));
@@ -380,22 +383,24 @@ handle Engine::play3dClocked(
     if (mVoice[v]->mOverallVolume < 0.01f)
     {
         // Inaudible.
-        mVoice[v]->mFlags |= AudioSourceInstanceFlags::Inaudible;
+        mVoice[v]->mFlags.Inaudible = true;
 
-        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::InaudibleKill))
+        if (mVoice[v]->mFlags.InaudibleKill)
         {
             stopVoice_internal(v);
         }
     }
     else
     {
-        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
+        mVoice[v]->mFlags.Inaudible = false;
     }
+
     mActiveVoiceDirty = true;
     unlockAudioMutex_internal();
 
     setDelaySamples(h, samples);
     setPause(h, false);
+
     return h;
 }
 
@@ -480,9 +485,9 @@ void Engine::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, 
 }
 
 
-void Engine::set3dSourceAttenuation(handle aVoiceHandle,
-                                    size_t aAttenuationModel,
-                                    float  aAttenuationRolloffFactor)
+void Engine::set3dSourceAttenuation(handle           aVoiceHandle,
+                                    AttenuationModel aAttenuationModel,
+                                    float            aAttenuationRolloffFactor)
 {
     FOR_ALL_VOICES_PRE_3D
     m3dData[ch].m3dAttenuationModel   = aAttenuationModel;

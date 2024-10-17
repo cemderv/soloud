@@ -27,8 +27,6 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-namespace Misc
-{
 Prg::Prg()
 {
     srand(0);
@@ -63,6 +61,4 @@ float Prg::rand_float()
 {
     return (float)rand() * 2.3283064365386963e-10f;
 }
-
-} // namespace Misc
 }; // namespace SoLoud
