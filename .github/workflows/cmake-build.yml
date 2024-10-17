@@ -43,7 +43,7 @@ jobs:
       run: |
         apt update -y
         apt upgrade -y
-        apt install libasound2-dev
+        apt install -y libasound2-dev
 
     - name: Set reusable strings
       id: strings
