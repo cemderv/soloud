@@ -31,6 +31,8 @@ freely, subject to the following restrictions:
 #include "stb_vorbis.h"
 #include <cstring>
 
+#define MAKEDWORD(a, b, c, d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
+
 namespace SoLoud
 {
 WavInstance::WavInstance(Wav* aParent)
@@ -51,11 +53,10 @@ unsigned int WavInstance::getAudio(float*       aBuffer,
     if (copylen > aSamplesToRead)
         copylen = aSamplesToRead;
 
-    unsigned int i;
-    for (i = 0; i < mChannels; i++)
+    for (size_t i = 0; i < mChannels; ++i)
     {
         memcpy(aBuffer + i * aBufferSize,
-               mParent->mData + mOffset + i * mParent->mSampleCount,
+               mParent->mData.get() + mOffset + i * mParent->mSampleCount,
                sizeof(float) * copylen);
     }
 
@@ -72,32 +73,41 @@ bool WavInstance::rewind()
 
 bool WavInstance::hasEnded()
 {
-    if (!testFlag(mFlags, AudioSourceInstanceFlags::LOOPING) && mOffset >= mParent->mSampleCount)
+    if (!testFlag(mFlags, AudioSourceInstanceFlags::Looping) && mOffset >= mParent->mSampleCount)
     {
         return true;
     }
     return false;
 }
 
-Wav::Wav()
+Wav::Wav(std::span<const std::byte> data)
 {
-    mData        = nullptr;
-    mSampleCount = 0;
+    assert(data.data() != nullptr);
+    assert(data.size() > 0);
+
+    auto dr = MemoryFile{data};
+
+    mChannels = 1;
+
+    switch (dr.read32())
+    {
+        case MAKEDWORD('O', 'g', 'g', 'S'): loadogg(dr); break;
+        case MAKEDWORD('R', 'I', 'F', 'F'): loadwav(dr); break;
+        case MAKEDWORD('f', 'L', 'a', 'C'): loadflac(dr); break;
+        default: loadmp3(dr); break;
+    }
 }
 
 Wav::~Wav()
 {
     stop();
-    delete[] mData;
 }
 
-#define MAKEDWORD(a, b, c, d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
-
-void Wav::loadwav(MemoryFile* aReader)
+void Wav::loadwav(MemoryFile& aReader)
 {
     drwav decoder;
 
-    if (!drwav_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), nullptr))
+    if (!drwav_init_memory(&decoder, aReader.data(), aReader.size(), nullptr))
     {
         throw std::runtime_error{"Failed to load WAV"};
     }
@@ -110,20 +120,20 @@ void Wav::loadwav(MemoryFile* aReader)
         throw std::runtime_error{"Failed to load WAV"};
     }
 
-    mData           = new float[(unsigned int)(samples * decoder.channels)];
-    mBaseSamplerate = (float)decoder.sampleRate;
-    mSampleCount    = (unsigned int)samples;
+    mData           = std::make_unique<float[]>(samples * decoder.channels);
+    mBaseSamplerate = float(decoder.sampleRate);
+    mSampleCount    = samples;
     mChannels       = decoder.channels;
 
-    unsigned int i, j, k;
-    for (i = 0; i < mSampleCount; i += 512)
+    for (unsigned int i = 0; i < mSampleCount; i += 512)
     {
-        float        tmp[512 * MAX_CHANNELS];
-        unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
+        float      tmp[512 * MAX_CHANNELS];
+        const auto blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
         drwav_read_pcm_frames_f32(&decoder, blockSize, tmp);
-        for (j = 0; j < blockSize; j++)
+
+        for (unsigned int j = 0; j < blockSize; j++)
         {
-            for (k = 0; k < decoder.channels; k++)
+            for (unsigned int k = 0; k < decoder.channels; k++)
             {
                 mData[k * mSampleCount + i + j] = tmp[j * decoder.channels + k];
             }
@@ -133,10 +143,10 @@ void Wav::loadwav(MemoryFile* aReader)
     drwav_uninit(&decoder);
 }
 
-void Wav::loadogg(MemoryFile* aReader)
+void Wav::loadogg(MemoryFile& aReader)
 {
     int   e      = 0;
-    auto* vorbis = stb_vorbis_open_memory(aReader->getMemPtr(), aReader->length(), &e, 0);
+    auto* vorbis = stb_vorbis_open_memory(aReader.data_uc(), aReader.size(), &e, 0);
 
     if (vorbis == nullptr)
     {
@@ -155,8 +165,8 @@ void Wav::loadogg(MemoryFile* aReader)
     {
         mChannels = info.channels;
     }
-    mData = new float[samples * mChannels];
-    memset(mData, 0, samples * mChannels * sizeof(float));
+
+    mData        = std::make_unique<float[]>(samples * mChannels);
     mSampleCount = samples;
     samples      = 0;
 
@@ -172,7 +182,7 @@ void Wav::loadogg(MemoryFile* aReader)
 
         for (unsigned int ch = 0; ch < mChannels; ch++)
         {
-            memcpy(mData + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
+            memcpy(mData.get() + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
         }
 
         samples += n;
@@ -181,11 +191,11 @@ void Wav::loadogg(MemoryFile* aReader)
     stb_vorbis_close(vorbis);
 }
 
-void Wav::loadmp3(MemoryFile* aReader)
+void Wav::loadmp3(MemoryFile& aReader)
 {
     drmp3 decoder;
 
-    if (!drmp3_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), nullptr))
+    if (!drmp3_init_memory(&decoder, aReader.data_uc(), aReader.size(), nullptr))
     {
         throw std::runtime_error{"Failed to load MP3"};
     }
@@ -198,7 +208,7 @@ void Wav::loadmp3(MemoryFile* aReader)
         throw std::runtime_error{"Failed to load MP3"};
     }
 
-    mData           = new float[(unsigned int)(samples * decoder.channels)];
+    mData           = std::make_unique<float[]>(samples * decoder.channels);
     mBaseSamplerate = float(decoder.sampleRate);
     mSampleCount    = samples;
     mChannels       = decoder.channels;
@@ -222,9 +232,9 @@ void Wav::loadmp3(MemoryFile* aReader)
     drmp3_uninit(&decoder);
 }
 
-void Wav::loadflac(MemoryFile* aReader)
+void Wav::loadflac(MemoryFile& aReader)
 {
-    drflac* decoder = drflac_open_memory(aReader->mDataPtr, aReader->mDataLength, nullptr);
+    drflac* decoder = drflac_open_memory(aReader.data(), aReader.size(), nullptr);
 
     if (!decoder)
     {
@@ -239,7 +249,7 @@ void Wav::loadflac(MemoryFile* aReader)
         throw std::runtime_error{"Failed to load FLAC"};
     }
 
-    mData           = new float[(unsigned int)(samples * decoder->channels)];
+    mData           = std::make_unique<float[]>(samples * decoder->channels);
     mBaseSamplerate = float(decoder->sampleRate);
     mSampleCount    = samples;
     mChannels       = decoder->channels;
@@ -262,56 +272,6 @@ void Wav::loadflac(MemoryFile* aReader)
     drflac_close(decoder);
 }
 
-void Wav::testAndLoadFile(MemoryFile* aReader)
-{
-    delete[] mData;
-    mData         = nullptr;
-    mSampleCount  = 0;
-    mChannels     = 1;
-    const int tag = aReader->read32();
-
-    if (tag == MAKEDWORD('O', 'g', 'g', 'S'))
-    {
-        return loadogg(aReader);
-    }
-
-    if (tag == MAKEDWORD('R', 'I', 'F', 'F'))
-    {
-        return loadwav(aReader);
-    }
-
-    if (tag == MAKEDWORD('f', 'L', 'a', 'C'))
-    {
-        return loadflac(aReader);
-    }
-
-    loadmp3(aReader);
-}
-
-void Wav::loadMem(const unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
-{
-    assert(aMem != nullptr);
-    assert(aLength > 0);
-
-    stop();
-
-    MemoryFile dr;
-    dr.openMem(aMem, aLength, aCopy, aTakeOwnership);
-    return testAndLoadFile(&dr);
-}
-
-void Wav::loadFile(File* aFile)
-{
-    assert(aFile != nullptr);
-
-    stop();
-
-    MemoryFile mr;
-    mr.openFileToMem(aFile);
-
-    return testAndLoadFile(&mr);
-}
-
 AudioSourceInstance* Wav::createInstance()
 {
     return new WavInstance(this);
@@ -319,85 +279,6 @@ AudioSourceInstance* Wav::createInstance()
 
 double Wav::getLength() const
 {
-    if (mBaseSamplerate == 0)
-        return 0;
-    return mSampleCount / mBaseSamplerate;
-}
-
-void Wav::loadRawWave8(unsigned char* aMem,
-                       unsigned int   aLength,
-                       float          aSamplerate,
-                       unsigned int   aChannels)
-{
-    assert(aMem != nullptr);
-    assert(aLength > 0);
-    assert(aSamplerate > 0);
-    assert(aChannels >= 1);
-
-    stop();
-
-    delete[] mData;
-    mData           = new float[aLength];
-    mSampleCount    = aLength / aChannels;
-    mChannels       = aChannels;
-    mBaseSamplerate = aSamplerate;
-
-    for (unsigned int i = 0; i < aLength; i++)
-    {
-        mData[i] = (signed(aMem[i]) - 128) / float(0x80);
-    }
-}
-
-void Wav::loadRawWave16(short*       aMem,
-                        unsigned int aLength,
-                        float        aSamplerate,
-                        unsigned int aChannels)
-{
-    assert(aMem != nullptr);
-    assert(aLength > 0);
-    assert(aSamplerate > 0);
-    assert(aChannels >= 1);
-
-    stop();
-    delete[] mData;
-    mData           = new float[aLength];
-    mSampleCount    = aLength / aChannels;
-    mChannels       = aChannels;
-    mBaseSamplerate = aSamplerate;
-
-    for (unsigned int i = 0; i < aLength; i++)
-    {
-        mData[i] = aMem[i] / float(0x8000);
-    }
-}
-
-void Wav::loadRawWave(float*       aMem,
-                      unsigned int aLength,
-                      float        aSamplerate,
-                      unsigned int aChannels,
-                      bool         aCopy,
-                      bool         aTakeOwndership)
-{
-    assert(aMem != nullptr);
-    assert(aLength > 0);
-    assert(aSamplerate > 0);
-    assert(aChannels >= 1);
-
-    stop();
-    delete[] mData;
-
-    if (aCopy == true || aTakeOwndership == false)
-    {
-        mData = new float[aLength];
-        memcpy(mData, aMem, sizeof(float) * aLength);
-    }
-    else
-    {
-        mData = aMem;
-    }
-
-    mSampleCount    = aLength / aChannels;
-    mChannels       = aChannels;
-    mBaseSamplerate = aSamplerate;
+    return mBaseSamplerate == 0 ? 0 : mSampleCount / mBaseSamplerate;
 }
 }; // namespace SoLoud

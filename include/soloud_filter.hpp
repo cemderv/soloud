@@ -30,7 +30,7 @@ class Fader;
 
 class FilterInstance
 {
-public:
+  public:
     FilterInstance() = default;
 
     virtual void initParams(int aNumParams);
@@ -61,15 +61,11 @@ public:
                                      time_t       aStartTime);
 
     virtual void oscillateFilterParameter(
-        unsigned int aAttributeId,
-        float        aFrom,
-        float        aTo,
-        time_t       aTime,
-        time_t       aStartTime);
+        unsigned int aAttributeId, float aFrom, float aTo, time_t aTime, time_t aStartTime);
 
     virtual ~FilterInstance();
 
-protected:
+  protected:
     unsigned int mNumParams    = 0;
     unsigned int mParamChanged = 0;
     float*       mParam        = nullptr;
@@ -78,7 +74,7 @@ protected:
 
 class Filter
 {
-public:
+  public:
     Filter() = default;
 
     virtual ~Filter() noexcept = default;

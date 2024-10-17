@@ -30,7 +30,7 @@ namespace SoLoud
 QueueInstance::QueueInstance(Queue* aParent)
 {
     mParent = aParent;
-    mFlags |= AudioSourceInstanceFlags::PROTECTED;
+    mFlags |= AudioSourceInstanceFlags::Protected;
 }
 
 unsigned int QueueInstance::getAudio(float*       aBuffer,

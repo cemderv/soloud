@@ -42,7 +42,7 @@ class RobotizeFilterInstance : public FilterInstance
 
     RobotizeFilter* mParent;
 
-public:
+  public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
@@ -54,7 +54,7 @@ public:
 
 class RobotizeFilter : public Filter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
         WET = 0,

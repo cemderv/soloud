@@ -28,49 +28,49 @@ freely, subject to the following restrictions:
 #include "soloud_audiosource.hpp"
 #include "soloud_misc.hpp"
 #include <array>
+#include <span>
 
 namespace SoLoud
 {
-class File;
+class MemoryFile;
 
 struct SfxrParams
 {
-    int wave_type;
+    int wave_type = 0;
 
-    float p_base_freq;
-    float p_freq_limit;
-    float p_freq_ramp;
-    float p_freq_dramp;
-    float p_duty;
-    float p_duty_ramp;
+    float p_base_freq  = 0.3f;
+    float p_freq_limit = 0.0f;
+    float p_freq_ramp  = 0.0f;
+    float p_freq_dramp = 0.0f;
+    float p_duty       = 0.0f;
+    float p_duty_ramp  = 0.0f;
 
-    float p_vib_strength;
-    float p_vib_speed;
-    float p_vib_delay;
+    float p_vib_strength = 0.0f;
+    float p_vib_speed    = 0.0f;
+    float p_vib_delay    = 0.0f;
 
-    float p_env_attack;
-    float p_env_sustain;
-    float p_env_decay;
-    float p_env_punch;
+    float p_env_attack  = 0.0f;
+    float p_env_sustain = 0.3f;
+    float p_env_decay   = 0.4f;
+    float p_env_punch   = 0.0f;
 
-    bool  filter_on;
-    float p_lpf_resonance;
-    float p_lpf_freq;
-    float p_lpf_ramp;
-    float p_hpf_freq;
-    float p_hpf_ramp;
+    bool  filter_on       = false;
+    float p_lpf_resonance = 0.0f;
+    float p_lpf_freq      = 1.0f;
+    float p_lpf_ramp      = 0.0f;
+    float p_hpf_freq      = 0.0f;
+    float p_hpf_ramp      = 0.0f;
 
-    float p_pha_offset;
-    float p_pha_ramp;
+    float p_pha_offset = 0.0f;
+    float p_pha_ramp   = 0.0f;
 
-    float p_repeat_speed;
+    float p_repeat_speed = 0.0f;
 
-    float p_arp_speed;
-    float p_arp_mod;
+    float p_arp_speed = 0.0f;
+    float p_arp_mod   = 0.0f;
 
-    float master_vol;
-
-    float sound_vol;
+    float master_vol = 0.05f;
+    float sound_vol  = 0.5f;
 };
 
 class Sfxr;
@@ -143,26 +143,19 @@ enum class SFXR_PRESETS
 
 class Sfxr : public AudioSource
 {
+    friend SfxrInstance;
+
   public:
-    SfxrParams mParams;
+    explicit Sfxr(std::span<const std::byte> data);
 
-    Misc::Prg mRand;
-
-    Sfxr();
+    explicit Sfxr(int aPresetNo, int aRandSeed);
 
     ~Sfxr() override;
 
-    void resetParams();
-
-    void loadParamsMem(unsigned char* aMem,
-                       unsigned int   aLength,
-                       bool           aCopy          = false,
-                       bool           aTakeOwnership = true);
-
-    void loadParamsFile(File* aFile);
-
-    void loadPreset(int aPresetNo, int aRandSeed);
-
     AudioSourceInstance* createInstance() override;
+
+  private:
+    SfxrParams mParams;
+    Misc::Prg  mRand;
 };
 }; // namespace SoLoud

@@ -65,7 +65,7 @@ WaveShaperFilterInstance::~WaveShaperFilterInstance()
 
 void WaveShaperFilter::setParams(float aAmount)
 {
-    assert(aAmount>=-1 && aAmount<=1);
+    assert(aAmount >= -1 && aAmount <= 1);
     mAmount = aAmount;
 }
 

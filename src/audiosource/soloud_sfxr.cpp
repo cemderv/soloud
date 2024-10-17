@@ -70,7 +70,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             fperiod = fmaxperiod;
             if (mParams.p_freq_limit > 0.0f)
             {
-                if (hasFlag(AudioSourceInstanceFlags::LOOPING))
+                if (hasFlag(AudioSourceInstanceFlags::Looping))
                 {
                     resetSample(false);
                 }
@@ -103,7 +103,7 @@ unsigned int SfxrInstance::getAudio(float*       aBuffer,
             env_stage++;
             if (env_stage == 3)
             {
-                if (testFlag(mFlags, AudioSourceInstanceFlags::LOOPING))
+                if (testFlag(mFlags, AudioSourceInstanceFlags::Looping))
                 {
                     resetSample(false);
                 }
@@ -326,13 +326,11 @@ void SfxrInstance::resetSample(bool aRestart)
 #undef frnd
 #define frnd(x) ((float)(mRand.rand() % 10001) / 10000 * (x))
 
-
-void Sfxr::loadPreset(int aPresetNo, int aRandSeed)
+Sfxr::Sfxr(int aPresetNo, int aRandSeed)
 {
     assert(aPresetNo >= 0);
     assert(aPresetNo <= 6);
 
-    resetParams();
     mRand.srand(aRandSeed);
 
     switch (aPresetNo)
@@ -489,102 +487,57 @@ void Sfxr::loadPreset(int aPresetNo, int aRandSeed)
     }
 }
 
-void Sfxr::resetParams()
+Sfxr::Sfxr(std::span<const std::byte> data)
 {
-    mParams.wave_type = 0;
+    auto mf = MemoryFile{data};
 
-    mParams.p_base_freq  = 0.3f;
-    mParams.p_freq_limit = 0.0f;
-    mParams.p_freq_ramp  = 0.0f;
-    mParams.p_freq_dramp = 0.0f;
-    mParams.p_duty       = 0.0f;
-    mParams.p_duty_ramp  = 0.0f;
-
-    mParams.p_vib_strength = 0.0f;
-    mParams.p_vib_speed    = 0.0f;
-    mParams.p_vib_delay    = 0.0f;
-
-    mParams.p_env_attack  = 0.0f;
-    mParams.p_env_sustain = 0.3f;
-    mParams.p_env_decay   = 0.4f;
-    mParams.p_env_punch   = 0.0f;
-
-    mParams.filter_on       = false;
-    mParams.p_lpf_resonance = 0.0f;
-    mParams.p_lpf_freq      = 1.0f;
-    mParams.p_lpf_ramp      = 0.0f;
-    mParams.p_hpf_freq      = 0.0f;
-    mParams.p_hpf_ramp      = 0.0f;
-
-    mParams.p_pha_offset = 0.0f;
-    mParams.p_pha_ramp   = 0.0f;
-
-    mParams.p_repeat_speed = 0.0f;
-
-    mParams.p_arp_speed = 0.0f;
-    mParams.p_arp_mod   = 0.0f;
-
-    mParams.master_vol = 0.05f;
-    mParams.sound_vol  = 0.5f;
-}
-
-void Sfxr::loadParamsMem(unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
-{
-    MemoryFile mf;
-    mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
-
-    return loadParamsFile(&mf);
-}
-
-void Sfxr::loadParamsFile(File* aFile)
-{
     int version = 0;
-    aFile->read((unsigned char*)&version, sizeof(int));
+    mf.read((unsigned char*)&version, sizeof(int));
     if (version != 100 && version != 101 && version != 102)
     {
         throw std::runtime_error{"Failed to load sfxr"};
     }
 
-    aFile->read((unsigned char*)&mParams.wave_type, sizeof(int));
+    mf.read((unsigned char*)&mParams.wave_type, sizeof(int));
 
-
-    mParams.sound_vol = 0.5f;
     if (version == 102)
-        aFile->read((unsigned char*)&mParams.sound_vol, sizeof(float));
+        mf.read((unsigned char*)&mParams.sound_vol, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.p_base_freq, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_freq_limit, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_freq_ramp, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_base_freq, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_freq_limit, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_freq_ramp, sizeof(float));
+
     if (version >= 101)
-        aFile->read((unsigned char*)&mParams.p_freq_dramp, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_duty, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_duty_ramp, sizeof(float));
+        mf.read((unsigned char*)&mParams.p_freq_dramp, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.p_vib_strength, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_vib_speed, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_vib_delay, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_duty, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_duty_ramp, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.p_env_attack, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_env_sustain, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_env_decay, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_env_punch, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_vib_strength, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_vib_speed, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_vib_delay, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.filter_on, sizeof(bool));
-    aFile->read((unsigned char*)&mParams.p_lpf_resonance, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_lpf_freq, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_lpf_ramp, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_hpf_freq, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_hpf_ramp, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_env_attack, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_env_sustain, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_env_decay, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_env_punch, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.p_pha_offset, sizeof(float));
-    aFile->read((unsigned char*)&mParams.p_pha_ramp, sizeof(float));
+    mf.read((unsigned char*)&mParams.filter_on, sizeof(bool));
+    mf.read((unsigned char*)&mParams.p_lpf_resonance, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_lpf_freq, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_lpf_ramp, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_hpf_freq, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_hpf_ramp, sizeof(float));
 
-    aFile->read((unsigned char*)&mParams.p_repeat_speed, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_pha_offset, sizeof(float));
+    mf.read((unsigned char*)&mParams.p_pha_ramp, sizeof(float));
+
+    mf.read((unsigned char*)&mParams.p_repeat_speed, sizeof(float));
 
     if (version >= 101)
     {
-        aFile->read((unsigned char*)&mParams.p_arp_speed, sizeof(float));
-        aFile->read((unsigned char*)&mParams.p_arp_mod, sizeof(float));
+        mf.read((unsigned char*)&mParams.p_arp_speed, sizeof(float));
+        mf.read((unsigned char*)&mParams.p_arp_mod, sizeof(float));
     }
 }
 
@@ -592,13 +545,6 @@ Sfxr::~Sfxr()
 {
     stop();
 }
-
-Sfxr::Sfxr()
-{
-    resetParams();
-    mBaseSamplerate = 44100;
-}
-
 
 AudioSourceInstance* Sfxr::createInstance()
 {

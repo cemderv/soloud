@@ -25,11 +25,12 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_audiosource.hpp"
+#include <span>
 
 namespace SoLoud
 {
 class Monotone;
-class File;
+class MemoryFile;
 
 struct MonotoneSong
 {
@@ -91,16 +92,16 @@ class Monotone : public AudioSource
     int          mNotesHz[800];
     int          mVibTable[32];
     int          mHardwareChannels;
-    WAVEFORM     mWaveform;
+    Waveform     mWaveform;
     MonotoneSong mSong;
+
     Monotone();
     ~Monotone() override;
-    void                 setParams(int aHardwareChannels, WAVEFORM aWaveform = WAVEFORM::SQUARE);
-    void                 loadMem(const unsigned char* aMem,
-                                 unsigned int         aLength,
-                                 bool                 aCopy          = false,
-                                 bool                 aTakeOwnership = true);
-    void                 loadFile(File* aFile);
+
+    void setParams(int aHardwareChannels, Waveform aWaveform = Waveform::Square);
+
+    void loadMem(std::span<const std::byte> aData);
+
     AudioSourceInstance* createInstance() override;
 
   public:

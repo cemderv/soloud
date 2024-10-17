@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_audiosource.hpp"
+#include <optional>
 
 struct stb_vorbis;
 #ifndef dr_flac_h
@@ -40,69 +41,60 @@ struct drwav;
 namespace SoLoud
 {
 class WavStream;
-class File;
+class MemoryFile;
 
 class WavStreamInstance : public AudioSourceInstance
 {
-    WavStream*   mParent;
-    unsigned int mOffset;
-    File*        mFile;
+    WavStream* mParent = nullptr;
+    size_t     mOffset = 0;
+    MemoryFile mFile;
 
-    union codec {
-        stb_vorbis* mOgg;
-        drflac*     mFlac;
-        drmp3*      mMp3;
-        drwav*      mWav;
-    } mCodec;
+    std::variant<stb_vorbis*, drflac*, drmp3*, drwav*> mCodec;
 
-    unsigned int mOggFrameSize;
-    unsigned int mOggFrameOffset;
-    float**      mOggOutputs;
+    size_t  mOggFrameSize   = 0;
+    size_t  mOggFrameOffset = 0;
+    float** mOggOutputs     = nullptr;
 
-  public:
-    explicit WavStreamInstance(WavStream* aParent);
+public:
+    explicit     WavStreamInstance(WavStream* aParent);
     unsigned int getAudio(float*       aBuffer,
                           unsigned int aSamplesToRead,
                           unsigned int aBufferSize) override;
-    bool         seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
-    bool         rewind() override;
-    bool         hasEnded() override;
+    bool seek(double aSeconds, float* mScratch, unsigned int mScratchSize) override;
+    bool rewind() override;
+    bool hasEnded() override;
     ~WavStreamInstance() override;
 };
 
 enum WAVSTREAM_FILETYPE
 {
-    WAVSTREAM_WAV  = 0,
-    WAVSTREAM_OGG  = 1,
+    WAVSTREAM_WAV = 0,
+    WAVSTREAM_OGG = 1,
     WAVSTREAM_FLAC = 2,
-    WAVSTREAM_MP3  = 3
+    WAVSTREAM_MP3 = 3
 };
 
 class WavStream : public AudioSource
 {
-    void loadwav(File& fp);
-    void loadogg(File& fp);
-    void loadflac(File& fp);
-    void loadmp3(File& fp);
+    friend WavStreamInstance;
 
-  public:
-    int          mFiletype    = 0;
-    File*        mMemFile     = nullptr;
-    File*        mStreamFile  = nullptr;
+public:
+    int          mFiletype = WAVSTREAM_WAV;
+    MemoryFile   mFile;
+    bool         mIsStream    = false;
     unsigned int mSampleCount = 0;
 
-    WavStream();
+    explicit WavStream(std::span<const std::byte> data);
 
     ~WavStream() override;
-
-    void loadMem(const unsigned char* aData,
-                 unsigned int         aDataLen,
-                 bool                 aCopy          = false,
-                 bool                 aTakeOwnership = true);
 
     AudioSourceInstance* createInstance() override;
     time_t               getLength() const;
 
-    void parse(File& aFile);
+private:
+    void loadwav(MemoryFile& fp);
+    void loadogg(MemoryFile& fp);
+    void loadflac(MemoryFile& fp);
+    void loadmp3(MemoryFile& fp);
 };
 }; // namespace SoLoud

@@ -25,20 +25,17 @@ freely, subject to the following restrictions:
 #pragma once
 
 #include "soloud_audiosource.hpp"
+#include <span>
 
 struct stb_vorbis;
 
 namespace SoLoud
 {
 class Wav;
-class File;
 class MemoryFile;
 
 class WavInstance : public AudioSourceInstance
 {
-    Wav*         mParent;
-    unsigned int mOffset;
-
   public:
     explicit WavInstance(Wav* aParent);
 
@@ -49,49 +46,32 @@ class WavInstance : public AudioSourceInstance
     bool rewind() override;
 
     bool hasEnded() override;
+
+  private:
+    Wav*   mParent = nullptr;
+    size_t mOffset = 0;
 };
 
 class Wav : public AudioSource
 {
-    void loadwav(MemoryFile* aReader);
-    void loadogg(MemoryFile* aReader);
-    void loadmp3(MemoryFile* aReader);
-    void loadflac(MemoryFile* aReader);
-    void testAndLoadFile(MemoryFile* aReader);
+    friend WavInstance;
 
   public:
-    float*       mData;
-    unsigned int mSampleCount;
-
-    Wav();
+    explicit Wav(std::span<const std::byte> data);
 
     ~Wav() override;
 
-    void loadMem(const unsigned char* aMem,
-                 unsigned int         aLength,
-                 bool                 aCopy          = false,
-                 bool                 aTakeOwnership = true);
-
-    void loadFile(File* aFile);
-
-    void loadRawWave8(unsigned char* aMem,
-                      unsigned int   aLength,
-                      float          aSamplerate = 44100.0f,
-                      unsigned int   aChannels   = 1);
-
-    void loadRawWave16(short*       aMem,
-                       unsigned int aLength,
-                       float        aSamplerate = 44100.0f,
-                       unsigned int aChannels   = 1);
-
-    void loadRawWave(float*       aMem,
-                     unsigned int aLength,
-                     float        aSamplerate    = 44100.0f,
-                     unsigned int aChannels      = 1,
-                     bool         aCopy          = false,
-                     bool         aTakeOwnership = true);
-
     AudioSourceInstance* createInstance() override;
-    time_t               getLength() const;
+
+    time_t getLength() const;
+
+  private:
+    void loadwav(MemoryFile& aReader);
+    void loadogg(MemoryFile& aReader);
+    void loadmp3(MemoryFile& aReader);
+    void loadflac(MemoryFile& aReader);
+
+    std::unique_ptr<float[]> mData;
+    size_t                   mSampleCount = 0;
 };
 }; // namespace SoLoud

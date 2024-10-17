@@ -38,7 +38,7 @@ class DCRemovalFilterInstance : public FilterInstance
     DCRemovalFilter* mParent;
     int              mOffset;
 
-public:
+  public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
                 unsigned int aBufferSize,
@@ -51,10 +51,9 @@ public:
 
 class DCRemovalFilter : public Filter
 {
-public:
-    float           mLength;
+  public:
     FilterInstance* createInstance() override;
-    DCRemovalFilter();
-    void setParams(float aLength = 0.1f);
+
+    float mLength = 0.1f;
 };
 } // namespace SoLoud

@@ -34,7 +34,7 @@ class WaveShaperFilterInstance : public FilterInstance
 {
     WaveShaperFilter* mParent;
 
-public:
+  public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
@@ -48,7 +48,7 @@ public:
 
 class WaveShaperFilter : public Filter
 {
-public:
+  public:
     enum FILTERPARAMS
     {
         WET = 0,

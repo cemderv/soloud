@@ -38,7 +38,7 @@ class FlangerFilterInstance : public FilterInstance
     unsigned int   mOffset;
     double         mIndex;
 
-public:
+  public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
                 unsigned int aBufferSize,
@@ -51,7 +51,7 @@ public:
 
 class FlangerFilter : public Filter
 {
-public:
+  public:
     enum FILTERPARAMS
     {
         WET,

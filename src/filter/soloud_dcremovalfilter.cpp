@@ -90,19 +90,6 @@ DCRemovalFilterInstance::~DCRemovalFilterInstance()
     delete[] mTotals;
 }
 
-DCRemovalFilter::DCRemovalFilter()
-{
-    mLength = 0.1f;
-}
-
-void DCRemovalFilter::setParams(float aLength)
-{
-    assert(aLength>0.0f);
-
-    mLength = aLength;
-}
-
-
 FilterInstance* DCRemovalFilter::createInstance()
 {
     return new DCRemovalFilterInstance(this);

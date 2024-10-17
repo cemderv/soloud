@@ -75,6 +75,5 @@ class FFTFilter : public Filter
 {
   public:
     FilterInstance* createInstance() override;
-    FFTFilter();
 };
 } // namespace SoLoud

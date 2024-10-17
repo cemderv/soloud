@@ -33,30 +33,32 @@ class BassboostFilter;
 
 class BassboostFilterInstance : public FFTFilterInstance
 {
-    enum FILTERATTRIBUTE
-    {
-        WET = 0,
-        BOOST = 1
-    };
+  public:
+    BassboostFilterInstance(BassboostFilter* aParent);
 
-    BassboostFilter* mParent;
-
-public:
     void fftFilterChannel(float*       aFFTBuffer,
                           unsigned int aSamples,
                           float        aSamplerate,
                           time_t       aTime,
                           unsigned int aChannel,
                           unsigned int aChannels) override;
-    BassboostFilterInstance(BassboostFilter* aParent);
+
+  protected:
+    enum FILTERATTRIBUTE
+    {
+        WET   = 0,
+        BOOST = 1
+    };
+
+    BassboostFilter* mParent;
 };
 
 class BassboostFilter : public FFTFilter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
-        WET = 0,
+        WET   = 0,
         BOOST = 1
     };
 

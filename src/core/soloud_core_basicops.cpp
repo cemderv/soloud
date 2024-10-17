@@ -70,7 +70,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 
     if (aPaused)
     {
-        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::PAUSED;
+        mVoice[ch]->mFlags |= AudioSourceInstanceFlags::Paused;
     }
 
     setVoicePan_internal(ch, aPan);
@@ -108,11 +108,7 @@ handle Soloud::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused
 }
 
 handle Soloud::playClocked(
-    time_t       aSoundTime,
-    AudioSource& aSound,
-    float        aVolume,
-    float        aPan,
-    unsigned int aBus)
+    time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, aPan, 1, aBus);
     lockAudioMutex_internal();
@@ -144,9 +140,9 @@ bool Soloud::seek(handle aVoiceHandle, time_t aSeconds)
 {
     bool res = true;
     FOR_ALL_VOICES_PRE
-        const auto singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
-        if (!singleres)
-            res = singleres;
+    const auto singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+    if (!singleres)
+        res = singleres;
     FOR_ALL_VOICES_POST
     return res;
 }
@@ -155,7 +151,7 @@ bool Soloud::seek(handle aVoiceHandle, time_t aSeconds)
 void Soloud::stop(handle aVoiceHandle)
 {
     FOR_ALL_VOICES_PRE
-        stopVoice_internal(ch);
+    stopVoice_internal(ch);
     FOR_ALL_VOICES_POST
 }
 

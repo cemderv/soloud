@@ -62,23 +62,23 @@ enum class AudioSourceInstanceFlags
 {
     None = 0,
     // This audio instance loops (if supported)
-    LOOPING = 1,
+    Looping = 1,
     // This audio instance is protected - won't get stopped if we run out of voices
-    PROTECTED = 2,
+    Protected = 2,
     // This audio instance is paused
-    PAUSED = 4,
+    Paused = 4,
     // This audio instance is affected by 3d processing
-    PROCESS_3D = 8,
+    Process3D = 8,
     // This audio instance has listener-relative 3d coordinates
-    LISTENER_RELATIVE = 16,
+    ListenerRelative = 16,
     // Currently inaudible
-    INAUDIBLE = 32,
+    Inaudible = 32,
     // If inaudible, should be killed (default = don't kill kill)
-    INAUDIBLE_KILL = 64,
+    InaudibleKill = 64,
     // If inaudible, should still be ticked (default = pause)
-    INAUDIBLE_TICK = 128,
+    InaudibleTick = 128,
     // Don't auto-stop sound
-    DISABLE_AUTOSTOP = 256
+    DisableAutostop = 256
 };
 
 class AudioSourceInstance3dData
@@ -90,29 +90,40 @@ class AudioSourceInstance3dData
 
     // 3d position
     vec3 m3dPosition;
+
     // 3d velocity
     vec3 m3dVelocity;
+
     // 3d min distance
     float m3dMinDistance = 0.0f;
+
     // 3d max distance
     float m3dMaxDistance = 1000000.0f;
+
     // 3d attenuation rolloff factor
     float m3dAttenuationRolloff = 1.0f;
+
     // 3d attenuation model
     unsigned int m3dAttenuationModel = 0;
+
     // 3d doppler factor
     float m3dDopplerFactor = 1.0f;
+
     // Pointer to a custom audio collider object
     AudioCollider* mCollider = nullptr;
+
     // Pointer to a custom audio attenuator object
     AudioAttenuator* mAttenuator = nullptr;
+
     // User data related to audio collider
     int mColliderData = 0;
 
     // Doppler sample rate multiplier
     float mDopplerValue = 0.0f;
+
     // Overall 3d volume
     float m3dVolume = 0.0f;
+
     // Channel volume
     std::array<float, MAX_CHANNELS> mChannelVolume{};
 
@@ -160,7 +171,7 @@ class AudioSourceInstance
     float mSamplerate = 44100.0f;
 
     // Number of channels this audio source produces
-    unsigned int mChannels = 1;
+    size_t mChannels = 1;
 
     // Relative play speed; samplerate = base samplerate * relative play speed
     float mSetRelativePlaySpeed = 1.0f;
@@ -316,63 +327,49 @@ class AudioSource
         EXPONENTIAL_DISTANCE = 3
     };
 
-    // Flags. See AudioSource::FLAGS
-    unsigned int mFlags;
-    // Base sample rate, used to initialize instances
-    float mBaseSamplerate;
-    // Default volume for created instances
-    float mVolume;
-    // Number of channels this audio source produces
-    unsigned int mChannels;
-    // Sound source ID. Assigned by SoLoud the first time it's played.
-    unsigned int mAudioSourceID;
-    // 3d min distance
-    float m3dMinDistance;
-    // 3d max distance
-    float m3dMaxDistance;
-    // 3d attenuation rolloff factor
-    float m3dAttenuationRolloff;
-    // 3d attenuation model
-    unsigned int m3dAttenuationModel;
-    // 3d doppler factor
-    float m3dDopplerFactor;
-    // Filter pointer
-    Filter* mFilter[FILTERS_PER_STREAM];
-    // Pointer to the Soloud object. Needed to stop all instances in dtor.
-    Soloud* mSoloud;
-    // Pointer to a custom audio collider object
-    AudioCollider* mCollider;
-    // Pointer to custom attenuator object
-    AudioAttenuator* mAttenuator;
-    // User data related to audio collider
-    int mColliderData;
-    // When looping, start playing from this time
-    time_t mLoopPoint;
+    AudioSource() = default;
 
-    // CTor
-    AudioSource();
+    virtual ~AudioSource() noexcept;
+
+    // Create instance from the audio source. Called from within Soloud class.
+    virtual AudioSourceInstance* createInstance() = 0;
+
+    // Set filter. Set to nullptr to clear the filter.
+    virtual void setFilter(unsigned int aFilterId, Filter* aFilter);
+
+    // Stop all instances of this audio source
+    void stop();
+
     // Set default volume for instances
     void setVolume(float aVolume);
+
     // Set the looping of the instances created from this audio source
     void setLooping(bool aLoop);
+
     // Set whether only one instance of this sound should ever be playing at the same time
     void setSingleInstance(bool aSingleInstance);
+
     // Set whether audio should auto-stop when it ends or not
     void setAutoStop(bool aAutoStop);
 
     // Set the minimum and maximum distances for 3d audio source (closer to min distance = max vol)
     void set3dMinMaxDistance(float aMinDistance, float aMaxDistance);
+
     // Set attenuation model and rolloff factor for 3d audio source
     void set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+
     // Set doppler factor to reduce or enhance doppler effect, default = 1.0
     void set3dDopplerFactor(float aDopplerFactor);
+
     // Set the coordinates for this audio source to be relative to listener's coordinates.
     void set3dListenerRelative(bool aListenerRelative);
+
     // Enable delaying the start of the sound based on the distance.
     void set3dDistanceDelay(bool aDistanceDelay);
 
     // Set a custom 3d audio collider. Set to nullptr to disable.
     void set3dCollider(AudioCollider* aCollider, int aUserData = 0);
+
     // Set a custom attenuator. Set to nullptr to disable.
     void set3dAttenuator(AudioAttenuator* aAttenuator);
 
@@ -381,16 +378,56 @@ class AudioSource
 
     // Set time to jump to when looping
     void setLoopPoint(time_t aLoopPoint);
+
     // Get current loop point value
     time_t getLoopPoint();
 
-    // Set filter. Set to nullptr to clear the filter.
-    virtual void setFilter(unsigned int aFilterId, Filter* aFilter);
-    // DTor
-    virtual ~AudioSource();
-    // Create instance from the audio source. Called from within Soloud class.
-    virtual AudioSourceInstance* createInstance() = 0;
-    // Stop all instances of this audio source
-    void stop();
+    // Flags. See AudioSource::FLAGS
+    unsigned int mFlags = 0;
+
+    // Base sample rate, used to initialize instances
+    float mBaseSamplerate = 44'100.0f;
+
+    // Default volume for created instances
+    float mVolume = 1.0f;
+
+    // Number of channels this audio source produces
+    unsigned int mChannels = 1;
+
+    // Sound source ID. Assigned by SoLoud the first time it's played.
+    unsigned int mAudioSourceID = 0;
+
+    // 3d min distance
+    float m3dMinDistance = 1.0f;
+
+    // 3d max distance
+    float m3dMaxDistance = 1'000'000.0f;
+
+    // 3d attenuation rolloff factor
+    float m3dAttenuationRolloff = 1.0f;
+
+    // 3d attenuation model
+    unsigned int m3dAttenuationModel = NO_ATTENUATION;
+
+    // 3d doppler factor
+    float m3dDopplerFactor = 1.0f;
+
+    // Filter pointer
+    std::array<Filter*, FILTERS_PER_STREAM> mFilter{};
+
+    // Pointer to the Soloud object. Needed to stop all instances in dtor.
+    Soloud* mSoloud = nullptr;
+
+    // Pointer to a custom audio collider object
+    AudioCollider* mCollider = nullptr;
+
+    // Pointer to custom attenuator object
+    AudioAttenuator* mAttenuator = nullptr;
+
+    // User data related to audio collider
+    int mColliderData = 0;
+
+    // When looping, start playing from this time
+    time_t mLoopPoint = 0;
 };
 }; // namespace SoLoud

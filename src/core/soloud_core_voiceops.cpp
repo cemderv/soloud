@@ -53,11 +53,11 @@ void Soloud::setVoicePause_internal(unsigned int aVoice, int aPause)
 
         if (aPause)
         {
-            mVoice[aVoice]->mFlags |= AudioSourceInstanceFlags::PAUSED;
+            mVoice[aVoice]->mFlags |= AudioSourceInstanceFlags::Paused;
         }
         else
         {
-            mVoice[aVoice]->mFlags &= ~AudioSourceInstanceFlags::PAUSED;
+            mVoice[aVoice]->mFlags &= ~AudioSourceInstanceFlags::Paused;
         }
     }
 }
@@ -148,7 +148,7 @@ void Soloud::updateVoiceVolume_internal(unsigned int aVoice)
     assert(aVoice < VOICE_COUNT);
     assert(mInsideAudioThreadMutex);
     mVoice[aVoice]->mOverallVolume = mVoice[aVoice]->mSetVolume * m3dData[aVoice].m3dVolume;
-    if (testFlag(mVoice[aVoice]->mFlags, AudioSourceInstanceFlags::PAUSED))
+    if (testFlag(mVoice[aVoice]->mFlags, AudioSourceInstanceFlags::Paused))
     {
         int i;
         for (i = 0; i < MAX_CHANNELS; i++)

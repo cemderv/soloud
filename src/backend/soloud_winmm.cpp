@@ -150,10 +150,10 @@ static void winMMCleanup(Soloud* aSoloud)
 }
 
 void winmm_init(Soloud*      aSoloud,
-                  unsigned int aFlags,
-                  unsigned int aSamplerate,
-                  unsigned int aBuffer,
-                  unsigned int aChannels)
+                unsigned int aFlags,
+                unsigned int aSamplerate,
+                unsigned int aBuffer,
+                unsigned int aChannels)
 {
     SoLoudWinMMData* data        = new SoLoudWinMMData;
     aSoloud->mBackendData        = data;

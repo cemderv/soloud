@@ -16,7 +16,7 @@ class Filter;
 // Soloud core class.
 class Soloud
 {
-public:
+  public:
     // Back-end data; content is up to the back-end implementation.
     void* mBackendData;
     // Pointer for the audio thread mutex.
@@ -38,7 +38,7 @@ public:
     ~Soloud();
 
     // Initialize SoLoud. Must be called before SoLoud can be used.
-    void init(FLAGS                       aFlags      = FLAGS::CLIP_ROUNDOFF,
+    void init(Flags                       aFlags      = Flags::ClipRoundoff,
               std::optional<unsigned int> aSamplerate = std::nullopt,
               std::optional<unsigned int> aBufferSize = std::nullopt,
               unsigned int                aChannels   = 2);
@@ -160,7 +160,7 @@ public:
     // Get current post-clip scaler value.
     float getPostClipScaler() const;
     // Get the current main resampler
-    RESAMPLER getMainResampler() const;
+    Resampler getMainResampler() const;
     // Get current global volume
     float getGlobalVolume() const;
     // Get current maximum active voice setting
@@ -187,7 +187,7 @@ public:
     // Set the post clip scaler value
     void setPostClipScaler(float aScaler);
     // Set the main resampler
-    void setMainResampler(RESAMPLER aResampler);
+    void setMainResampler(Resampler aResampler);
     // Set the pause state
     void setPause(handle aVoiceHandle, bool aPause);
     // Pause all voices
@@ -309,14 +309,14 @@ public:
     // null driver.
     void mixSigned16(short* aBuffer, unsigned int aSamples);
 
-public:
+  public:
     // Mix N samples * M channels. Called by other mix_ functions.
     void mix_internal(unsigned int aSamples, unsigned int aStride);
 
     // Handle rest of initialization (called from backend)
     void postinit_internal(unsigned int aSamplerate,
                            unsigned int aBufferSize,
-                           FLAGS        aFlags,
+                           Flags        aFlags,
                            unsigned int aChannels);
 
     // Update list of active voices
@@ -331,7 +331,7 @@ public:
                          unsigned int aBus,
                          float        aSamplerate,
                          unsigned int aChannels,
-                         RESAMPLER    aResampler);
+                         Resampler    aResampler);
     // Find a free voice, stopping the oldest if no free voice is found.
     int findFreeVoice_internal();
     // Converts handle to voice, if the handle is valid. Returns -1 if not.
@@ -401,7 +401,7 @@ public:
     std::array<AudioSourceInstance*, VOICE_COUNT> mVoice{};
 
     // Resampler for the main bus
-    RESAMPLER mResampler;
+    Resampler mResampler;
 
     // Output sample rate (not float)
     unsigned int mSamplerate;
@@ -413,7 +413,7 @@ public:
     unsigned int mBufferSize;
 
     // Flags; see Soloud::FLAGS
-    FLAGS mFlags;
+    Flags mFlags;
 
     // Global volume. Applied before clipping.
     float mGlobalVolume;

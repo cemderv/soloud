@@ -66,28 +66,6 @@ void LofiFilterInstance::filterChannel(float*       aBuffer,
     }
 }
 
-LofiFilterInstance::~LofiFilterInstance()
-{
-}
-
-LofiFilter::LofiFilter()
-{
-    setParams(4000, 3);
-}
-
-void LofiFilter::setParams(float aSampleRate, float aBitdepth)
-{
-    assert(aSampleRate>0.0f);
-    assert(aBitdepth>0.0f);
-
-    mSampleRate = aSampleRate;
-    mBitdepth   = aBitdepth;
-}
-
-LofiFilter::~LofiFilter()
-{
-}
-
 LofiFilterInstance* LofiFilter::createInstance()
 {
     return new LofiFilterInstance(this);

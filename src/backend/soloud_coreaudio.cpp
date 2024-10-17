@@ -32,10 +32,10 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-result coreaudio_init(Soloud* aSoloud,
-                      unsigned int    aFlags,
-                      unsigned int    aSamplerate,
-                      unsigned int    aBuffer)
+result coreaudio_init(Soloud*      aSoloud,
+                      unsigned int aFlags,
+                      unsigned int aSamplerate,
+                      unsigned int aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -84,7 +84,7 @@ static void coreaudio_fill_buffer(void* context, AudioQueueRef queue, AudioQueue
 }
 
 void coreaudio_init(Soloud*      aSoloud,
-                    FLAGS        aFlags,
+                    Flags        aFlags,
                     unsigned int aSamplerate,
                     unsigned int aBuffer,
                     unsigned int aChannels)

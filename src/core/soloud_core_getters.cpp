@@ -33,7 +33,7 @@ float Soloud::getPostClipScaler() const
     return mPostClipScaler;
 }
 
-RESAMPLER Soloud::getMainResampler() const
+Resampler Soloud::getMainResampler() const
 {
     return mResampler;
 }
@@ -142,7 +142,7 @@ bool Soloud::getLooping(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return 0;
     }
-    const bool v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::LOOPING);
+    const bool v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Looping);
     unlockAudioMutex_internal();
     return v;
 }
@@ -156,7 +156,7 @@ bool Soloud::getAutoStop(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::DISABLE_AUTOSTOP);
+    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::DisableAutostop);
     unlockAudioMutex_internal();
     return !v;
 }
@@ -282,7 +282,7 @@ bool Soloud::getPause(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::PAUSED);
+    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Paused);
     unlockAudioMutex_internal();
     return v;
 }
@@ -296,7 +296,7 @@ bool Soloud::getProtectVoice(handle aVoiceHandle)
         unlockAudioMutex_internal();
         return false;
     }
-    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::PROTECTED);
+    const auto v = testFlag(mVoice[ch]->mFlags, AudioSourceInstanceFlags::Protected);
     unlockAudioMutex_internal();
     return v;
 }
@@ -320,7 +320,7 @@ int Soloud::findFreeVoice_internal()
             }
             return i;
         }
-        if (testFlag(mVoice[i]->mFlags, AudioSourceInstanceFlags::PROTECTED) == 0 &&
+        if (testFlag(mVoice[i]->mFlags, AudioSourceInstanceFlags::Protected) == 0 &&
             mVoice[i]->mPlayIndex < lowest_play_index_value)
         {
             lowest_play_index_value = mVoice[i]->mPlayIndex;

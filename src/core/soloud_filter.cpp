@@ -84,11 +84,7 @@ void FilterInstance::fadeFilterParameter(unsigned int aAttributeId,
 }
 
 void FilterInstance::oscillateFilterParameter(
-    unsigned int aAttributeId,
-    float        aFrom,
-    float        aTo,
-    double       aTime,
-    double       aStartTime)
+    unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
 {
     if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
         return;

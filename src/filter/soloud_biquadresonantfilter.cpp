@@ -36,33 +36,39 @@ void BiquadResonantFilterInstance::calcBQRParams()
 {
     mDirty = 0;
 
-    auto  omega     = float(2.0f * M_PI * mParam[Frequency] / mSamplerate);
-    auto  sin_omega = sin(omega);
-    auto  cos_omega = cos(omega);
-    float alpha     = sin_omega / (2.0f * mParam[Resonance]);
-    float scalar    = 1.0f / (1.0f + alpha);
+    const auto omega     = float(2.0f * M_PI * mParam[Frequency] / mSamplerate);
+    const auto sin_omega = sin(omega);
+    const auto cos_omega = cos(omega);
+    const auto alpha     = sin_omega / (2.0f * mParam[Resonance]);
+    const auto scalar    = 1.0f / (1.0f + alpha);
 
-    switch ((int)(mParam[Type]))
+    switch (int(mParam[Type]))
     {
-        default:
-        case BiquadResonantFilter::LOWPASS: mA0 = 0.5f * (1.0f - cos_omega) * scalar;
+        case BiquadResonantFilter::LOWPASS: {
+            mA0 = 0.5f * (1.0f - cos_omega) * scalar;
             mA1 = (1.0f - cos_omega) * scalar;
             mA2 = mA0;
             mB1 = -2.0f * cos_omega * scalar;
             mB2 = (1.0f - alpha) * scalar;
             break;
-        case BiquadResonantFilter::HIGHPASS: mA0 = 0.5f * (1.0f + cos_omega) * scalar;
+        }
+        case BiquadResonantFilter::HIGHPASS: {
+            mA0 = 0.5f * (1.0f + cos_omega) * scalar;
             mA1 = -(1.0f + cos_omega) * scalar;
             mA2 = mA0;
             mB1 = -2.0f * cos_omega * scalar;
             mB2 = (1.0f - alpha) * scalar;
             break;
-        case BiquadResonantFilter::BANDPASS: mA0 = alpha * scalar;
+        }
+        case BiquadResonantFilter::BANDPASS: {
+            mA0 = alpha * scalar;
             mA1 = 0;
             mA2 = -mA0;
             mB1 = -2.0f * cos_omega * scalar;
             mB2 = (1.0f - alpha) * scalar;
             break;
+        }
+        default: break;
     }
 }
 
@@ -84,7 +90,7 @@ BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter*
 
     mParam[Resonance] = aParent->mResonance;
     mParam[Frequency] = aParent->mFrequency;
-    mParam[Type]      = (float)aParent->mFilterType;
+    mParam[Type]      = float(aParent->mFilterType);
 
     mSamplerate = 44100;
 
@@ -142,10 +148,6 @@ void BiquadResonantFilterInstance::filterChannel(float*       aBuffer,
     // If we skipped a sample earlier, patch it by just copying the previous.
     if (osamples != aSamples)
         aBuffer[c] = aBuffer[c - 1];
-}
-
-BiquadResonantFilterInstance::~BiquadResonantFilterInstance()
-{
 }
 
 FilterInstance* BiquadResonantFilter::createInstance()

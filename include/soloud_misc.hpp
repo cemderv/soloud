@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-enum class WAVEFORM;
+enum class Waveform;
 
 // Class that handles aligned allocations to support vectorized operations
 class AlignedFloatBuffer
@@ -65,7 +65,7 @@ class TinyAlignedFloatBuffer
 namespace Misc
 {
 // Generate a waveform.
-float generateWaveform(WAVEFORM aWaveform, float p);
+float generateWaveform(Waveform aWaveform, float p);
 
 // WELL512 random
 class Prg

@@ -36,7 +36,7 @@ class EqFilterInstance : public FFTFilterInstance
 {
     enum FILTERATTRIBUTE
     {
-        WET = 0,
+        WET   = 0,
         BAND1 = 1,
         BAND2 = 2,
         BAND3 = 3,
@@ -49,7 +49,7 @@ class EqFilterInstance : public FFTFilterInstance
 
     EqFilter* mParent;
 
-public:
+  public:
     void fftFilterChannel(float*       aFFTBuffer,
                           unsigned int aSamples,
                           float        aSamplerate,
@@ -61,10 +61,10 @@ public:
 
 class EqFilter : public FFTFilter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
-        WET = 0,
+        WET   = 0,
         BAND1 = 1,
         BAND2 = 2,
         BAND3 = 3,

@@ -37,7 +37,7 @@ class EchoFilterInstance : public FilterInstance
     int    mBufferMaxLength;
     int    mOffset;
 
-public:
+  public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
                 unsigned int aBufferSize,
@@ -50,7 +50,7 @@ public:
 
 class EchoFilter : public Filter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
         WET = 0,

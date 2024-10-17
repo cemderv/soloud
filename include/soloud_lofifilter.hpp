@@ -49,20 +49,20 @@ class LofiFilterInstance : public FilterInstance
 
     LofiFilter* mParent;
 
-public:
+  public:
     void filterChannel(float*       aBuffer,
                        unsigned int aSamples,
                        float        aSamplerate,
                        time_t       aTime,
                        unsigned int aChannel,
                        unsigned int aChannels) override;
-    ~LofiFilterInstance() override;
+
     explicit LofiFilterInstance(LofiFilter* aParent);
 };
 
 class LofiFilter : public Filter
 {
-public:
+  public:
     enum FILTERPARAMS
     {
         WET,
@@ -70,11 +70,9 @@ public:
         BITDEPTH
     };
 
-    float               mSampleRate;
-    float               mBitdepth;
     LofiFilterInstance* createInstance() override;
-    LofiFilter();
-    void setParams(float aSampleRate, float aBitdepth);
-    ~LofiFilter() override;
+
+    float mSampleRate = 4000.0f;
+    float mBitdepth   = 3.0f;
 };
 } // namespace SoLoud

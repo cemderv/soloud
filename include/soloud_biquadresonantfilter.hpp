@@ -37,6 +37,17 @@ struct BQRStateData
 
 class BiquadResonantFilterInstance : public FilterInstance
 {
+  public:
+    explicit BiquadResonantFilterInstance(BiquadResonantFilter* aParent);
+
+    void filterChannel(float*       aBuffer,
+                       unsigned int aSamples,
+                       float        aSamplerate,
+                       time_t       aTime,
+                       unsigned int aChannel,
+                       unsigned int aChannels) override;
+
+  protected:
     enum FilterAttribute
     {
         Wet = 0,
@@ -56,24 +67,14 @@ class BiquadResonantFilterInstance : public FilterInstance
 
     BiquadResonantFilter* mParent;
     void                  calcBQRParams();
-
-public:
-    void filterChannel(float*       aBuffer,
-                       unsigned int aSamples,
-                       float        aSamplerate,
-                       time_t       aTime,
-                       unsigned int aChannel,
-                       unsigned int aChannels) override;
-    ~BiquadResonantFilterInstance() override;
-    explicit BiquadResonantFilterInstance(BiquadResonantFilter* aParent);
 };
 
 class BiquadResonantFilter : public Filter
 {
-public:
+  public:
     enum FILTERTYPE
     {
-        LOWPASS = 0,
+        LOWPASS  = 0,
         HIGHPASS = 1,
         BANDPASS = 2
     };

@@ -34,7 +34,7 @@ namespace FreeverbImpl
 
 class Comb
 {
-public:
+  public:
     Comb();
     void   setbuffer(float* aBuf, int aSize);
     float  process(float aInp);
@@ -52,7 +52,7 @@ public:
 
 class Allpass
 {
-public:
+  public:
     Allpass();
     void   setbuffer(float* aBuf, int aSize);
     float  process(float aInp);
@@ -114,7 +114,7 @@ const int gAllpasstuningR4 = 225 + gStereospread;
 
 class Revmodel
 {
-public:
+  public:
     Revmodel();
     void mute();
     void process(float* aSampleData, long aNumSamples, long aStride);
@@ -128,8 +128,8 @@ public:
 
     float mGain;
     float mRoomsize, mRoomsize1;
-    float mDamp,     mDamp1;
-    float mWet,      mWet1, mWet2;
+    float mDamp, mDamp1;
+    float mWet, mWet1, mWet2;
     float mDry;
     float mWidth;
     float mMode;
@@ -209,7 +209,7 @@ void Allpass::setbuffer(float* aBuf, int aSize)
 
 void Allpass::mute()
 {
-    for (int i     = 0; i < mBufsize; i++)
+    for (int i = 0; i < mBufsize; i++)
         mBuffer[i] = 0;
 }
 
@@ -253,7 +253,7 @@ void Comb::setbuffer(float* aBuf, int aSize)
 
 void Comb::mute()
 {
-    for (int i     = 0; i < mBufsize; i++)
+    for (int i = 0; i < mBufsize; i++)
         mBuffer[i] = 0;
 }
 
@@ -349,7 +349,7 @@ void Revmodel::mute()
 
 void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
 {
-    float* inputL,* inputR;
+    float *inputL, *inputR;
     inputL = aSampleData;
     inputR = aSampleData + aStride;
 
@@ -360,8 +360,8 @@ void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
     while (aNumSamples-- > 0)
     {
         float outL, outR, input;
-        outL  = outR = 0;
-        input = (*inputL + *inputR) * mGain;
+        outL = outR = 0;
+        input       = (*inputL + *inputR) * mGain;
 
         // Accumulate comb filters in parallel
         for (int i = 0; i < gNumcombs; i++)

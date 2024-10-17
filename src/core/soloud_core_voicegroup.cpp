@@ -146,7 +146,7 @@ void Soloud::addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle)
     // Full group, allocate more memory
     const auto n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
 
-    for (i   = 0; i < mVoiceGroup[c][0]; i++)
+    for (i = 0; i < mVoiceGroup[c][0]; i++)
         n[i] = mVoiceGroup[c][i];
 
     n[n[0]]     = aVoiceHandle;

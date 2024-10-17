@@ -75,77 +75,73 @@ static constexpr size_t MAX_CHANNELS = 8;
 namespace SoLoud
 {
 class Soloud;
-typedef void (*      mutexCallFunction)(void* aMutexPtr);
-typedef void (*      soloudCallFunction)(Soloud* aSoloud);
-typedef bool (*      soloudResultFunction)(Soloud* aSoloud);
+typedef void (*mutexCallFunction)(void* aMutexPtr);
+typedef void (*soloudCallFunction)(Soloud* aSoloud);
+typedef bool (*soloudResultFunction)(Soloud* aSoloud);
 typedef unsigned int handle;
 typedef double       time_t;
 
-enum class FLAGS
+enum class Flags
 {
     // Use round-off clipper
-    None = 0,
-    CLIP_ROUNDOFF = 1,
-    ENABLE_VISUALIZATION = 2,
-    NO_FPU_REGISTER_CHANGE = 4
+    None                = 0,
+    ClipRoundoff        = 1,
+    EnableVisualization = 2,
+    NoFpuRegisterChange = 4
 };
 
-static inline FLAGS operator&(FLAGS lhs,
-                              FLAGS rhs)
+static inline Flags operator&(Flags lhs, Flags rhs)
 {
-    return FLAGS(int(lhs) & int(rhs));
+    return Flags(int(lhs) & int(rhs));
 }
 
-static inline FLAGS operator|(FLAGS lhs,
-                              FLAGS rhs)
+static inline Flags operator|(Flags lhs, Flags rhs)
 {
-    return FLAGS(int(lhs) | int(rhs));
+    return Flags(int(lhs) | int(rhs));
 }
 
-static inline FLAGS operator~(FLAGS value)
+static inline Flags operator~(Flags value)
 {
-    return FLAGS(~int(value));
+    return Flags(~int(value));
 }
 
-static inline FLAGS& operator&=(FLAGS& lhs,
-                                FLAGS  rhs)
+static inline Flags& operator&=(Flags& lhs, Flags rhs)
 {
     lhs = lhs & rhs;
     return lhs;
 }
 
-static inline FLAGS& operator|=(FLAGS& lhs,
-                                FLAGS  rhs)
+static inline Flags& operator|=(Flags& lhs, Flags rhs)
 {
     lhs = lhs | rhs;
     return lhs;
 }
 
-static inline bool testFlag(FLAGS value, FLAGS toTest)
+static inline bool testFlag(Flags value, Flags toTest)
 {
     return (int(value) & int(toTest)) == int(toTest);
 }
 
-enum class WAVEFORM
+enum class Waveform
 {
-    SQUARE = 0,
-    SAW,
-    SIN,
-    TRIANGLE,
-    BOUNCE,
-    JAWS,
-    HUMPS,
-    FSQUARE,
-    FSAW
+    Square = 0,
+    Saw,
+    Sin,
+    Triangle,
+    Bounce,
+    Jaws,
+    Humps,
+    FSquare,
+    FSaw
 };
 
-enum class RESAMPLER
+enum class Resampler
 {
-    POINT,
-    LINEAR,
-    CATMULLROM
+    Point,
+    Linear,
+    CatmullRom
 };
 
 // Default resampler for both main and bus mixers
-static constexpr auto SOLOUD_DEFAULT_RESAMPLER = RESAMPLER::LINEAR;
+static constexpr auto default_resampler = Resampler::Linear;
 }; // namespace SoLoud

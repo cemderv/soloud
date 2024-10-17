@@ -336,7 +336,7 @@ Monotone::Monotone()
     mChannels       = 1;
 
     mHardwareChannels = 1;
-    mWaveform         = WAVEFORM::SQUARE;
+    mWaveform         = Waveform::Square;
 }
 
 void Monotone::clear()
@@ -367,7 +367,7 @@ static char* mystrdup(const char* src)
     return res;
 }
 
-void Monotone::setParams(int aHardwareChannels, WAVEFORM aWaveform)
+void Monotone::setParams(int aHardwareChannels, Waveform aWaveform)
 {
     assert(aHardwareChannels > 0);
 
@@ -375,25 +375,14 @@ void Monotone::setParams(int aHardwareChannels, WAVEFORM aWaveform)
     mWaveform         = aWaveform;
 }
 
-void Monotone::loadMem(const unsigned char* aMem,
-                       unsigned int         aLength,
-                       bool                 aCopy,
-                       bool                 aTakeOwnership)
+void Monotone::loadMem(std::span<const std::byte> aData)
 {
-    MemoryFile mf;
-    mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
-
-    return loadFile(&mf);
-}
-
-void Monotone::loadFile(File* aFile)
-{
-    assert(aFile != nullptr);
+    auto mf = MemoryFile{aData};
 
     clear();
     int           i;
     unsigned char temp[200];
-    aFile->read(temp, 9);
+    mf.read(temp, 9);
     char magic[] = "\bMONOTONE";
     for (i = 0; i < 9; i++)
     {
@@ -402,13 +391,13 @@ void Monotone::loadFile(File* aFile)
             throw std::runtime_error{"Failed to load monotone"};
         }
     }
-    aFile->read(temp, 41);
+    mf.read(temp, 41);
     temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
     mSong.mTitle      = mystrdup((char*)temp + 1);
-    aFile->read(temp, 41);
+    mf.read(temp, 41);
     temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
     mSong.mComment    = mystrdup((char*)temp + 1);
-    aFile->read(temp, 4);
+    mf.read(temp, 4);
     mSong.mVersion       = temp[0];
     mSong.mTotalPatterns = temp[1];
     mSong.mTotalTracks   = temp[2];
@@ -417,12 +406,12 @@ void Monotone::loadFile(File* aFile)
     {
         throw std::runtime_error{"Failed to load monotone"};
     }
-    aFile->read(mSong.mOrder, 256);
+    mf.read(mSong.mOrder, 256);
     int totalnotes     = 64 * mSong.mTotalPatterns * mSong.mTotalTracks;
     mSong.mPatternData = new unsigned int[totalnotes];
     for (i = 0; i < totalnotes; i++)
     {
-        aFile->read(temp, 2);
+        mf.read(temp, 2);
         unsigned int datavalue = temp[0] | (temp[1] << 8);
         mSong.mPatternData[i]  = datavalue;
         // unsigned int note = (datavalue >> 9) & 127;
@@ -432,7 +421,6 @@ void Monotone::loadFile(File* aFile)
         // unsigned int effectdata2 = (datavalue >> 0) & 7;
     }
 }
-
 
 AudioSourceInstance* Monotone::createInstance()
 {

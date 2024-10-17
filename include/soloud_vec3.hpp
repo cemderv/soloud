@@ -17,7 +17,7 @@ struct vec3
     {
     }
 
-    [[nodiscard]] bool null() const
+    [[nodiscard]] bool isNull() const
     {
         if (mX == 0 && mY == 0 && mZ == 0)
             return true;

@@ -31,168 +31,62 @@ distribution.
 
 namespace SoLoud
 {
-unsigned int File::read8()
+uint8_t MemoryFile::read8()
 {
-    unsigned char d = 0;
-    read((unsigned char*)&d, 1);
+    uint8_t d = 0;
+    read(&d, sizeof(d));
     return d;
 }
 
-unsigned int File::read16()
+uint16_t MemoryFile::read16()
 {
-    unsigned short d = 0;
-    read((unsigned char*)&d, 2);
+    uint16_t d = 0;
+    read(reinterpret_cast<unsigned char*>(&d), sizeof(d));
     return d;
 }
 
-unsigned int File::read32()
+uint32_t MemoryFile::read32()
 {
-    unsigned int d = 0;
-    read((unsigned char*)&d, 4);
+    uint32_t d = 0;
+    read(reinterpret_cast<unsigned char*>(&d), sizeof(d));
     return d;
 }
 
 unsigned int MemoryFile::read(unsigned char* aDst, unsigned int aBytes)
 {
-    if (mOffset + aBytes >= mDataLength)
-        aBytes = mDataLength - mOffset;
+    if (mOffset + aBytes >= mData.size())
+    {
+        aBytes = mData.size() - mOffset;
+    }
 
-    memcpy(aDst, mDataPtr + mOffset, aBytes);
+    std::memcpy(aDst, mData.data() + mOffset, aBytes);
     mOffset += aBytes;
 
     return aBytes;
 }
 
-unsigned int MemoryFile::length()
-{
-    return mDataLength;
-}
-
 void MemoryFile::seek(int aOffset)
 {
-    if (aOffset >= 0)
-        mOffset = aOffset;
-    else
-        mOffset = mDataLength + aOffset;
-    if (mOffset > mDataLength - 1)
-        mOffset = mDataLength - 1;
+    mOffset = aOffset >= 0 ? aOffset : mData.size() + aOffset;
+
+    if (mOffset > mData.size() - 1)
+    {
+        mOffset = mData.size() - 1;
+    }
 }
 
-unsigned int MemoryFile::pos()
+size_t MemoryFile::pos() const
 {
     return mOffset;
 }
 
-const unsigned char* MemoryFile::getMemPtr()
+MemoryFile::MemoryFile(std::span<const std::byte> data)
+    : mData(data)
 {
-    return mDataPtr;
 }
 
-MemoryFile::~MemoryFile()
+bool MemoryFile::eof() const
 {
-    if (mDataOwned)
-        delete[] mDataPtr;
-}
-
-MemoryFile::MemoryFile()
-{
-    mDataPtr    = 0;
-    mDataLength = 0;
-    mOffset     = 0;
-    mDataOwned  = false;
-}
-
-void MemoryFile::openMem(const unsigned char* aData,
-                         unsigned int         aDataLength,
-                         bool                 aCopy,
-                         bool                 aTakeOwnership)
-{
-    assert(aData != nullptr);
-    assert(aDataLength > 0);
-
-    if (mDataOwned)
-        delete[] mDataPtr;
-
-    mDataPtr = nullptr;
-    mOffset  = 0;
-
-    mDataLength = aDataLength;
-
-    if (aCopy)
-    {
-        mDataOwned = true;
-        mDataPtr   = new unsigned char[aDataLength];
-        memcpy((void*)mDataPtr, aData, aDataLength);
-    }
-    else
-    {
-        mDataPtr   = aData;
-        mDataOwned = aTakeOwnership;
-    }
-}
-
-void MemoryFile::openFileToMem(File* aFile)
-{
-    assert(aFile != nullptr);
-
-    if (mDataOwned)
-        delete[] mDataPtr;
-
-    mDataPtr = 0;
-    mOffset  = 0;
-
-    mDataLength = aFile->length();
-    mDataPtr    = new unsigned char[mDataLength];
-    aFile->read((unsigned char*)mDataPtr, mDataLength);
-    mDataOwned = true;
-}
-
-int MemoryFile::eof()
-{
-    if (mOffset >= mDataLength)
-        return 1;
-    return 0;
+    return mOffset >= mData.size();
 }
 } // namespace SoLoud
-
-extern "C"
-{
-    int Soloud_Filehack_fgetc(Soloud_Filehack* f)
-    {
-        SoLoud::File* fp = (SoLoud::File*)f;
-        if (fp->eof())
-            return EOF;
-        return fp->read8();
-    }
-
-    int Soloud_Filehack_fread(void* dst, int s, int c, Soloud_Filehack* f)
-    {
-        SoLoud::File* fp = (SoLoud::File*)f;
-        return fp->read((unsigned char*)dst, s * c) / s;
-    }
-
-    int Soloud_Filehack_fseek(Soloud_Filehack* f, int idx, int base)
-    {
-        SoLoud::File* fp = (SoLoud::File*)f;
-        switch (base)
-        {
-            case SEEK_CUR: fp->seek(fp->pos() + idx); break;
-            case SEEK_END: fp->seek(fp->length() + idx); break;
-            default: fp->seek(idx);
-        }
-        return 0;
-    }
-
-    int Soloud_Filehack_ftell(Soloud_Filehack* f)
-    {
-        SoLoud::File* fp = (SoLoud::File*)f;
-        return fp->pos();
-    }
-
-    int Soloud_Filehack_fclose(Soloud_Filehack* f)
-    {
-        SoLoud::File* fp = (SoLoud::File*)f;
-        delete fp;
-        return 0;
-    }
-}

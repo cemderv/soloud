@@ -26,56 +26,42 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include <cstdio>
+#include <span>
 
 typedef void* Soloud_Filehack;
 
 namespace SoLoud
 {
-class File
+class MemoryFile final
 {
   public:
-    virtual ~File() noexcept = default;
+    MemoryFile() = default;
 
-    unsigned int         read8();
-    unsigned int         read16();
-    unsigned int         read32();
-    virtual int          eof()                                          = 0;
-    virtual unsigned int read(unsigned char* aDst, unsigned int aBytes) = 0;
-    virtual unsigned int length()                                       = 0;
-    virtual void         seek(int aOffset)                              = 0;
-    virtual unsigned int pos()                                          = 0;
+    explicit MemoryFile(std::span<const std::byte> data);
 
-    virtual FILE* getFilePtr()
+    uint8_t      read8();
+    uint16_t     read16();
+    uint32_t     read32();
+    bool         eof() const;
+    unsigned int read(unsigned char* aDst, unsigned int aBytes);
+    void         seek(int aOffset);
+    size_t       pos() const;
+
+    const std::byte* data() const
     {
-        return nullptr;
+        return mData.data();
+    }
+    const unsigned char* data_uc() const
+    {
+        return reinterpret_cast<const unsigned char*>(data());
+    }
+    size_t size() const
+    {
+        return mData.size();
     }
 
-    virtual const unsigned char* getMemPtr()
-    {
-        return nullptr;
-    }
-};
-
-class MemoryFile : public File
-{
-  public:
-    const unsigned char* mDataPtr;
-    unsigned int         mDataLength;
-    unsigned int         mOffset;
-    bool                 mDataOwned;
-
-    int                  eof() override;
-    unsigned int         read(unsigned char* aDst, unsigned int aBytes) override;
-    unsigned int         length() override;
-    void                 seek(int aOffset) override;
-    unsigned int         pos() override;
-    const unsigned char* getMemPtr() override;
-    ~MemoryFile() override;
-    MemoryFile();
-    void openMem(const unsigned char* aData,
-                 unsigned int         aDataLength,
-                 bool                 aCopy          = false,
-                 bool                 aTakeOwnership = true);
-    void openFileToMem(File* aFile);
+  private:
+    std::span<const std::byte> mData;
+    size_t                     mOffset = 0;
 };
 }; // namespace SoLoud

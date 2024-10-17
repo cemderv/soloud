@@ -74,27 +74,27 @@ void AudioSourceInstance::init(AudioSource& aSource, int aPlayIndex)
 
     if (aSource.mFlags & AudioSource::SHOULD_LOOP)
     {
-        mFlags |= AudioSourceInstanceFlags::LOOPING;
+        mFlags |= AudioSourceInstanceFlags::Looping;
     }
     if (aSource.mFlags & AudioSource::PROCESS_3D)
     {
-        mFlags |= AudioSourceInstanceFlags::PROCESS_3D;
+        mFlags |= AudioSourceInstanceFlags::Process3D;
     }
     if (aSource.mFlags & AudioSource::LISTENER_RELATIVE)
     {
-        mFlags |= AudioSourceInstanceFlags::LISTENER_RELATIVE;
+        mFlags |= AudioSourceInstanceFlags::ListenerRelative;
     }
     if (aSource.mFlags & AudioSource::INAUDIBLE_KILL)
     {
-        mFlags |= AudioSourceInstanceFlags::INAUDIBLE_KILL;
+        mFlags |= AudioSourceInstanceFlags::InaudibleKill;
     }
     if (aSource.mFlags & AudioSource::INAUDIBLE_TICK)
     {
-        mFlags |= AudioSourceInstanceFlags::INAUDIBLE_TICK;
+        mFlags |= AudioSourceInstanceFlags::InaudibleTick;
     }
     if (aSource.mFlags & AudioSource::DISABLE_AUTOSTOP)
     {
-        mFlags |= AudioSourceInstanceFlags::DISABLE_AUTOSTOP;
+        mFlags |= AudioSourceInstanceFlags::DisableAutostop;
     }
 }
 
@@ -131,32 +131,7 @@ bool AudioSourceInstance::seek(double aSeconds, float* mScratch, unsigned int mS
     return true;
 }
 
-
-AudioSource::AudioSource()
-{
-    int i;
-    for (i = 0; i < FILTERS_PER_STREAM; i++)
-    {
-        mFilter[i] = 0;
-    }
-    mFlags                = 0;
-    mBaseSamplerate       = 44100;
-    mAudioSourceID        = 0;
-    mSoloud               = 0;
-    mChannels             = 1;
-    m3dMinDistance        = 1;
-    m3dMaxDistance        = 1000000.0f;
-    m3dAttenuationRolloff = 1.0f;
-    m3dAttenuationModel   = NO_ATTENUATION;
-    m3dDopplerFactor      = 1.0f;
-    mCollider             = 0;
-    mAttenuator           = 0;
-    mColliderData         = 0;
-    mVolume               = 1;
-    mLoopPoint            = 0;
-}
-
-AudioSource::~AudioSource()
+AudioSource::~AudioSource() noexcept
 {
     stop();
 }
@@ -216,6 +191,7 @@ void AudioSource::setFilter(unsigned int aFilterId, Filter* aFilter)
 {
     if (aFilterId >= FILTERS_PER_STREAM)
         return;
+
     mFilter[aFilterId] = aFilter;
 }
 

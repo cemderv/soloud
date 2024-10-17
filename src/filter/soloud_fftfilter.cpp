@@ -298,10 +298,6 @@ FFTFilterInstance::~FFTFilterInstance()
     delete[] mSumPhase;
 }
 
-FFTFilter::FFTFilter()
-{
-}
-
 FilterInstance* FFTFilter::createInstance()
 {
     return new FFTFilterInstance(this);

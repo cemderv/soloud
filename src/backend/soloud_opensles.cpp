@@ -31,10 +31,10 @@ freely, subject to the following restrictions:
 #if !defined(WITH_OPENSLES)
 namespace SoLoud
 {
-result opensles_init(Soloud* aSoloud,
-                     unsigned int    aFlags,
-                     unsigned int    aSamplerate,
-                     unsigned int    aBuffer)
+result opensles_init(Soloud*      aSoloud,
+                     unsigned int aFlags,
+                     unsigned int aSamplerate,
+                     unsigned int aBuffer)
 {
     return NOT_IMPLEMENTED;
 }
@@ -181,11 +181,11 @@ static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player,
     }
 }
 
-result opensles_init(Soloud* aSoloud,
-                     unsigned int    aFlags,
-                     unsigned int    aSamplerate,
-                     unsigned int    aBuffer,
-                     unsigned int    aChannels)
+result opensles_init(Soloud*      aSoloud,
+                     unsigned int aFlags,
+                     unsigned int aSamplerate,
+                     unsigned int aBuffer,
+                     unsigned int aChannels)
 {
     BackendData* data = new BackendData();
 

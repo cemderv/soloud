@@ -32,7 +32,7 @@ class DuckFilter;
 
 class DuckFilterInstance : public FilterInstance
 {
-public:
+  public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
                 unsigned int aBufferSize,
@@ -44,7 +44,7 @@ public:
 
     explicit DuckFilterInstance(DuckFilter* aParent);
 
-private:
+  private:
     handle  mListenTo;
     Soloud* mSoloud;
     float   mCurrentLevel;
@@ -52,7 +52,7 @@ private:
 
 class DuckFilter : public Filter
 {
-public:
+  public:
     enum FILTERATTRIBUTE
     {
         WET = 0,

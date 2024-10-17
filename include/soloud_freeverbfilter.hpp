@@ -49,7 +49,7 @@ class FreeverbFilterInstance : public FilterInstance
     FreeverbFilter*         mParent;
     FreeverbImpl::Revmodel* mModel;
 
-public:
+  public:
     void filter(float*       aBuffer,
                 unsigned int aSamples,
                 unsigned int aBufferSize,
@@ -62,7 +62,7 @@ public:
 
 class FreeverbFilter : public Filter
 {
-public:
+  public:
     enum FILTERPARAM
     {
         WET = 0,

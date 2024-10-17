@@ -62,11 +62,7 @@ static mat3 lookatRH(const vec3& at, vec3 up)
 #endif
 
 float doppler(
-    vec3        aDeltaPos,
-    const vec3& aSrcVel,
-    const vec3& aDstVel,
-    float       aFactor,
-    float       aSoundSpeed)
+    vec3 aDeltaPos, const vec3& aSrcVel, const vec3& aDstVel, float aFactor, float aSoundSpeed)
 {
     float deltamag = aDeltaPos.mag();
     if (deltamag == 0)
@@ -114,7 +110,7 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
     auto speaker = std::array<vec3, MAX_CHANNELS>{};
 
     for (unsigned int i = 0; i < mChannels; ++i)
-        speaker[i]      = normalize(m3dSpeakerPosition[i]);
+        speaker[i] = normalize(m3dSpeakerPosition[i]);
 
     const auto lpos = m3dPosition;
     const auto lvel = m3dVelocity;
@@ -131,7 +127,7 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
         auto       pos = v.m3dPosition;
         const auto vel = v.m3dVelocity;
 
-        if (!testFlag(v.mFlags, AudioSourceInstanceFlags::LISTENER_RELATIVE))
+        if (!testFlag(v.mFlags, AudioSourceInstanceFlags::ListenerRelative))
         {
             pos = pos - lpos;
         }
@@ -151,20 +147,23 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
         {
             switch (v.m3dAttenuationModel)
             {
-                case AudioSource::INVERSE_DISTANCE: vol *= attenuateInvDistance(dist,
+                case AudioSource::INVERSE_DISTANCE:
+                    vol *= attenuateInvDistance(dist,
+                                                v.m3dMinDistance,
+                                                v.m3dMaxDistance,
+                                                v.m3dAttenuationRolloff);
+                    break;
+                case AudioSource::LINEAR_DISTANCE:
+                    vol *= attenuateLinearDistance(dist,
+                                                   v.m3dMinDistance,
+                                                   v.m3dMaxDistance,
+                                                   v.m3dAttenuationRolloff);
+                    break;
+                case AudioSource::EXPONENTIAL_DISTANCE:
+                    vol *= attenuateExponentialDistance(dist,
                                                         v.m3dMinDistance,
                                                         v.m3dMaxDistance,
                                                         v.m3dAttenuationRolloff);
-                    break;
-                case AudioSource::LINEAR_DISTANCE: vol *= attenuateLinearDistance(dist,
-                                                       v.m3dMinDistance,
-                                                       v.m3dMaxDistance,
-                                                       v.m3dAttenuationRolloff);
-                    break;
-                case AudioSource::EXPONENTIAL_DISTANCE: vol *= attenuateExponentialDistance(dist,
-                                                            v.m3dMinDistance,
-                                                            v.m3dMaxDistance,
-                                                            v.m3dAttenuationRolloff);
                     break;
                 default:
                     // case AudioSource::NO_ATTENUATION:
@@ -187,7 +186,7 @@ void Soloud::update3dVoices_internal(unsigned int* aVoiceArray, unsigned int aVo
         for (unsigned int j = 0; j < mChannels; j++)
         {
             float speakervol = (speaker[j].dot(pos) + 1) / 2;
-            if (speaker[j].null())
+            if (speaker[j].isNull())
                 speakervol = 1;
             // Different speaker "focus" calculations to try, if the default "bleeds" too much..
             // speakervol = (speakervol * speakervol + speakervol) / 2;
@@ -209,7 +208,7 @@ void Soloud::update3dAudio()
     int i;
     for (i = 0; i < (signed)mHighestVoice; i++)
     {
-        if (mVoice[i] && mVoice[i]->hasFlag(AudioSourceInstanceFlags::PROCESS_3D))
+        if (mVoice[i] && mVoice[i]->hasFlag(AudioSourceInstanceFlags::Process3D))
         {
             voices[voicecount] = i;
             voicecount++;
@@ -242,16 +241,16 @@ void Soloud::update3dAudio()
             if (vi->mOverallVolume < 0.001f)
             {
                 // Inaudible.
-                vi->mFlags |= AudioSourceInstanceFlags::INAUDIBLE;
+                vi->mFlags |= AudioSourceInstanceFlags::Inaudible;
 
-                if (testFlag(vi->mFlags, AudioSourceInstanceFlags::INAUDIBLE_KILL))
+                if (testFlag(vi->mFlags, AudioSourceInstanceFlags::InaudibleKill))
                 {
                     stopVoice_internal(voices[i]);
                 }
             }
             else
             {
-                vi->mFlags &= ~AudioSourceInstanceFlags::INAUDIBLE;
+                vi->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
             }
         }
     }
@@ -262,12 +261,7 @@ void Soloud::update3dAudio()
 
 
 handle Soloud::play3d(
-    AudioSource& aSound,
-    vec3         aPos,
-    vec3         aVel,
-    float        aVolume,
-    bool         aPaused,
-    unsigned int aBus)
+    AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, bool aPaused, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -278,13 +272,13 @@ handle Soloud::play3d(
         return h;
     }
     m3dData[v].mHandle = h;
-    mVoice[v]->mFlags |= AudioSourceInstanceFlags::PROCESS_3D;
+    mVoice[v]->mFlags |= AudioSourceInstanceFlags::Process3D;
     set3dSourceParameters(h, aPos, aVel);
 
     int samples = 0;
     if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
     {
-        const auto pos = testFlag(mVoice[v]->mFlags, AudioSourceInstanceFlags::LISTENER_RELATIVE)
+        const auto pos = testFlag(mVoice[v]->mFlags, AudioSourceInstanceFlags::ListenerRelative)
                              ? aPos
                              : aPos - m3dPosition;
 
@@ -313,16 +307,16 @@ handle Soloud::play3d(
     if (mVoice[v]->mOverallVolume < 0.01f)
     {
         // Inaudible.
-        mVoice[v]->mFlags |= AudioSourceInstanceFlags::INAUDIBLE;
+        mVoice[v]->mFlags |= AudioSourceInstanceFlags::Inaudible;
 
-        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::INAUDIBLE_KILL))
+        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::InaudibleKill))
         {
             stopVoice_internal(v);
         }
     }
     else
     {
-        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::INAUDIBLE;
+        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
     }
     mActiveVoiceDirty = true;
 
@@ -333,12 +327,7 @@ handle Soloud::play3d(
 }
 
 handle Soloud::play3dClocked(
-    time_t       aSoundTime,
-    AudioSource& aSound,
-    vec3         aPos,
-    vec3         aVel,
-    float        aVolume,
-    unsigned int aBus)
+    time_t aSoundTime, AudioSource& aSound, vec3 aPos, vec3 aVel, float aVolume, unsigned int aBus)
 {
     handle h = play(aSound, aVolume, 0, 1, aBus);
     lockAudioMutex_internal();
@@ -349,7 +338,7 @@ handle Soloud::play3dClocked(
         return h;
     }
     m3dData[v].mHandle = h;
-    mVoice[v]->mFlags |= AudioSourceInstanceFlags::PROCESS_3D;
+    mVoice[v]->mFlags |= AudioSourceInstanceFlags::Process3D;
     set3dSourceParameters(h, aPos, aVel);
     time_t lasttime = mLastClockedTime;
     if (lasttime == 0)
@@ -391,16 +380,16 @@ handle Soloud::play3dClocked(
     if (mVoice[v]->mOverallVolume < 0.01f)
     {
         // Inaudible.
-        mVoice[v]->mFlags |= AudioSourceInstanceFlags::INAUDIBLE;
+        mVoice[v]->mFlags |= AudioSourceInstanceFlags::Inaudible;
 
-        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::INAUDIBLE_KILL))
+        if (mVoice[v]->hasFlag(AudioSourceInstanceFlags::InaudibleKill))
         {
             stopVoice_internal(v);
         }
     }
     else
     {
-        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::INAUDIBLE;
+        mVoice[v]->mFlags &= ~AudioSourceInstanceFlags::Inaudible;
     }
     mActiveVoiceDirty = true;
     unlockAudioMutex_internal();
@@ -413,7 +402,7 @@ handle Soloud::play3dClocked(
 
 void Soloud::set3dSoundSpeed(float aSpeed)
 {
-    assert(aSpeed>0.0f);
+    assert(aSpeed > 0.0f);
     m3dSoundSpeed = aSpeed;
 }
 
@@ -460,8 +449,8 @@ void Soloud::set3dListenerVelocity(vec3 value)
 void Soloud::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocity)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dPosition = aPos;
-        m3dData[ch].m3dVelocity = aVelocity;
+    m3dData[ch].m3dPosition = aPos;
+    m3dData[ch].m3dVelocity = aVelocity;
     FOR_ALL_VOICES_POST_3D
 }
 
@@ -469,7 +458,7 @@ void Soloud::set3dSourceParameters(handle aVoiceHandle, vec3 aPos, vec3 aVelocit
 void Soloud::set3dSourcePosition(handle aVoiceHandle, vec3 value)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dPosition = value;
+    m3dData[ch].m3dPosition = value;
     FOR_ALL_VOICES_POST_3D
 }
 
@@ -477,7 +466,7 @@ void Soloud::set3dSourcePosition(handle aVoiceHandle, vec3 value)
 void Soloud::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dVelocity = velocity;
+    m3dData[ch].m3dVelocity = velocity;
     FOR_ALL_VOICES_POST_3D
 }
 
@@ -485,8 +474,8 @@ void Soloud::set3dSourceVelocity(handle aVoiceHandle, vec3 velocity)
 void Soloud::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dMinDistance = aMinDistance;
-        m3dData[ch].m3dMaxDistance = aMaxDistance;
+    m3dData[ch].m3dMinDistance = aMinDistance;
+    m3dData[ch].m3dMaxDistance = aMaxDistance;
     FOR_ALL_VOICES_POST_3D
 }
 
@@ -496,8 +485,8 @@ void Soloud::set3dSourceAttenuation(handle       aVoiceHandle,
                                     float        aAttenuationRolloffFactor)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dAttenuationModel   = aAttenuationModel;
-        m3dData[ch].m3dAttenuationRolloff = aAttenuationRolloffFactor;
+    m3dData[ch].m3dAttenuationModel   = aAttenuationModel;
+    m3dData[ch].m3dAttenuationRolloff = aAttenuationRolloffFactor;
     FOR_ALL_VOICES_POST_3D
 }
 
@@ -505,7 +494,7 @@ void Soloud::set3dSourceAttenuation(handle       aVoiceHandle,
 void Soloud::set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor)
 {
     FOR_ALL_VOICES_PRE_3D
-        m3dData[ch].m3dDopplerFactor = aDopplerFactor;
+    m3dData[ch].m3dDopplerFactor = aDopplerFactor;
     FOR_ALL_VOICES_POST_3D
 }
 }; // namespace SoLoud

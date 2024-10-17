@@ -74,10 +74,7 @@ void FlangerFilterInstance::filter(float*       aBuffer,
             mIndex += inc;
             mBuffer[mbofs + mOffset % mBufferLength] = aBuffer[abofs];
             float n                                  = 0.5f * (aBuffer[abofs] +
-                                                               mBuffer[mbofs + (
-                                                                       mBufferLength - delay +
-                                                                       mOffset)
-                                                                   % mBufferLength]);
+                              mBuffer[mbofs + (mBufferLength - delay + mOffset) % mBufferLength]);
             mOffset++;
             aBuffer[abofs] += (n - aBuffer[abofs]) * mParam[FlangerFilter::WET];
         }
