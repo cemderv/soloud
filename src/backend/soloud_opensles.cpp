@@ -27,16 +27,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
-
-#if !defined(WITH_OPENSLES)
-namespace SoLoud
-{
-result opensles_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-} // namespace SoLoud
-#else
+#include "soloud_engine.hpp"
 
 #include "SLES/OpenSLES.h"
 #include "SLES/OpenSLES_Platform.h"
@@ -306,4 +297,3 @@ result opensles_init(
     return SO_NO_ERROR;
 }
 }; // namespace SoLoud
-#endif

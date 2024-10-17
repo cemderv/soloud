@@ -28,17 +28,6 @@ freely, subject to the following restrictions:
 #include "soloud_engine.hpp"
 #include <stdexcept>
 
-#if !defined(WITH_COREAUDIO)
-
-namespace SoLoud
-{
-result coreaudio_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-} // namespace SoLoud
-#else
-
 #include <AudioToolbox/AudioToolbox.h>
 
 #define NUM_BUFFERS 2
@@ -134,4 +123,3 @@ void coreaudio_init(
     }
 }
 }; // namespace SoLoud
-#endif

@@ -27,17 +27,6 @@ freely, subject to the following restrictions:
 #include "soloud_misc.hpp"
 #include "soloud_thread.hpp"
 
-#if !defined(WITH_WINMM)
-
-namespace SoLoud
-{
-void winmm_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-}
-}; // namespace SoLoud
-
-#else
-
 #include <mmsystem.h>
 #include <windows.h>
 
@@ -208,5 +197,3 @@ void winmm_init(Engine* aSoloud, Flags aFlags, size_t aSamplerate, size_t aBuffe
     aSoloud->mBackendString = "WinMM";
 }
 }; // namespace SoLoud
-
-#endif

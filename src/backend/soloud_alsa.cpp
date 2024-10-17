@@ -24,18 +24,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
-
-#if !defined(WITH_ALSA)
-
-namespace SoLoud
-{
-result alsa_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-}; // namespace SoLoud
-
-#else
+#include "soloud_engine.hpp"
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
@@ -164,4 +153,3 @@ result alsa_init(
     return 0;
 }
 }; // namespace SoLoud
-#endif

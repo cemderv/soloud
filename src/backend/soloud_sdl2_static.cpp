@@ -23,19 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.hpp"
+#include "soloud_engine.hpp"
 #include <cstdlib>
-
-#if !defined(WITH_SDL2_STATIC)
-
-namespace SoLoud
-{
-result sdl2static_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-} // namespace SoLoud
-
-#else
 
 #include "SDL.h"
 #include <math.h>
@@ -120,4 +109,3 @@ result sdl2static_init(
     return 0;
 }
 }; // namespace SoLoud
-#endif

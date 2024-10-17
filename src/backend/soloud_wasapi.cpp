@@ -24,18 +24,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
-
-#if !defined(WITH_WASAPI)
-
-namespace SoLoud
-{
-result wasapi_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-}; // namespace SoLoud
-
-#else
+#include "soloud_engine.hpp"
 
 #include <audioclient.h>
 #include <mmdeviceapi.h>
@@ -413,4 +402,3 @@ result wasapi_init(
     return 0;
 }
 }; // namespace SoLoud
-#endif

@@ -24,18 +24,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_thread.hpp"
-
-#if !defined(WITH_XAUDIO2)
-
-namespace SoLoud
-{
-result xaudio2_init(Engine* aSoloud, size_t aFlags, size_t aSamplerate, size_t aBuffer)
-{
-    return NOT_IMPLEMENTED;
-}
-}; // namespace SoLoud
-
-#else
+#include "soloud_engine.hpp"
 
 #include <windows.h>
 
@@ -265,5 +254,3 @@ result xaudio2_init(
     return 0;
 }
 }; // namespace SoLoud
-
-#endif
