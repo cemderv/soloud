@@ -33,7 +33,7 @@ RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
     mParent = aParent;
     initParams(3);
     mParam[FREQ] = aParent->mFreq;
-    mParam[WAVE] = (float)aParent->mWave;
+    mParam[WAVE] = float(aParent->mWave);
 }
 
 void RobotizeFilterInstance::filterChannel(float* aBuffer,
