@@ -22,188 +22,182 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <cstring>
-#include "soloud_internal.h"
+#include "soloud_internal.hpp"
 
 // Core "basic" operations - play, stop, etc
 
 namespace SoLoud
 {
-	handle Soloud::play(AudioSource &aSound, float aVolume, float aPan, bool aPaused, unsigned int aBus)
-	{
-		if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
-		{
-			// Only one instance allowed, stop others
-			aSound.stop();
-		}
+handle Engine::play(AudioSource& aSound, float aVolume, float aPan, bool aPaused, size_t aBus)
+{
+    if (aSound.single_instance)
+    {
+        // Only one instance allowed, stop others
+        aSound.stop();
+    }
 
-		// Creation of an audio instance may take significant amount of time,
-		// so let's not do it inside the audio thread mutex.
-		aSound.mSoloud = this;
-		SoLoud::AudioSourceInstance *instance = aSound.createInstance();
+    // Creation of an audio instance may take significant amount of time,
+    // so let's not do it inside the audio thread mutex.
+    aSound.engine = this;
+    auto instance = aSound.createInstance();
 
-		lockAudioMutex_internal();
-		int ch = findFreeVoice_internal();
-		if (ch < 0) 
-		{
-			unlockAudioMutex_internal();
-			delete instance;
-			return UNKNOWN_ERROR;
-		}
-		if (!aSound.mAudioSourceID)
-		{
-			aSound.mAudioSourceID = mAudioSourceID;
-			mAudioSourceID++;
-		}
-		mVoice[ch] = instance;
-		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
-		mVoice[ch]->mBusHandle = aBus;
-		mVoice[ch]->init(aSound, mPlayIndex);
-		m3dData[ch].init(aSound);
+    lockAudioMutex_internal();
+    int ch = findFreeVoice_internal();
+    if (ch < 0)
+    {
+        unlockAudioMutex_internal();
+        return 7; // TODO: this was "UNKNOWN_ERROR"
+    }
+    if (!aSound.audio_source_id)
+    {
+        aSound.audio_source_id = mAudioSourceID;
+        mAudioSourceID++;
+    }
+    mVoice[ch]                 = instance;
+    mVoice[ch]->mAudioSourceID = aSound.audio_source_id;
+    mVoice[ch]->mBusHandle     = aBus;
+    mVoice[ch]->init(aSound, mPlayIndex);
+    m3dData[ch] = AudioSourceInstance3dData{aSound};
 
-		mPlayIndex++;
+    mPlayIndex++;
 
-		// 20 bits, skip the last one (top bits full = voice group)
-		if (mPlayIndex == 0xfffff) 
-		{
-			mPlayIndex = 0;
-		}
+    // 20 bits, skip the last one (top bits full = voice group)
+    if (mPlayIndex == 0xfffff)
+    {
+        mPlayIndex = 0;
+    }
 
-		if (aPaused)
-		{
-			mVoice[ch]->mFlags |= AudioSourceInstance::PAUSED;
-		}
+    if (aPaused)
+    {
+        mVoice[ch]->mFlags.Paused = true;
+    }
 
-		setVoicePan_internal(ch, aPan);
-		if (aVolume < 0)
-		{
-			setVoiceVolume_internal(ch, aSound.mVolume);
-		}
-		else
-		{
-			setVoiceVolume_internal(ch, aVolume);
-		}
+    setVoicePan_internal(ch, aPan);
+    if (aVolume < 0)
+    {
+        setVoiceVolume_internal(ch, aSound.volume);
+    }
+    else
+    {
+        setVoiceVolume_internal(ch, aVolume);
+    }
 
-		// Fix initial voice volume ramp up		
-		int i;
-		for (i = 0; i < MAX_CHANNELS; i++)
-		{
-			mVoice[ch]->mCurrentChannelVolume[i] = mVoice[ch]->mChannelVolume[i] * mVoice[ch]->mOverallVolume;
-		}
+    // Fix initial voice volume ramp up
+    for (int i = 0; i < MAX_CHANNELS; ++i)
+    {
+        mVoice[ch]->mCurrentChannelVolume[i] =
+            mVoice[ch]->mChannelVolume[i] * mVoice[ch]->mOverallVolume;
+    }
 
-		setVoiceRelativePlaySpeed_internal(ch, 1);
-		
-		for (i = 0; i < FILTERS_PER_STREAM; i++)
-		{
-			if (aSound.mFilter[i])
-			{
-				mVoice[ch]->mFilter[i] = aSound.mFilter[i]->createInstance();
-			}
-		}
+    setVoiceRelativePlaySpeed_internal(ch, 1);
 
-		mActiveVoiceDirty = true;
+    for (int i = 0; i < FILTERS_PER_STREAM; ++i)
+    {
+        if (aSound.filter[i])
+        {
+            mVoice[ch]->mFilter[i] = aSound.filter[i]->createInstance();
+        }
+    }
 
-		unlockAudioMutex_internal();
+    mActiveVoiceDirty = true;
 
-		int handle = getHandleFromVoice_internal(ch);
-		return handle;
-	}
+    unlockAudioMutex_internal();
 
-	handle Soloud::playClocked(time aSoundTime, AudioSource &aSound, float aVolume, float aPan, unsigned int aBus)
-	{
-		handle h = play(aSound, aVolume, aPan, 1, aBus);
-		lockAudioMutex_internal();
-		// mLastClockedTime is cleared to zero at start of every output buffer
-		time lasttime = mLastClockedTime;
-		if (lasttime == 0)
-		{
-			mLastClockedTime = aSoundTime;
-			lasttime = aSoundTime;
-		}
-		unlockAudioMutex_internal();
-		int samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
-		// Make sure we don't delay too much (or overflow)
-		if (samples < 0 || samples > 2048)		
-			samples = 0;
-		setDelaySamples(h, samples);
-		setPause(h, 0);
-		return h;
-	}
-
-	handle Soloud::playBackground(AudioSource &aSound, float aVolume, bool aPaused, unsigned int aBus)
-	{
-		handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
-		setPanAbsolute(h, 1.0f, 1.0f);
-		return h;
-	}
-
-	result Soloud::seek(handle aVoiceHandle, time aSeconds)
-	{
-		result res = SO_NO_ERROR;
-		result singleres = SO_NO_ERROR;
-		FOR_ALL_VOICES_PRE
-			singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
-		if (singleres != SO_NO_ERROR)
-			res = singleres;
-		FOR_ALL_VOICES_POST
-		return res;
-	}
-
-
-	void Soloud::stop(handle aVoiceHandle)
-	{
-		FOR_ALL_VOICES_PRE
-			stopVoice_internal(ch);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::stopAudioSource(AudioSource &aSound)
-	{
-		if (aSound.mAudioSourceID)
-		{
-			lockAudioMutex_internal();
-			
-			int i;
-			for (i = 0; i < (signed)mHighestVoice; i++)
-			{
-				if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
-				{
-					stopVoice_internal(i);
-				}
-			}
-			unlockAudioMutex_internal();
-		}
-	}
-
-	void Soloud::stopAll()
-	{
-		int i;
-		lockAudioMutex_internal();
-		for (i = 0; i < (signed)mHighestVoice; i++)
-		{
-			stopVoice_internal(i);
-		}
-		unlockAudioMutex_internal();
-	}
-
-	int Soloud::countAudioSource(AudioSource &aSound)
-	{
-		int count = 0;
-		if (aSound.mAudioSourceID)
-		{
-			lockAudioMutex_internal();
-
-			int i;
-			for (i = 0; i < (signed)mHighestVoice; i++)
-			{
-				if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
-				{
-					count++;
-				}
-			}
-			unlockAudioMutex_internal();
-		}
-		return count;
-	}
-
+    return getHandleFromVoice_internal(ch);
 }
+
+handle Engine::playClocked(
+    time_t aSoundTime, AudioSource& aSound, float aVolume, float aPan, size_t aBus)
+{
+    const handle h = play(aSound, aVolume, aPan, 1, aBus);
+    lockAudioMutex_internal();
+    // mLastClockedTime is cleared to zero at start of every output buffer
+    time_t lasttime = mLastClockedTime;
+    if (lasttime == 0)
+    {
+        mLastClockedTime = aSoundTime;
+        lasttime         = aSoundTime;
+    }
+    unlockAudioMutex_internal();
+    int samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
+    // Make sure we don't delay too much (or overflow)
+    if (samples < 0 || samples > 2048)
+        samples = 0;
+    setDelaySamples(h, samples);
+    setPause(h, false);
+    return h;
+}
+
+handle Engine::playBackground(AudioSource& aSound, float aVolume, bool aPaused, size_t aBus)
+{
+    const handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
+    setPanAbsolute(h, 1.0f, 1.0f);
+    return h;
+}
+
+bool Engine::seek(handle aVoiceHandle, time_t aSeconds)
+{
+    bool res = true;
+    FOR_ALL_VOICES_PRE
+    const auto singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+    if (!singleres)
+        res = singleres;
+    FOR_ALL_VOICES_POST
+    return res;
+}
+
+
+void Engine::stop(handle aVoiceHandle)
+{
+    FOR_ALL_VOICES_PRE
+    stopVoice_internal(ch);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::stopAudioSource(AudioSource& aSound)
+{
+    if (aSound.audio_source_id)
+    {
+        lockAudioMutex_internal();
+
+        for (size_t i = 0; i < mHighestVoice; ++i)
+        {
+            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
+            {
+                stopVoice_internal(i);
+            }
+        }
+        unlockAudioMutex_internal();
+    }
+}
+
+void Engine::stopAll()
+{
+    lockAudioMutex_internal();
+    for (size_t i = 0; i < mHighestVoice; ++i)
+    {
+        stopVoice_internal(i);
+    }
+    unlockAudioMutex_internal();
+}
+
+int Engine::countAudioSource(AudioSource& aSound)
+{
+    int count = 0;
+    if (aSound.audio_source_id)
+    {
+        lockAudioMutex_internal();
+
+        for (size_t i = 0; i < mHighestVoice; ++i)
+        {
+            if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.audio_source_id)
+            {
+                count++;
+            }
+        }
+        unlockAudioMutex_internal();
+    }
+    return count;
+}
+
+} // namespace SoLoud

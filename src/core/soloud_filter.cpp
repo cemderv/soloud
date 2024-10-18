@@ -22,146 +22,90 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
+#include "soloud_filter.hpp"
+#include "soloud_fader.hpp"
 
 namespace SoLoud
 {
+void FilterInstance::initParams(int aNumParams)
+{
+    mNumParams  = aNumParams;
+    mParam      = std::make_unique<float[]>(mNumParams);
+    mParamFader = std::make_unique<Fader[]>(mNumParams);
 
-	int Filter::getParamCount()
-	{
-		return 1; // there's always WET
-	}
+    mParam[0] = 1; // set 'wet' to 1
+}
 
-	const char* Filter::getParamName(unsigned int aParamIndex)
-	{
-		return "Wet";
-	}
+void FilterInstance::updateParams(double aTime)
+{
+    for (size_t i = 0; i < mNumParams; ++i)
+    {
+        if (mParamFader[i].mActive > 0)
+        {
+            mParamChanged |= 1 << i;
+            mParam[i] = mParamFader[i].get(aTime);
+        }
+    }
+}
 
-	unsigned int Filter::getParamType(unsigned int aParamIndex)
-	{
-		return Filter::FLOAT_PARAM;
-	}
-	
-	float Filter::getParamMax(unsigned int aParamIndex)
-	{
-		return 1;
-	}
+void FilterInstance::setFilterParameter(size_t aAttributeId, float aValue)
+{
+    if (aAttributeId >= mNumParams)
+        return;
 
-	float Filter::getParamMin(unsigned int aParamIndex)
-	{
-		return 0;
-	}
+    mParamFader[aAttributeId].mActive = 0;
+    mParam[aAttributeId]              = aValue;
+    mParamChanged |= 1 << aAttributeId;
+}
 
-	Filter::Filter()
-	{
-	}
+void FilterInstance::fadeFilterParameter(size_t aAttributeId,
+                                         float  aTo,
+                                         double aTime,
+                                         double aStartTime)
+{
+    if (aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
+        return;
 
-	Filter::~Filter()
-	{
-	}
-	
-	FilterInstance::FilterInstance()
-	{
-		mNumParams = 0;
-		mParamChanged = 0;
-		mParam = 0;
-		mParamFader = 0;
-	}
+    mParamFader[aAttributeId].set(mParam[aAttributeId], aTo, aTime, aStartTime);
+}
 
-	result FilterInstance::initParams(int aNumParams)
-	{		
-		mNumParams = aNumParams;
-		delete[] mParam;
-		delete[] mParamFader;
-		mParam = new float[mNumParams];
-		mParamFader = new Fader[mNumParams];
+void FilterInstance::oscillateFilterParameter(
+    size_t aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
+{
+    if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
+        return;
 
-		if (mParam == NULL || mParamFader == NULL)
-		{
-			delete[] mParam;
-			delete[] mParamFader;
-			mParam = NULL;
-			mParamFader = NULL;
-			mNumParams = 0;
-			return OUT_OF_MEMORY;
-		}
+    mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
+}
 
-		unsigned int i;
-		for (i = 0; i < mNumParams; i++)
-		{
-			mParam[i] = 0;
-			mParamFader[i].mActive = 0;
-		}
-		mParam[0] = 1; // set 'wet' to 1
+float FilterInstance::getFilterParameter(size_t aAttributeId)
+{
+    if (aAttributeId >= mNumParams)
+        return 0;
 
-		return 0;
-	}
+    return mParam[aAttributeId];
+}
 
-	void FilterInstance::updateParams(double aTime)
-	{
-		unsigned int i;
-		for (i = 0; i < mNumParams; i++)
-		{
-			if (mParamFader[i].mActive > 0)
-			{
-				mParamChanged |= 1 << i;
-				mParam[i] = mParamFader[i].get(aTime);
-			}
-		}
-	}
+void FilterInstance::filter(float* aBuffer,
+                            size_t aSamples,
+                            size_t aBufferSize,
+                            size_t aChannels,
+                            float  aSamplerate,
+                            double aTime)
+{
+    for (size_t i = 0; i < aChannels; ++i)
+    {
+        filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
+    }
+}
 
-	FilterInstance::~FilterInstance()
-	{
-		delete[] mParam;
-		delete[] mParamFader;
-	}
+void FilterInstance::filterChannel(float* /*aBuffer*/,
+                                   size_t /*aSamples*/,
+                                   float /*aSamplerate*/,
+                                   double /*aTime*/,
+                                   size_t /*aChannel*/,
+                                   size_t /*aChannels*/)
+{
+}
 
-	void FilterInstance::setFilterParameter(unsigned int aAttributeId, float aValue)
-	{
-		if (aAttributeId >= mNumParams)
-			return;
-
-		mParamFader[aAttributeId].mActive = 0;
-		mParam[aAttributeId] = aValue;
-		mParamChanged |= 1 << aAttributeId;
-	}
-
-	void FilterInstance::fadeFilterParameter(unsigned int aAttributeId, float aTo, double aTime, double aStartTime)
-	{
-		if (aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
-			return;
-
-		mParamFader[aAttributeId].set(mParam[aAttributeId], aTo, aTime, aStartTime);
-	}
-
-	void FilterInstance::oscillateFilterParameter(unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
-	{
-		if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
-			return;
-
-		mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
-	}
-
-	float FilterInstance::getFilterParameter(unsigned int aAttributeId)
-	{
-		if (aAttributeId >= mNumParams)
-			return 0;
-
-		return mParam[aAttributeId];
-	}
-
-	void FilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
-	{
-		unsigned int i;
-		for (i = 0; i < aChannels; i++)
-		{
-			filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
-		}
-	}
-
-	void FilterInstance::filterChannel(float * /*aBuffer*/, unsigned int /*aSamples*/, float /*aSamplerate*/, double /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
-	{
-	}
-
-};
-
+}; // namespace SoLoud

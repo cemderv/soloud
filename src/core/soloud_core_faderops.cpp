@@ -22,135 +22,137 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_internal.h"
+#include "soloud_internal.hpp"
 
 // Core operations related to faders (not including filters)
 
 namespace SoLoud
 {
-	void Soloud::schedulePause(handle aVoiceHandle, time aTime)
-	{
-		if (aTime <= 0)
-		{
-			setPause(aVoiceHandle, 1);
-			return;
-		}
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mPauseScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::scheduleStop(handle aVoiceHandle, time aTime)
-	{
-		if (aTime <= 0)
-		{
-			stop(aVoiceHandle);
-			return;
-		}
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mStopScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time aTime)
-	{
-		float from = getVolume(aVoiceHandle);
-		if (aTime <= 0 || aTo == from)
-		{
-			setVolume(aVoiceHandle, aTo);
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mVolumeFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::fadePan(handle aVoiceHandle, float aTo, time aTime)
-	{
-		float from = getPan(aVoiceHandle);
-		if (aTime <= 0 || aTo == from)
-		{
-			setPan(aVoiceHandle, aTo);
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mPanFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime)
-	{
-		float from = getRelativePlaySpeed(aVoiceHandle);
-		if (aTime <= 0 || aTo == from)
-		{
-			setRelativePlaySpeed(aVoiceHandle, aTo);
-			return;
-		}
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mRelativePlaySpeedFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::fadeGlobalVolume(float aTo, time aTime)
-	{
-		float from = getGlobalVolume();
-		if (aTime <= 0 || aTo == from)
-		{
-			setGlobalVolume(aTo);
-			return;
-		}
-		mGlobalVolumeFader.set(from, aTo, aTime, mStreamTime);
-	}
-
-
-	void Soloud::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time aTime)
-	{
-		if (aTime <= 0 || aTo == aFrom)
-		{
-			setVolume(aVoiceHandle, aTo);
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mVolumeFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTime)
-	{
-		if (aTime <= 0 || aTo == aFrom)
-		{
-			setPan(aVoiceHandle, aTo);
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mPanFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time aTime)
-	{
-		if (aTime <= 0 || aTo == aFrom)
-		{
-			setRelativePlaySpeed(aVoiceHandle, aTo);
-			return;
-		}
-		
-		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mRelativePlaySpeedFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::oscillateGlobalVolume(float aFrom, float aTo, time aTime)
-	{
-		if (aTime <= 0 || aTo == aFrom)
-		{
-			setGlobalVolume(aTo);
-			return;
-		}
-		mGlobalVolumeFader.setLFO(aFrom, aTo, aTime, mStreamTime);
-	}
+void Engine::schedulePause(handle aVoiceHandle, time_t aTime)
+{
+    if (aTime <= 0)
+    {
+        setPause(aVoiceHandle, 1);
+        return;
+    }
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mPauseScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
 }
+
+void Engine::scheduleStop(handle aVoiceHandle, time_t aTime)
+{
+    if (aTime <= 0)
+    {
+        stop(aVoiceHandle);
+        return;
+    }
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mStopScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::fadeVolume(handle aVoiceHandle, float aTo, time_t aTime)
+{
+    float from = getVolume(aVoiceHandle);
+    if (aTime <= 0 || aTo == from)
+    {
+        setVolume(aVoiceHandle, aTo);
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mVolumeFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::fadePan(handle aVoiceHandle, float aTo, time_t aTime)
+{
+    const float from = getPan(aVoiceHandle);
+
+    if (aTime <= 0 || aTo == from)
+    {
+        setPan(aVoiceHandle, aTo);
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mPanFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time_t aTime)
+{
+    const float from = getRelativePlaySpeed(aVoiceHandle);
+    if (aTime <= 0 || aTo == from)
+    {
+        setRelativePlaySpeed(aVoiceHandle, aTo);
+        return;
+    }
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mRelativePlaySpeedFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::fadeGlobalVolume(float aTo, time_t aTime)
+{
+    const float from = getGlobalVolume();
+    if (aTime <= 0 || aTo == from)
+    {
+        setGlobalVolume(aTo);
+        return;
+    }
+    mGlobalVolumeFader.set(from, aTo, aTime, mStreamTime);
+}
+
+
+void Engine::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
+{
+    if (aTime <= 0 || aTo == aFrom)
+    {
+        setVolume(aVoiceHandle, aTo);
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mVolumeFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
+{
+    if (aTime <= 0 || aTo == aFrom)
+    {
+        setPan(aVoiceHandle, aTo);
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mPanFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time_t aTime)
+{
+    if (aTime <= 0 || aTo == aFrom)
+    {
+        setRelativePlaySpeed(aVoiceHandle, aTo);
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    mVoice[ch]->mRelativePlaySpeedFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::oscillateGlobalVolume(float aFrom, float aTo, time_t aTime)
+{
+    if (aTime <= 0 || aTo == aFrom)
+    {
+        setGlobalVolume(aTo);
+        return;
+    }
+
+    mGlobalVolumeFader.setLFO(aFrom, aTo, aTime, mStreamTime);
+}
+} // namespace SoLoud
