@@ -22,135 +22,160 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_internal.h"
+#include "soloud_internal.hpp"
 
 // Core operations related to filters
 
 namespace SoLoud
 {
-	void Soloud::setGlobalFilter(unsigned int aFilterId, Filter *aFilter)
-	{
-		if (aFilterId >= FILTERS_PER_STREAM)
-			return;
+void Engine::setGlobalFilter(size_t aFilterId, Filter* aFilter)
+{
+    if (aFilterId >= FILTERS_PER_STREAM)
+    {
+        return;
+    }
 
-		lockAudioMutex_internal();
-		delete mFilterInstance[aFilterId];
-		mFilterInstance[aFilterId] = 0;
-		
-		mFilter[aFilterId] = aFilter;
-		if (aFilter)
-		{
-			mFilterInstance[aFilterId] = mFilter[aFilterId]->createInstance();
-		}
-		unlockAudioMutex_internal();
-	}
+    lockAudioMutex_internal();
 
-	float Soloud::getFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId)
-	{
-		float ret = INVALID_PARAMETER;
-		if (aFilterId >= FILTERS_PER_STREAM)
-			return ret;
+    mFilter[aFilterId] = aFilter;
+    if (aFilter)
+    {
+        mFilterInstance[aFilterId] = mFilter[aFilterId]->createInstance();
+    }
 
-		if (aVoiceHandle == 0)
-		{
-			lockAudioMutex_internal();
-			if (mFilterInstance[aFilterId])
-			{
-				ret = mFilterInstance[aFilterId]->getFilterParameter(aAttributeId);
-			}
-			unlockAudioMutex_internal();
-			return ret;
-		}
-
-		int ch = getVoiceFromHandle_internal(aVoiceHandle);
-		if (ch == -1) 
-		{
-			return ret;
-		}
-		lockAudioMutex_internal();
-		if (mVoice[ch] &&
-			mVoice[ch]->mFilter[aFilterId])
-		{
-			ret = mVoice[ch]->mFilter[aFilterId]->getFilterParameter(aAttributeId);
-		}
-		unlockAudioMutex_internal();
-		
-		return ret;
-	}
-
-	void Soloud::setFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aValue)
-	{
-		if (aFilterId >= FILTERS_PER_STREAM)
-			return;
-
-		if (aVoiceHandle == 0)
-		{
-			lockAudioMutex_internal();
-			if (mFilterInstance[aFilterId])
-			{
-				mFilterInstance[aFilterId]->setFilterParameter(aAttributeId, aValue);
-			}
-			unlockAudioMutex_internal();
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		if (mVoice[ch] &&
-			mVoice[ch]->mFilter[aFilterId])
-		{
-			mVoice[ch]->mFilter[aFilterId]->setFilterParameter(aAttributeId, aValue);
-		}
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::fadeFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aTo, double aTime)
-	{
-		if (aFilterId >= FILTERS_PER_STREAM)
-			return;
-
-		if (aVoiceHandle == 0)
-		{
-			lockAudioMutex_internal();
-			if (mFilterInstance[aFilterId])
-			{
-				mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
-			}
-			unlockAudioMutex_internal();
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		if (mVoice[ch] &&
-			mVoice[ch]->mFilter[aFilterId])
-		{
-			mVoice[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
-		}
-		FOR_ALL_VOICES_POST
-	}
-
-	void Soloud::oscillateFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aFrom, float aTo, double aTime)
-	{
-		if (aFilterId >= FILTERS_PER_STREAM)
-			return;
-
-		if (aVoiceHandle == 0)
-		{
-			lockAudioMutex_internal();
-			if (mFilterInstance[aFilterId])
-			{
-				mFilterInstance[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
-			}
-			unlockAudioMutex_internal();
-			return;
-		}
-
-		FOR_ALL_VOICES_PRE
-		if (mVoice[ch] &&
-			mVoice[ch]->mFilter[aFilterId])
-		{
-			mVoice[ch]->mFilter[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
-		}
-		FOR_ALL_VOICES_POST
-	}
-
+    unlockAudioMutex_internal();
 }
+
+std::optional<float> Engine::getFilterParameter(handle aVoiceHandle,
+                                                size_t aFilterId,
+                                                size_t aAttributeId)
+{
+    if (aFilterId >= FILTERS_PER_STREAM)
+    {
+        return {};
+    }
+
+    auto ret = std::optional<float>{};
+
+    if (aVoiceHandle == 0)
+    {
+        lockAudioMutex_internal();
+        if (mFilterInstance[aFilterId])
+        {
+            ret = mFilterInstance[aFilterId]->getFilterParameter(aAttributeId);
+        }
+        unlockAudioMutex_internal();
+        return ret;
+    }
+
+    const int ch = getVoiceFromHandle_internal(aVoiceHandle);
+    if (ch == -1)
+    {
+        return ret;
+    }
+
+    lockAudioMutex_internal();
+    if (mVoice[ch] && mVoice[ch]->mFilter[aFilterId])
+    {
+        ret = mVoice[ch]->mFilter[aFilterId]->getFilterParameter(aAttributeId);
+    }
+    unlockAudioMutex_internal();
+
+    return ret;
+}
+
+void Engine::setFilterParameter(handle aVoiceHandle,
+                                size_t aFilterId,
+                                size_t aAttributeId,
+                                float  aValue)
+{
+    if (aFilterId >= FILTERS_PER_STREAM)
+    {
+        return;
+    }
+
+    if (aVoiceHandle == 0)
+    {
+        lockAudioMutex_internal();
+        if (mFilterInstance[aFilterId])
+        {
+            mFilterInstance[aFilterId]->setFilterParameter(aAttributeId, aValue);
+        }
+        unlockAudioMutex_internal();
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    if (mVoice[ch] && mVoice[ch]->mFilter[aFilterId])
+    {
+        mVoice[ch]->mFilter[aFilterId]->setFilterParameter(aAttributeId, aValue);
+    }
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::fadeFilterParameter(
+    handle aVoiceHandle, size_t aFilterId, size_t aAttributeId, float aTo, double aTime)
+{
+    if (aFilterId >= FILTERS_PER_STREAM)
+    {
+        return;
+    }
+
+    if (aVoiceHandle == 0)
+    {
+        lockAudioMutex_internal();
+        if (mFilterInstance[aFilterId])
+        {
+            mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
+        }
+        unlockAudioMutex_internal();
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    if (mVoice[ch] && mVoice[ch]->mFilter[aFilterId])
+    {
+        mVoice[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
+    }
+    FOR_ALL_VOICES_POST
+}
+
+void Engine::oscillateFilterParameter(handle aVoiceHandle,
+                                      size_t aFilterId,
+                                      size_t aAttributeId,
+                                      float  aFrom,
+                                      float  aTo,
+                                      double aTime)
+{
+    if (aFilterId >= FILTERS_PER_STREAM)
+    {
+        return;
+    }
+
+    if (aVoiceHandle == 0)
+    {
+        lockAudioMutex_internal();
+        if (mFilterInstance[aFilterId])
+        {
+            mFilterInstance[aFilterId]->oscillateFilterParameter(aAttributeId,
+                                                                 aFrom,
+                                                                 aTo,
+                                                                 aTime,
+                                                                 mStreamTime);
+        }
+        unlockAudioMutex_internal();
+        return;
+    }
+
+    FOR_ALL_VOICES_PRE
+    if (mVoice[ch] && mVoice[ch]->mFilter[aFilterId])
+    {
+        mVoice[ch]->mFilter[aFilterId]->oscillateFilterParameter(aAttributeId,
+                                                                 aFrom,
+                                                                 aTo,
+                                                                 aTime,
+                                                                 mStreamTime);
+    }
+    FOR_ALL_VOICES_POST
+}
+} // namespace SoLoud

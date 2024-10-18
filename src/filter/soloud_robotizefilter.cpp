@@ -22,89 +22,41 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <string.h>
-#include "soloud.h"
-#include "soloud_misc.h"
-#include "soloud_robotizefilter.h"
+#include "soloud.hpp"
+#include "soloud_filter.hpp"
+#include "soloud_misc.hpp"
 
 namespace SoLoud
 {
-	RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter *aParent)
-	{
-		mParent = aParent;
-		initParams(3);
-		mParam[FREQ] = aParent->mFreq;
-		mParam[WAVE] = (float)aParent->mWave;
-	}
-
-	void RobotizeFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
-	{
-		unsigned int i;
-		int period = (int)(aSamplerate / mParam[FREQ]);
-		int start = (int)(aTime * aSamplerate) % period;
-		for (i = 0; i < aSamples; i++)
-		{
-			float s = aBuffer[i];
-			float wpos = ((start + i) % period) / (float)period;
-			s *= SoLoud::Misc::generateWaveform((int)mParam[WAVE], wpos) + 0.5f;
-			aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
-		}
-	}
-
-	RobotizeFilter::RobotizeFilter()
-	{
-		mFreq = 30;
-		mWave = 0;
-	}
-
-	void RobotizeFilter::setParams(float aFreq, int aWaveform)
-	{
-		mFreq = aFreq;
-		mWave = aWaveform;
-	}
-
-	int RobotizeFilter::getParamCount()
-	{
-		return 3;
-	}
-
-	const char* RobotizeFilter::getParamName(unsigned int aParamIndex)
-	{
-		if (aParamIndex > 2)
-			return 0;
-		const char* names[3] = {
-			"Wet",
-			"Frequency",
-			"Waveform"
-		};
-		return names[aParamIndex];
-	}
-
-	unsigned int RobotizeFilter::getParamType(unsigned int aParamIndex)
-	{
-		if (aParamIndex == WAVE)
-			return INT_PARAM;
-		return FLOAT_PARAM;
-	}
-
-	float RobotizeFilter::getParamMax(unsigned int aParamIndex)
-	{
-		if (aParamIndex == WAVE)
-			return 6;
-		if (aParamIndex == FREQ)
-			return 100;
-		return 1;
-	}
-
-	float RobotizeFilter::getParamMin(unsigned int aParamIndex)
-	{
-		if (aParamIndex == FREQ)
-			return 0.1f;
-		return 0;
-	}
-
-	FilterInstance *RobotizeFilter::createInstance()
-	{
-		return new RobotizeFilterInstance(this);
-	}
+RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter* aParent)
+{
+    mParent = aParent;
+    FilterInstance::initParams(3);
+    mParam[FREQ] = aParent->mFreq;
+    mParam[WAVE] = float(aParent->mWave);
 }
+
+void RobotizeFilterInstance::filterChannel(float* aBuffer,
+                                           size_t aSamples,
+                                           float  aSamplerate,
+                                           time_t aTime,
+                                           size_t aChannel,
+                                           size_t aChannels)
+{
+    const auto period = int(aSamplerate / mParam[FREQ]);
+    const auto start  = int(aTime * aSamplerate) % period;
+
+    for (size_t i = 0; i < aSamples; ++i)
+    {
+        float s    = aBuffer[i];
+        float wpos = ((start + i) % period) / (float)period;
+        s *= generateWaveform(Waveform(int(mParam[WAVE])), wpos) + 0.5f;
+        aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
+    }
+}
+
+std::shared_ptr<FilterInstance> RobotizeFilter::createInstance()
+{
+    return std::make_shared<RobotizeFilterInstance>(this);
+}
+} // namespace SoLoud
