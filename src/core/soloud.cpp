@@ -796,7 +796,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                     }
 
                     // If buffer size or samples to read are not divisible by 4, handle leftovers
-                    for (j = c; j < aSamplesToRead; ++j)
+                    for (size_t j = c; j < aSamplesToRead; ++j)
                     {
                         pan[0] += pani[0];
                         pan[1] += pani[1];
@@ -842,7 +842,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                         __m128 p0        = _mm_load_ps(pan0.mData);
                         __m128 p1        = _mm_load_ps(pan1.mData);
 
-                        for (j = 0; j < samplequads; ++j)
+                        for (size_t j = 0; j < samplequads; ++j)
                         {
                             __m128 f  = _mm_load_ps(aScratch + c);
                             __m128 c0 = _mm_mul_ps(f, p0);
@@ -859,7 +859,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                         }
                     }
                     // If buffer size or samples to read are not divisible by 4, handle leftovers
-                    for (j = c; j < aSamplesToRead; ++j)
+                    for (size_t j = c; j < aSamplesToRead; ++j)
                     {
                         pan[0] += pani[0];
                         pan[1] += pani[1];
