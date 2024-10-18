@@ -92,7 +92,7 @@ static void alsaCleanup(Engine* engine)
     engine->mBackendData = 0;
 }
 
-void alsa_init(Engine* engine, Flags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
+void alsa_init(Engine* engine, EngineFlags aFlags, size_t aSamplerate, size_t aBuffer, size_t aChannels)
 {
     ALSAData* data = new ALSAData;
     memset(data, 0, sizeof(ALSAData));
