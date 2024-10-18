@@ -233,8 +233,7 @@ void Engine::trimVoiceGroup_internal(handle aVoiceGroupHandle)
         {
             lockAudioMutex_internal();
             // current index is an invalid handle, move all following handles backwards
-            size_t j;
-            for (j = i; j < mVoiceGroup[c][0] - 1; ++j)
+            for (size_t j = i; j < mVoiceGroup[c][0] - 1; ++j)
             {
                 mVoiceGroup[c][j] = mVoiceGroup[c][j + 1];
                 // not a full group, we can stop copying

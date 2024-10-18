@@ -365,8 +365,8 @@ handle Engine::play3dClocked(
     update3dVoices_internal({reinterpret_cast<size_t*>(&v), 1});
     lockAudioMutex_internal();
     updateVoiceRelativePlaySpeed_internal(v);
-    int j;
-    for (j = 0; j < MAX_CHANNELS; ++j)
+
+    for (size_t j = 0; j < MAX_CHANNELS; ++j)
     {
         mVoice[v]->mChannelVolume[j] = m3dData[v].mChannelVolume[j];
     }

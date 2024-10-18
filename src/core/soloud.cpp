@@ -368,7 +368,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
         __m128 vdelta = _mm_load_ps1(&vd);
         c             = 0;
         d             = 0;
-        for (j = 0; j < mChannels; ++j)
+        for (size_t j = 0; j < mChannels; ++j)
         {
             __m128 vol = _mm_load_ps(volumes.mData);
 
@@ -426,7 +426,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
         __m128 vdelta = _mm_load_ps1(&vd);
         c             = 0;
         d             = 0;
-        for (j = 0; j < mChannels; ++j)
+        for (size_t j = 0; j < mChannels; ++j)
         {
             __m128 vol = _mm_load_ps(volumes.mData);
             for (i = 0; i < samplequads; ++i)
@@ -777,7 +777,7 @@ void panAndExpand(std::shared_ptr<AudioSourceInstance>& aVoice,
                         __m128 p0        = _mm_load_ps(pan0.mData);
                         __m128 p1        = _mm_load_ps(pan1.mData);
 
-                        for (j = 0; j < samplequads; ++j)
+                        for (size_t j = 0; j < samplequads; ++j)
                         {
                             __m128 f0 = _mm_load_ps(aScratch + c);
                             __m128 c0 = _mm_mul_ps(f0, p0);
@@ -1977,12 +1977,10 @@ void interlace_samples_float(const float* aSourceBuffer,
                              size_t       aStride)
 {
     // 111222 -> 121212
-    size_t i, j, c;
-    c = 0;
-    for (j = 0; j < aChannels; ++j)
+    for (size_t j = 0; j < aChannels; ++j)
     {
-        c = j * aStride;
-        for (i = j; i < aSamples * aChannels; i += aChannels)
+        auto c = j * aStride;
+        for (auto i = j; i < aSamples * aChannels; i += aChannels)
         {
             aDestBuffer[i] = aSourceBuffer[c];
             ++c;
