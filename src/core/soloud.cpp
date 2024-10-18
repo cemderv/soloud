@@ -344,7 +344,7 @@ void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
     size_t samplequads = (aSamples + 3) / 4; // rounded up
 
     // Clip
-    if (testFlag(mFlags, Flags::ClipRoundoff))
+    if (mFlags.ClipRoundoff)
     {
         float                  nb          = -1.65f;
         __m128                 negbound    = _mm_load_ps1(&nb);
@@ -1780,7 +1780,7 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
             // This causes all math to consider really tiny values as zero, which
             // helps performance. I'd rather use constants from the sse headers,
             // but for some reason the DAZ value is not defined there(!)
-            if (!testFlag(mFlags, Flags::NoFpuRegisterChange))
+            if (!mFlags.NoFpuRegisterChange)
             {
                 _mm_setcsr(_mm_getcsr() | 0x8040);
             }
