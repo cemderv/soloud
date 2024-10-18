@@ -81,7 +81,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aBufferSize.has_value())
             buffersize = 2048;
 
-        sdl2static_init(this, aFlags, samplerate, buffersize, aChannels);
+        sdl2static_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -90,7 +90,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aBufferSize.has_value())
             buffersize = 4096;
 
-        xaudio2_init(this, aFlags, samplerate, buffersize, aChannels);
+        xaudio2_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -99,7 +99,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aBufferSize.has_value())
             buffersize = 4096;
 
-        winmm_init(this, aFlags, samplerate, buffersize, aChannels);
+        winmm_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -111,7 +111,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aSamplerate.has_value())
             samplerate = 48000;
 
-        wasapi_init(this, aFlags, samplerate, buffersize, aChannels);
+        wasapi_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -120,7 +120,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aBufferSize.has_value())
             buffersize = 2048;
 
-        alsa_init(this, aFlags, samplerate, buffersize, aChannels);
+        alsa_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 
@@ -138,7 +138,7 @@ Engine::Engine(EngineFlags           flags,
         if (!aBufferSize.has_value())
             buffersize = 4096;
 
-        opensles_init(this, aFlags, samplerate, buffersize, aChannels);
+        opensles_init(this, flags, samplerate, buffersize, aChannels);
     }
 #endif
 }
@@ -181,7 +181,7 @@ void Engine::resume()
 
 void Engine::postinit_internal(size_t      aSamplerate,
                                size_t      aBufferSize,
-                               EngineFlags aFlags,
+                               EngineFlags flags,
                                size_t      aChannels)
 {
     mGlobalVolume = 1;
@@ -208,7 +208,7 @@ void Engine::postinit_internal(size_t      aSamplerate,
     for (size_t i = 0; i < mMaxActiveVoices * 2; ++i)
         mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
 
-    mFlags          = aFlags;
+    mFlags          = flags;
     mPostClipScaler = 0.95f;
 
     switch (mChannels)
@@ -636,7 +636,7 @@ static void resample_linear(const float* aSrc,
 
     for (int i = 0; i < aDstSampleCount; ++i, pos += aStepFixed)
     {
-        const int         p  = pos >> FIXPOINT_FRAC_BITS;
+        const int   p  = pos >> FIXPOINT_FRAC_BITS;
         const int   f  = pos & FIXPOINT_FRAC_MASK;
         float       s1 = aSrc1[SAMPLE_GRANULARITY - 1];
         const float s2 = aSrc[p];
@@ -1762,7 +1762,7 @@ void Engine::mix_internal(size_t aSamples, size_t aStride)
         if (!once)
         {
             once = true;
-            if (!testFlag(mFlags, Flags::NoFpuRegisterChange))
+            if (!mFlags.NoFpuRegisterChange)
             {
                 _controlfp(_DN_FLUSH, _MCW_DN);
             }

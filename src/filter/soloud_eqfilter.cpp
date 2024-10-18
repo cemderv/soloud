@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.hpp"
 #include "soloud_filter.hpp"
+#include <algorithm>
 #include <cstring>
 
 namespace SoLoud

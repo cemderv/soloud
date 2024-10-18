@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #include "soloud_bus.hpp"
 #include "soloud_fft.hpp"
 #include "soloud_internal.hpp"
+#include <algorithm>
 #include <cassert>
 
 namespace SoLoud
@@ -269,7 +270,7 @@ float* Bus::calcFFT()
     if (mInstance && engine)
     {
         engine->lockAudioMutex_internal();
-        auto temp = std::array<float,1024>{};
+        auto temp = std::array<float, 1024>{};
         for (int i = 0; i < 256; ++i)
         {
             temp[i * 2]     = mInstance->mVisualizationWaveData[i];
