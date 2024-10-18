@@ -42,27 +42,27 @@ class Fader
     float get(time_t aCurrentTime);
 
     // Value to fade from
-    float mFrom=0.0f;
+    float mFrom = 0.0f;
 
     // Value to fade to
-    float mTo=0.0f;
+    float mTo = 0.0f;
 
     // Delta between from and to
-    float mDelta=0.0f;
+    float mDelta = 0.0f;
 
     // Total time to fade
-    time_t mTime=0;
+    time_t mTime = 0;
 
     // Time fading started
-    time_t mStartTime=0;
+    time_t mStartTime = 0;
 
     // Time fading will end
-    time_t mEndTime=0;
+    time_t mEndTime = 0;
 
     // Current value. Used in case time rolls over.
-    float mCurrent=0.0f;
+    float mCurrent = 0.0f;
 
     // Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
-    int mActive=0;
+    int mActive = 0;
 };
 }; // namespace SoLoud

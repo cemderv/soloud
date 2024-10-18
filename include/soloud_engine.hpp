@@ -6,8 +6,8 @@
 #include "soloud_vec3.hpp"
 #include <memory>
 #include <optional>
-#include <vector>
 #include <span>
+#include <vector>
 
 namespace SoLoud
 {

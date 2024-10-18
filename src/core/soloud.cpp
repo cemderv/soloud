@@ -332,11 +332,11 @@ float* Engine::calcFFT()
 }
 
 #if defined(SOLOUD_SSE_INTRINSICS)
-void Engine::clip_internal(AlignedFloatBuffer& aBuffer,
-                           AlignedFloatBuffer& aDestBuffer,
-                           size_t              aSamples,
-                           float               aVolume0,
-                           float               aVolume1)
+void Engine::clip_internal(const AlignedFloatBuffer& aBuffer,
+                           const AlignedFloatBuffer& aDestBuffer,
+                           size_t                    aSamples,
+                           float                     aVolume0,
+                           float                     aVolume1)
 {
     float  vd = (aVolume1 - aVolume0) / aSamples;
     float  v  = aVolume0;

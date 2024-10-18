@@ -29,60 +29,60 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 // SDL2 "non-dynamic" back-end initialization call
-void sdl2static_init(Engine* engine,
-                     EngineFlags   aFlags      ,
-                     size_t  aSamplerate = 44100,
-                     size_t  aBuffer     = 2048,
-                     size_t  aChannels   = 2);
+void sdl2static_init(Engine*     engine,
+                     EngineFlags aFlags,
+                     size_t      aSamplerate = 44100,
+                     size_t      aBuffer     = 2048,
+                     size_t      aChannels   = 2);
 
 // Core Audio driver back-end initialization call
-void coreaudio_init(Engine* engine,
-                    EngineFlags   aFlags      ,
-                    size_t  aSamplerate = 44100,
-                    size_t  aBuffer     = 2048,
-                    size_t  aChannels   = 2);
+void coreaudio_init(Engine*     engine,
+                    EngineFlags aFlags,
+                    size_t      aSamplerate = 44100,
+                    size_t      aBuffer     = 2048,
+                    size_t      aChannels   = 2);
 
 // OpenSL ES back-end initialization call
-void opensles_init(Engine* engine,
-                   EngineFlags   aFlags      ,
-                   size_t  aSamplerate = 44100,
-                   size_t  aBuffer     = 2048,
-                   size_t  aChannels   = 2);
+void opensles_init(Engine*     engine,
+                   EngineFlags aFlags,
+                   size_t      aSamplerate = 44100,
+                   size_t      aBuffer     = 2048,
+                   size_t      aChannels   = 2);
 
 // WinMM back-end initialization call
-void winmm_init(Engine* engine,
-                EngineFlags   aFlags      ,
-                size_t  aSamplerate = 44100,
-                size_t  aBuffer     = 4096,
-                size_t  aChannels   = 2);
+void winmm_init(Engine*     engine,
+                EngineFlags aFlags,
+                size_t      aSamplerate = 44100,
+                size_t      aBuffer     = 4096,
+                size_t      aChannels   = 2);
 
 // XAudio2 back-end initialization call
-void xaudio2_init(Engine* engine,
-                  EngineFlags   aFlags      ,
-                  size_t  aSamplerate = 44100,
-                  size_t  aBuffer     = 2048,
-                  size_t  aChannels   = 2);
+void xaudio2_init(Engine*     engine,
+                  EngineFlags aFlags,
+                  size_t      aSamplerate = 44100,
+                  size_t      aBuffer     = 2048,
+                  size_t      aChannels   = 2);
 
 // WASAPI back-end initialization call
-void wasapi_init(Engine* engine,
-                 EngineFlags   aFlags      ,
-                 size_t  aSamplerate = 44100,
-                 size_t  aBuffer     = 4096,
-                 size_t  aChannels   = 2);
+void wasapi_init(Engine*     engine,
+                 EngineFlags aFlags,
+                 size_t      aSamplerate = 44100,
+                 size_t      aBuffer     = 4096,
+                 size_t      aChannels   = 2);
 
 // PS Vita homebrew back-end initialization call
-void vita_homebrew_init(Engine* engine,
-                        EngineFlags   aFlags      ,
-                        size_t  aSamplerate = 44100,
-                        size_t  aBuffer     = 2048,
-                        size_t  aChannels   = 2);
+void vita_homebrew_init(Engine*     engine,
+                        EngineFlags aFlags,
+                        size_t      aSamplerate = 44100,
+                        size_t      aBuffer     = 2048,
+                        size_t      aChannels   = 2);
 
 // ALSA back-end initialization call
-void alsa_init(Engine* engine,
-               EngineFlags   aFlags      ,
-               size_t  aSamplerate = 44100,
-               size_t  aBuffer     = 2048,
-               size_t  aChannels   = 2);
+void alsa_init(Engine*     engine,
+               EngineFlags aFlags,
+               size_t      aSamplerate = 44100,
+               size_t      aBuffer     = 2048,
+               size_t      aChannels   = 2);
 
 // Interlace samples in a buffer. From 11112222 to 12121212
 void interlace_samples_float(const float* aSourceBuffer,
@@ -138,13 +138,13 @@ void interlace_samples_s16(const float* aSourceBuffer,
 #define FOR_ALL_VOICES_PRE_EXT                                                                     \
     handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
-    engine->lockAudioMutex_internal();                                                            \
-    h_ = engine->voiceGroupHandleToArray_internal(aVoiceHandle);                                  \
+    engine->lockAudioMutex_internal();                                                             \
+    h_ = engine->voiceGroupHandleToArray_internal(aVoiceHandle);                                   \
     if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \
     {                                                                                              \
-        int ch = engine->getVoiceFromHandle_internal(*h_);                                        \
+        int ch = engine->getVoiceFromHandle_internal(*h_);                                         \
         if (ch != -1)                                                                              \
         {
 
@@ -157,7 +157,7 @@ void interlace_samples_s16(const float* aSourceBuffer,
 #define FOR_ALL_VOICES_PRE_3D_EXT                                                                  \
     handle* h_     = nullptr;                                                                      \
     handle  th_[2] = {aVoiceHandle, 0};                                                            \
-    h_             = engine->voiceGroupHandleToArray(aVoiceHandle);                               \
+    h_             = engine->voiceGroupHandleToArray(aVoiceHandle);                                \
     if (h_ == nullptr)                                                                             \
         h_ = th_;                                                                                  \
     while (*h_)                                                                                    \

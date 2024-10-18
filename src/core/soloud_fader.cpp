@@ -69,12 +69,12 @@ float Fader::get(double aCurrentTime)
     {
         // Time rolled over.
         // Figure out where we were..
-        const float p    = (mCurrent - mFrom) / mDelta; // 0..1
-        mFrom      = mCurrent;
-        mStartTime = aCurrentTime;
-        mTime      = mTime * (1 - p); // time left
-        mDelta     = mTo - mFrom;
-        mEndTime   = mStartTime + mTime;
+        const float p = (mCurrent - mFrom) / mDelta; // 0..1
+        mFrom         = mCurrent;
+        mStartTime    = aCurrentTime;
+        mTime         = mTime * (1 - p); // time left
+        mDelta        = mTo - mFrom;
+        mEndTime      = mStartTime + mTime;
     }
     if (aCurrentTime > mEndTime)
     {

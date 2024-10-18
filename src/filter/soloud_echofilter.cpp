@@ -58,7 +58,7 @@ void EchoFilterInstance::filter(float* aBuffer,
         mBufferLength = mBufferMaxLength;
     }
 
-    int    prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
+    int prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
 
     for (size_t i = 0; i < aSamples; ++i)
     {
@@ -70,7 +70,8 @@ void EchoFilterInstance::filter(float* aBuffer,
             mBuffer[mOffset + chofs] = mParam[EchoFilter::FILTER] * mBuffer[prevofs + chofs] +
                                        (1 - mParam[EchoFilter::FILTER]) * mBuffer[mOffset + chofs];
 
-            const auto n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * mParam[EchoFilter::DECAY];
+            const auto n =
+                aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * mParam[EchoFilter::DECAY];
             mBuffer[mOffset + chofs] = n;
 
             aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[EchoFilter::WET];

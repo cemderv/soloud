@@ -35,7 +35,7 @@ class Engine;
 class FilterInstance
 {
   public:
-    FilterInstance()          = default;
+    FilterInstance() = default;
 
     virtual ~FilterInstance() noexcept = default;
 

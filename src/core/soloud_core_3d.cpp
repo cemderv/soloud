@@ -118,7 +118,7 @@ void Engine::update3dVoices_internal(std::span<const size_t> voiceList)
     const auto up   = m3dUp;
     const auto m    = lookatRH(at, up);
 
-    for(const size_t voice_id : voiceList)
+    for (const size_t voice_id : voiceList)
     {
         auto& v = m3dData[voice_id];
 

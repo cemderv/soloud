@@ -48,11 +48,11 @@ size_t Prg::rand()
     const size_t b = a ^ c ^ (a << 16) ^ (c << 15);
     c              = mState[(mIndex + 9) & 15];
     c ^= (c >> 11);
-    a              = mState[mIndex] = b ^ c;
-    const size_t d = a ^ ((a << 5) & 0xDA442D24UL);
-    mIndex         = (mIndex + 15) & 15;
-    a              = mState[mIndex];
-    mState[mIndex] = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
+    a = mState[mIndex] = b ^ c;
+    const size_t d     = a ^ ((a << 5) & 0xDA442D24UL);
+    mIndex             = (mIndex + 15) & 15;
+    a                  = mState[mIndex];
+    mState[mIndex]     = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
     return mState[mIndex];
 }
 
